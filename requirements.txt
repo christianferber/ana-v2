@@ -1,0 +1,11 @@
+# Änderung für v2: Mit Python 3.13.5 unter Windows geprüfte Laufzeitabhängigkeiten.
+nicegui==2.21.1
+docx-mailmerge==0.5.0
+python-docx==1.2.0
+docx2pdf==0.1.8
+pywin32==311
+schwifty==2025.6.0
+pywebview==5.4
+plotly==6.2.0
+pandas==2.3.3
+pypdf==6.5.0

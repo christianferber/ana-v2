@@ -1,0 +1,12 @@
+# Änderung für v2: Lokale Referenzen können Beispieldaten enthalten und bleiben außerhalb von Git.
+.lokal/
+__pycache__/
+# Änderung für v2: Lokale Einstellungen, Projekthinweise und Buildausgaben nicht veröffentlichen.
+ana.ini
+ana-betreiber.ini
+AGENTS.md
+build/
+dist/
+release/
+*.spec
+*.log

@@ -1,0 +1,8 @@
+# Änderung für v2: Einheitliche Textdateien und unveränderte Binärressourcen im Repository.
+*.py text eol=lf
+*.md text eol=lf
+*.ini text eol=lf
+*.txt text eol=lf
+*.png binary
+*.JPG binary
+*.ico binary

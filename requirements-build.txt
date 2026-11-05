@@ -1,0 +1,3 @@
+# Änderung für v2: Zusätzliche Abhängigkeit für die Windows-EXE.
+-r requirements.txt
+pyinstaller==6.14.2
