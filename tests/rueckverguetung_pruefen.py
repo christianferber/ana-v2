@@ -1,3 +1,4 @@
+# Änderung für v2: In tests/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: Rückvergütungen lokal sichern und mit der Vorlage vergleichen.
 
 Beispieldaten werden nur gelesen. Ergebnisse bleiben unter .lokal; Ausgaben
@@ -13,10 +14,10 @@ from pathlib import Path
 import sys
 from types import SimpleNamespace
 
-from datenhaltung import datei_oeffnen
-from einstellungen import ini_datei_lesen
+from anwendung.datenhaltung import datei_oeffnen
+from anwendung.einstellungen import ini_datei_lesen
 
-BASIS = Path(__file__).resolve().parent
+BASIS = Path(__file__).resolve().parents[1]
 REFERENZ = BASIS / '.lokal' / 'rueckverguetungsreferenz.json'
 
 
@@ -30,7 +31,7 @@ class Knopf:
 
 
 def funktionen_laden(original):
-    quelle = BASIS.parent / '_Vorlagen' / 'ana' / 'ana.py' if original else BASIS / 'ana.py'
+    quelle = BASIS.parent / '_Vorlagen' / 'ana' / 'ana.py' if original else BASIS / 'anwendung' / 'oberflaeche.py'
     baum = ast.parse(quelle.read_text(encoding='utf-8-sig'))
     namen = {'rueckv_tabelle_erstellen', 'rueckv_tabelle_berechnen', 'rueckv_erstellen'}
     if original:
@@ -40,7 +41,7 @@ def funktionen_laden(original):
     umgebung = {'datei_oeffnen': datei_oeffnen}
     if not original:
         # Änderung für v2: Tatsächliche Rechenfunktionen des neuen Moduls verwenden.
-        import berechnungen
+        from anwendung import berechnungen
         umgebung.update({name: getattr(berechnungen, name) for name in (
             'mwst_berechnen', 'rueckverguetung_vorbereiten', 'rueckverguetung_berechnen')})
     exec(compile(ast.Module(body=funktionen, type_ignores=[]), 'rueckverguetung', 'exec'), umgebung)
@@ -84,7 +85,7 @@ def ergebnisse(original):
 
 def main():
     if sys.argv[1:] not in (['erstellen'], ['pruefen']):
-        print('Aufruf: python rueckverguetung_pruefen.py erstellen | pruefen')
+        print('Aufruf: python -m tests.rueckverguetung_pruefen erstellen | pruefen')
         return 2
     try:
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):

@@ -4,6 +4,10 @@ ANA RELEASE NOTES
 Version 2.00 – 05.11.2026
 ------------------------
 
+- Aktualisierte Freigabe 2.00: Die neue Verzeichnisstruktur ersetzt die bisherige Bereitstellung derselben Version.
+- Projektstruktur: Anwendungsmodule, Tests, Skripte, Ressourcen, Beispielkonfiguration und Dokumentation in eigene Verzeichnisse eingeordnet.
+- Der Start mit `python ana.py` bleibt erhalten; Test- und Buildaufrufe verwenden Python-Pakete.
+- Ressourcenpfade für Python und Windows-Paket angepasst; Berechnungen und Datenformate unverändert.
 - Architektur: CSV-Dateizugriffe, INI-Zugriffe und Pfadbildung in eigene Module ausgelagert.
 - Architektur: Abrechnungs- und Rückvergütungsberechnung von der Oberfläche getrennt.
 - Architektur: Word-/PDF-Verarbeitung, Feldformatierung und CSV-Buchungsvorlagen ausgelagert.

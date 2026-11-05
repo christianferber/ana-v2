@@ -20,7 +20,7 @@ Geprüfte Umgebung: Windows, Python 3.13.5. Befehle im Projektordner ausführen:
 
 ```powershell
 python -m pip install -r requirements.txt
-Copy-Item ana.example.ini ana.ini
+Copy-Item konfiguration/ana.example.ini ana.ini
 python ana_start.py
 ```
 
@@ -34,7 +34,7 @@ ersten Start `Datenbank`, `Sicherungen`, `Logs`, `Downloads`, `Abrechnungen`,
 
 ```powershell
 python -m pip install -r requirements-build.txt
-python build_windows.py
+python -m scripts.build_windows
 ```
 
 Ergebnis: `release/ANA-2.00-Windows-x64.zip`. Die Anwendung wird als Ordnerpaket
@@ -48,12 +48,7 @@ festgelegten Nachbarverzeichnissen. `ana.ini` muss auf den freigegebenen
 Beispieldatenordner zeigen. Referenzen und Ausgaben liegen ausschließlich unter `.lokal/`.
 
 ```powershell
-python referenz_pruefen.py pruefen
-python berechnungen_pruefen.py
-python rueckverguetung_pruefen.py pruefen
-python buchungsvorlagen_pruefen.py pruefen
-python dateihilfen_pruefen.py
-python dokumente_pruefen.py
+python -m scripts.freigabe_pruefen
 ```
 
 Vor einem Oberflächentest eine laufende ANA-Instanz beenden. Oberflächentests
@@ -61,10 +56,41 @@ verwenden eine separate lokale Datenkopie und eine lokale Chrome-Installation.
 Sie geben keine Inhalte der Beispieldaten aus.
 
 ```powershell
-python oberflaeche_pruefen.py
-python oberflaeche_pruefen.py --rueckverguetung
+python -m tests.oberflaeche_pruefen
+python -m tests.oberflaeche_pruefen --rueckverguetung
 ```
 
 Bei der Rückvergütung verwendet der Praxistest einen vorhandenen Datensatz;
 der Berechnungsvergleich prüft alle vorhandenen Referenzfälle.
 Weitere Änderungen und Prüfgrenzen stehen in `RELEASE_NOTES.md`.
+
+## Verzeichnisstruktur
+
+<!-- Änderung für v2: Quellcode, Tests, Werkzeuge und Ressourcen getrennt erläutern. -->
+
+```text
+ana-v2/
+├── ana.py                 # Start mit python ana.py
+├── ana_start.py           # Start für die Windows-Paketierung
+├── anwendung/             # Oberfläche, Berechnungen und Fachmodule
+├── tests/                 # Lokale Referenz- und Praxistests
+├── scripts/               # Windows-Build und gebündelte Freigabeprüfung
+├── ressourcen/            # Logos und Icons
+├── konfiguration/         # Neutrale Beispielkonfiguration
+├── docs/                  # Strukturübersicht und aktueller Prüfbericht
+├── .lokal/                # Lokale Referenzen, Protokolle und Testausgaben
+├── build/                 # Temporäre Builddateien
+├── dist/                  # Erzeugte Windows-Anwendung
+└── release/               # Freigabearchive und Prüfsummen
+```
+
+Die aktive `ana.ini` bleibt lokal im Projektordner. `.lokal/`, aktive Einstellungen
+und Buildausgaben sind von Git ausgeschlossen. Details stehen in
+[`docs/STRUKTUR.md`](docs/STRUKTUR.md); der aktuelle Prüfbericht in
+[`docs/TESTBERICHT.md`](docs/TESTBERICHT.md).
+
+Ein Build in einem separaten Zielordner ersetzt keine vorhandenen Freigabepakete:
+
+```powershell
+python -m scripts.build_windows --ausgabe .lokal/struktur-build
+```

@@ -1,3 +1,4 @@
+# Änderung für v2: In tests/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: CSV-Buchungsexporte ausschließlich lokal bytegenau vergleichen.
 
 Der native Speicherdialog wird durch einen lokalen Ausgabepfad ersetzt.
@@ -19,10 +20,10 @@ import sys
 import tempfile
 from types import SimpleNamespace
 
-from datenhaltung import datei_oeffnen
-from einstellungen import ini_datei_lesen
+from anwendung.datenhaltung import datei_oeffnen
+from anwendung.einstellungen import ini_datei_lesen
 
-BASIS = Path(__file__).resolve().parent
+BASIS = Path(__file__).resolve().parents[1]
 REFERENZ = BASIS / '.lokal' / 'buchungsreferenz'
 EXPORTNAMEN = ('csv_grundgebuehr', 'csv_abschlag', 'csv_abrechnung_lastschrift',
                'csv_abrechnung_ueberweisung', 'csv_rueckv')
@@ -30,7 +31,7 @@ EXPORTNAMEN = ('csv_grundgebuehr', 'csv_abschlag', 'csv_abrechnung_lastschrift',
 
 def umgebung_laden(original, daten):
     # Änderung für v2: Originalfunktionen ohne Import/Start der Anwendung laden.
-    quelle = BASIS.parent / '_Vorlagen' / 'ana' / 'ana.py' if original else BASIS / 'ana.py'
+    quelle = BASIS.parent / '_Vorlagen' / 'ana' / 'ana.py' if original else BASIS / 'anwendung' / 'oberflaeche.py'
     baum = ast.parse(quelle.read_text(encoding='utf-8-sig'))
     namen = set(EXPORTNAMEN) | {name + '_speichern' for name in EXPORTNAMEN}
     namen |= {'buchung_datei_speichern', 'konto_aus_db', 'db_datei_oeffnen', 'tablefields_to_dotfloat'}
@@ -47,7 +48,7 @@ def umgebung_laden(original, daten):
                 'webview': SimpleNamespace(SAVE_DIALOG=0)}
     if not original:
         # Änderung für v2: Tatsächliche ausgelagerte Exportfunktionen verwenden.
-        import buchungsvorlagen
+        from anwendung import buchungsvorlagen
         umgebung.update({name: getattr(buchungsvorlagen, name) for name in (
             'grundgebuehr_csv', 'abschlag_csv', 'abrechnung_lastschrift_csv',
             'abrechnung_ueberweisung_csv', 'rueckverguetung_csv')})
@@ -137,7 +138,7 @@ def korrektur_pruefen(ausgabe, fall, daten, konten):
 
 def main():
     if sys.argv[1:] not in (['erstellen'], ['pruefen']):
-        print('Aufruf: python buchungsvorlagen_pruefen.py erstellen | pruefen')
+        print('Aufruf: python -m tests.buchungsvorlagen_pruefen erstellen | pruefen')
         return 2
     try:
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):

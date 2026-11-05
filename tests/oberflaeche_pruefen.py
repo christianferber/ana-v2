@@ -1,3 +1,4 @@
+# Änderung für v2: In tests/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: Echter lokaler Oberflächentest mit isolierter Beispieldatenkopie.
 
 Keine Screenshots, Dateninhalte oder Browserprotokolle werden ausgegeben.
@@ -21,11 +22,11 @@ import urllib.request
 
 from websockets.sync.client import connect
 
-from datenhaltung import datei_oeffnen, dictlist_to_csv
-from einstellungen import ini_datei_lesen, ini_datei_schreiben
-from referenz_pruefen import ergebnisse_berechnen
+from anwendung.datenhaltung import datei_oeffnen, dictlist_to_csv
+from anwendung.einstellungen import ini_datei_lesen, ini_datei_schreiben
+from tests.referenz_pruefen import ergebnisse_berechnen
 
-BASIS = Path(__file__).resolve().parent
+BASIS = Path(__file__).resolve().parents[1]
 SCHRITT = 'Vorbereitung'
 
 
@@ -38,7 +39,7 @@ def freier_port():
 
 def app_starten(ordner):
     # Änderung für v2: Originaloberfläche mit separater Konfiguration starten.
-    import ana
+    from anwendung import oberflaeche as ana
     ana.ini = str(ordner / 'ana.ini')
     original_run = ana.ui.run
     def test_run(**kwargs):
@@ -96,7 +97,8 @@ def testen(rueckverguetung=False):
     port = freier_port()
     (run / 'port.txt').write_text(str(port))
     log = (run / 'app.log').open('w', encoding='utf-8')
-    app = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), '--app', str(run)],
+    # Änderung für v2: Paketstart erhält den Projektordner im Python-Suchpfad.
+    app = subprocess.Popen([sys.executable, '-m', 'tests.oberflaeche_pruefen', '--app', str(run)],
                            cwd=BASIS, stdout=log, stderr=log, creationflags=subprocess.CREATE_NO_WINDOW)
     (run / 'app.pid').write_text(str(app.pid))
     browser = None

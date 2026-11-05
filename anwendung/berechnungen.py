@@ -1,3 +1,4 @@
+# Änderung für v2: In anwendung/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: Abrechnungen ohne Oberfläche und globale Eingabedaten berechnen."""
 
 from datetime import datetime, timedelta

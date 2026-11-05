@@ -1,4 +1,4 @@
-# Freigabeprüfung ANA 2.00
+# Prüfbericht ANA – aktueller Arbeitsstand
 
 <!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
 
@@ -21,5 +21,5 @@ ein vorhandener Datensatz. Der vollständige Rückvergütungs-Dokumentlauf
 überschritt das Testzeitlimit. Eine visuelle Dokumentprüfung fand aus
 Datenschutzgründen nicht im KI-Kontext statt.
 
-Windows-Paket: Start aus dem fertigen ZIP ohne Beispieldaten bestanden.
-Natives Fenster, lokale HTTP-Oberfläche und Versionsanzeige 2.00 geprüft.
+Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
+Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

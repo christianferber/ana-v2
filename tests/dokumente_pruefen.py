@@ -1,3 +1,4 @@
+# Änderung für v2: In tests/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: Dokumentaufrufe lokal gegen die Vorlage vergleichen.
 
 Word und PDF werden durch protokollierende Testobjekte ersetzt. Die Prüfung
@@ -12,18 +13,18 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-import dokumente
+from anwendung import dokumente
 # Änderung für v2: Dokumenttests verwenden die tatsächlich ausgelagerte Feldformatierung.
-from dokumentfelder import mapping_wordfelder, format_fuer_serienbrief
-from referenz_pruefen import ergebnisse_berechnen
+from anwendung.dokumentfelder import mapping_wordfelder, format_fuer_serienbrief
+from tests.referenz_pruefen import ergebnisse_berechnen
 # Änderung für v2: Vorhandene Rückvergütungsbeispiele ausschließlich lokal laden.
-from datenhaltung import datei_oeffnen
-from einstellungen import ini_datei_lesen
+from anwendung.datenhaltung import datei_oeffnen
+from anwendung.einstellungen import ini_datei_lesen
 
 
 def pruefen():
     # Änderung für v2: Originalcode ohne GUI-Start für direkte Ablaufvergleiche laden.
-    basis = Path(__file__).resolve().parent
+    basis = Path(__file__).resolve().parents[1]
     quelle = basis.parent / '_Vorlagen' / 'ana' / 'ana.py'
     baum = ast.parse(quelle.read_text(encoding='utf-8-sig'))
     funktionen = {k.name: k for k in baum.body if isinstance(k, ast.FunctionDef)}

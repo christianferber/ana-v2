@@ -1,9 +1,10 @@
+# Änderung für v2: In anwendung/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: CSV-Buchungsvorlagen ohne Oberfläche oder Dateizugriffe erstellen."""
 
 from decimal import Decimal
 
-from datenhaltung import dictlist_to_csv
-from berechnungen import round_half_up
+from anwendung.datenhaltung import dictlist_to_csv
+from anwendung.berechnungen import round_half_up
 
 
 def grundgebuehr_csv(konto_db, grundgebuehr, betreiber_iban,

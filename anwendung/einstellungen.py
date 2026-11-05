@@ -1,3 +1,4 @@
+# Änderung für v2: In anwendung/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: Arbeitsordnerpfade ohne Abhängigkeit von der Oberfläche bilden."""
 
 import configparser

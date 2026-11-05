@@ -1,3 +1,4 @@
+# Änderung für v2: In tests/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: Alten und neuen Abrechnungsablauf ausschließlich lokal vergleichen."""
 
 import ast
@@ -9,12 +10,12 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-import referenz_pruefen
+from tests import referenz_pruefen
 
 
 def pruefen():
     # Änderung für v2: Alte Funktionen aus der unveränderten Vorlage ohne Programmstart laden.
-    basis = Path(__file__).resolve().parent
+    basis = Path(__file__).resolve().parents[1]
     original = basis.parent / '_Vorlagen' / 'ana' / 'ana.py'
     baum = ast.parse(original.read_text(encoding='utf-8-sig'))
     namen = {'tablefields_to_int', 'tablefields_to_dotfloat', 'abnehmer_aus_daten',

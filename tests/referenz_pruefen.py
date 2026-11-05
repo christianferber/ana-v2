@@ -1,6 +1,7 @@
+# Änderung für v2: In tests/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: Berechnungsreferenzen ausschließlich lokal erzeugen und prüfen.
 
-Aufruf: python referenz_pruefen.py erstellen | pruefen
+Aufruf: python -m tests.referenz_pruefen erstellen | pruefen
 Es werden keine Dateninhalte, Dateinamen aus Beispieldaten oder Fehlerwerte ausgegeben.
 Die Anwendung und ihre Speicherfunktionen werden nicht gestartet.
 """
@@ -9,9 +10,9 @@ import ast
 import contextlib
 import copy
 # Änderung für v2: Referenzlauf verwendet jetzt die tatsächlich ausgelagerte Leseroutine.
-from datenhaltung import datei_oeffnen
+from anwendung.datenhaltung import datei_oeffnen
 # Änderung für v2: Die ausgelagerte Pfadbildung im Berechnungslauf verwenden.
-from einstellungen import pfade_erstellen, ini_datei_lesen
+from anwendung.einstellungen import pfade_erstellen, ini_datei_lesen
 from datetime import datetime, timedelta
 import hashlib
 import io
@@ -20,10 +21,8 @@ from pathlib import Path
 import sys
 from types import SimpleNamespace
 # Änderung für v2: Tatsächliche GUI-unabhängige Berechnung im Referenzlauf verwenden.
-import berechnungen
-
-
-BASIS = Path(__file__).resolve().parent
+from anwendung import berechnungen
+BASIS = Path(__file__).resolve().parents[1]
 REFERENZ = BASIS / '.lokal' / 'berechnungsreferenz.json'
 # Änderung für v2: Nur feste Prüfschrittnamen zur datensparsamen Fehlerdiagnose verwenden.
 PRUEFSCHRITT = 'Vorbereitung'
@@ -55,7 +54,7 @@ def funktionen_laden():
         'tablefields_to_int', 'tablefields_to_dotfloat',
         'letzte_mindestabnahme', 'abrechnung_erstellen_gui', 'umsatz_berechnen',
     }
-    baum = ast.parse((BASIS / 'ana.py').read_text(encoding='utf-8-sig'))
+    baum = ast.parse((BASIS / 'anwendung' / 'oberflaeche.py').read_text(encoding='utf-8-sig'))
     funktionen = [knoten for knoten in baum.body
                   if isinstance(knoten, ast.FunctionDef) and knoten.name in namen]
     if {knoten.name for knoten in funktionen} != namen:
@@ -143,7 +142,7 @@ def ergebnisse_berechnen():
 def main():
     # Änderung für v2: Fehler und Programmausgaben dürfen keine Beispieldaten offenlegen.
     if sys.argv[1:] not in (['erstellen'], ['pruefen']):
-        print('Aufruf: python referenz_pruefen.py erstellen | pruefen')
+        print('Aufruf: python -m tests.referenz_pruefen erstellen | pruefen')
         return 2
     try:
         if sys.argv[1] == 'erstellen' and REFERENZ.exists():
@@ -154,7 +153,7 @@ def main():
         if sys.argv[1] == 'erstellen':
             REFERENZ.parent.mkdir(exist_ok=True)
             inhalt = {
-                'quellcode_sha256': hashlib.sha256((BASIS / 'ana.py').read_bytes()).hexdigest(),
+                'quellcode_sha256': hashlib.sha256((BASIS / 'anwendung' / 'oberflaeche.py').read_bytes()).hexdigest(),
                 'ergebnisse': ergebnisse,
             }
             REFERENZ.write_text(json.dumps(inhalt, ensure_ascii=False, indent=2), encoding='utf-8')

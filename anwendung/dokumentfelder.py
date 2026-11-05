@@ -1,3 +1,4 @@
+# Änderung für v2: In anwendung/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: Word-Feldformatierung unverändert aus ana.py ausgelagert.
 
 Die Funktionen benötigen weder NiceGUI noch Microsoft Word.

@@ -1,3 +1,4 @@
+# Änderung für v2: In tests/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: Ausgelagerte Dateihilfen lokal mit der Vorlage vergleichen.
 
 Beispieldaten werden nur gelesen. Schreibprüfungen erfolgen in einem temporären
@@ -12,9 +13,9 @@ import io
 from pathlib import Path
 import tempfile
 
-import datenhaltung
+from anwendung import datenhaltung
 # Änderung für v2: Auch die ausgelagerte Pfadbildung gegen die Vorlage prüfen.
-from einstellungen import pfade_erstellen, ini_datei_lesen, ini_datei_schreiben
+from anwendung.einstellungen import pfade_erstellen, ini_datei_lesen, ini_datei_schreiben
 
 
 class IniZugriffeErweitern(ast.NodeTransformer):
@@ -182,27 +183,36 @@ class FreigegebeneBuchungskorrekturen(ast.NodeTransformer):
 
 def pruefen():
     # Änderung für v2: Struktur aller Originalfunktionen vergleichen, ohne ANA zu starten.
-    basis = Path(__file__).resolve().parent
+    basis = Path(__file__).resolve().parents[1]
     original = basis.parent / '_Vorlagen' / 'ana' / 'ana.py'
     alt = ast.parse(original.read_text(encoding='utf-8-sig'))
-    neu = ast.parse((basis / 'ana.py').read_text(encoding='utf-8-sig'))
-    modul = ast.parse((basis / 'datenhaltung.py').read_text(encoding='utf-8'))
+    neu = ast.parse((basis / 'anwendung' / 'oberflaeche.py').read_text(encoding='utf-8-sig'))
+    modul = ast.parse((basis / 'anwendung' / 'datenhaltung.py').read_text(encoding='utf-8'))
     # Änderung für v2: Ausgelagerte Feldformatierung ebenfalls strukturell vergleichen.
-    feldmodul = ast.parse((basis / 'dokumentfelder.py').read_text(encoding='utf-8'))
+    feldmodul = ast.parse((basis / 'anwendung' / 'dokumentfelder.py').read_text(encoding='utf-8'))
     # Änderung für v2: Dokumenthelfer als eingesetzte Originalabläufe vergleichen.
-    dokumentmodul = ast.parse((basis / 'dokumente.py').read_text(encoding='utf-8'))
+    dokumentmodul = ast.parse((basis / 'anwendung' / 'dokumente.py').read_text(encoding='utf-8'))
     dokumentfunktionen = {k.name: k for k in dokumentmodul.body if isinstance(k, ast.FunctionDef)}
     # Änderung für v2: Auch die ausgelagerten CSV-Vorlagen in die Strukturprüfung aufnehmen.
-    buchungsmodul = ast.parse((basis / 'buchungsvorlagen.py').read_text(encoding='utf-8'))
+    buchungsmodul = ast.parse((basis / 'anwendung' / 'buchungsvorlagen.py').read_text(encoding='utf-8'))
     buchungsfunktionen = {k.name: k for k in buchungsmodul.body if isinstance(k, ast.FunctionDef)}
     alte_funktionen = {k.name: k for k in alt.body if isinstance(k, ast.FunctionDef)}
+    # Änderung für v2: Nur die drei statischen Ressourcenpfade des Hauptfensters normalisieren.
+    class RessourcenEinsetzen(ast.NodeTransformer):
+        def visit_Constant(self, knoten):
+            namen = {'./ANA Logo.png': 'ANA logo.png', 'Logo NWS.JPG': 'Logo NWS.JPG',
+                     'ANA-favicon.ico': 'ANA-favicon.ico'}
+            if isinstance(knoten.value, str) and knoten.value in namen:
+                return ast.parse('str(RESSOURCEN / ' + repr(namen[knoten.value]) + ')', mode='eval').body
+            return knoten
+    alte_funktionen['main'] = RessourcenEinsetzen().visit(copy.deepcopy(alte_funktionen['main']))
     # Änderung für v2: Vorlage bleibt unverändert; erwartete Korrekturen nur im Prüfspeicher anwenden.
     korrekturen = FreigegebeneBuchungskorrekturen()
     alte_funktionen['csv_rueckv'] = korrekturen.visit(copy.deepcopy(alte_funktionen['csv_rueckv']))
     assert korrekturen.anzahl == 2
     neue_funktionen = {k.name: k for k in neu.body + modul.body + feldmodul.body if isinstance(k, ast.FunctionDef)}
     # Änderung für v2: Verschobene Rechenhilfen prüfen, den vorhandenen Adapter beibehalten.
-    rechenmodul = ast.parse((basis / 'berechnungen.py').read_text(encoding='utf-8'))
+    rechenmodul = ast.parse((basis / 'anwendung' / 'berechnungen.py').read_text(encoding='utf-8'))
     rechenfunktionen = {k.name: k for k in rechenmodul.body if isinstance(k, ast.FunctionDef)}
     for name, funktion in rechenfunktionen.items():
         if name in alte_funktionen and name != 'letzte_mindestabnahme':
@@ -262,15 +272,15 @@ def pruefen():
 
     # Änderung für v2: Den Import der ausgelagerten Funktionen zusätzlich kontrollieren.
     namen = {k.name for k in modul.body if isinstance(k, ast.FunctionDef)}
-    importe = [k for k in neu.body if isinstance(k, ast.ImportFrom) and k.module == 'datenhaltung']
+    importe = [k for k in neu.body if isinstance(k, ast.ImportFrom) and k.module == 'anwendung.datenhaltung']
     assert len(importe) == 1 and {k.name for k in importe[0].names} == namen
     # Änderung für v2: Alle fünf Vorlagen müssen über den tatsächlichen Modulimport verfügbar sein.
-    buchungsimporte = [k for k in neu.body if isinstance(k, ast.ImportFrom) and k.module == 'buchungsvorlagen']
+    buchungsimporte = [k for k in neu.body if isinstance(k, ast.ImportFrom) and k.module == 'anwendung.buchungsvorlagen']
     assert len(buchungsimporte) == 1
     assert {k.name for k in buchungsimporte[0].names} == set(buchungsfunktionen)
     # Änderung für v2: Alle ausgelagerten Formatierungsfunktionen müssen in ANA verfügbar bleiben.
     feldnamen = {k.name for k in feldmodul.body if isinstance(k, ast.FunctionDef)}
-    feldimporte = [k for k in neu.body if isinstance(k, ast.ImportFrom) and k.module == 'dokumentfelder']
+    feldimporte = [k for k in neu.body if isinstance(k, ast.ImportFrom) and k.module == 'anwendung.dokumentfelder']
     assert len(feldimporte) == 1 and {k.name for k in feldimporte[0].names} == feldnamen
 
     alte_hilfen = ast.Module(body=[alte_funktionen[name] for name in namen], type_ignores=[])

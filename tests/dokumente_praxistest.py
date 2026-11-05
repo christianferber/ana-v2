@@ -1,3 +1,4 @@
+# Änderung für v2: In tests/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: Eine echte Beispielabrechnung lokal als Word und PDF erzeugen.
 
 Nur der freigegebene Beispielordner wird gelesen. Ausgaben liegen unter .lokal.
@@ -16,11 +17,11 @@ from pypdf import PdfReader
 from win32com.client import DispatchEx
 import pythoncom
 
-from datenhaltung import datei_oeffnen
-import dokumente
+from anwendung.datenhaltung import datei_oeffnen
+from anwendung import dokumente
 # Änderung für v2: Dieselbe ausgelagerte Feldformatierung wie die Anwendung verwenden.
-from dokumentfelder import mapping_wordfelder
-from einstellungen import ini_datei_lesen
+from anwendung.dokumentfelder import mapping_wordfelder
+from anwendung.einstellungen import ini_datei_lesen
 
 
 SCHRITT = 'Vorbereitung'
@@ -28,7 +29,7 @@ SCHRITT = 'Vorbereitung'
 
 def erzeugen():
     global SCHRITT
-    basis = Path(__file__).resolve().parent
+    basis = Path(__file__).resolve().parents[1]
     daten = Path(ini_datei_lesen(basis / 'ana.ini')['Anwendung']['Arbeitsordner']).resolve()
     assert daten == (basis.parent / '_Vorlagen' / 'ana Beispieldaten').resolve()
 
