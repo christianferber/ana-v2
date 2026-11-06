@@ -62,7 +62,11 @@ python -m tests.oberflaeche_pruefen --rueckverguetung
 
 Bei der Rückvergütung verwendet der Praxistest einen vorhandenen Datensatz;
 der Berechnungsvergleich prüft alle vorhandenen Referenzfälle.
-Weitere Änderungen und Prüfgrenzen stehen in `RELEASE_NOTES.md`.
+<!-- Änderung: Anwenderinformationen, technische Details und Prüfungen getrennt verlinken. -->
+Features und Fehlerkorrekturen für Anwender stehen in den
+[Release Notes](RELEASE_NOTES.md), technische Einzelheiten im
+[Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md) und Prüfungen einschließlich
+ihrer Grenzen im [Prüfbericht](docs/TESTBERICHT.md).
 
 ## Verzeichnisstruktur
 

@@ -73,3 +73,8 @@ vorhandene ANA-Prozesse. Eine Windows-Prozessgruppe umfasst Test-App, natives
 Fenster, Testbrowser und Unterprozesse. Sie wird nach Erfolg, Fehler und Abbruch
 vollständig beendet; auch beim Ende des Testtreibers schließt Windows den Job.
 `tests/testprozesse_pruefen.py` prüft echte verwaiste Kinder und konkurrierende Starts.
+
+<!-- Änderung: Getrennte Dokumentation für Anwender und technische Wartung erläutern. -->
+`RELEASE_NOTES.md` beschreibt Features, Verbesserungen und Fehlerkorrekturen für
+Anwender. `docs/AENDERUNGSPROTOKOLL.md` enthält die technischen Details pro Version;
+`docs/TESTBERICHT.md` dokumentiert die Prüfungen und ihre Grenzen.
