@@ -18,6 +18,12 @@ Windows-Paketierung und den Start unabhängig vom aktuellen Verzeichnis.
 | `build/`, `dist/`, `release/` | Erzeugte Builddateien, Windows-Anwendung und Freigabearchive; nicht in Git |
 
 Die aktive `ana.ini` bleibt im Projektordner und wird nicht veröffentlicht.
+<!-- Änderung 2.033: Zuständigkeit der Zähleransicht dokumentieren. -->
+`anwendung/zaehler_ui.py` enthält Zählerimport, Sortierung, Datenprüfung,
+Korrekturdialoge, Tabellenbearbeitung und Speichern. Bedienzustand liegt auf
+der Ansicht; gemeinsame Daten bleiben auf der Anwendung. Adapter erhalten
+bestehende Aufrufe und die aktualisierbare Tabellen- und Statusanzeige.
+
 <!-- Änderung 2.03: Zuständigkeit der Abrechnungsansicht dokumentieren. -->
 `anwendung/abrechnung_ui.py` enthält die Jahresabrechnung mit Speicherdialogen,
 Mindestabnahme-Nachfragen, Plausibilitätsprüfung und Dokumentaufrufen. Der

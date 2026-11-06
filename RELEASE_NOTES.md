@@ -5,6 +5,12 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.033: Wartung aus Anwendersicht dokumentieren. -->
+Version 2.033 – 06.11.2026
+-------------------------
+
+Interne Wartung der Zählerverwaltung; Bedienung, Datenimport und Ergebnisse bleiben unverändert.
+
 Version 2.032 – 06.11.2026
 -------------------------
 

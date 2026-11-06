@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.033: Gebundene Zählermethoden mit lokalen Beispieldaten vergleichen.
+        ('Zähleransicht gegen Original', ['-m', 'tests.zaehler_pruefen']),
         # Änderung: Parallele Tests und verwaiste Fensterprozesse verhindern.
         ('Testprozesse und Startsperre', ['-m', 'tests.testprozesse_pruefen']),
         # Änderung: Ausgelagerte Abschlagsansicht mit Beispieldaten gegen Original prüfen.
@@ -76,6 +78,18 @@ def main():
                 'Für 2.031 wurde keine neue Windows-EXE erstellt oder geprüft.', '']
     # Änderung 2.032: Tatsächlich geprüfte vollständige Prozessbereinigung festhalten.
     bericht += ['Version 2.032: Windows-Prozessgruppe und Startsperre mit echten Unterprozessen', 'geprüft. Auch ein nach dem Elternprozess weiterlaufendes Kind wurde nach Erfolg', 'und simuliertem Testfehler beendet; ein konkurrierender Teststart wurde blockiert.', 'Vollständiger Beispieldaten-Praxislauf am 06.11.2026 bestanden: Abschlagstabelle,', 'Abrechnung, CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs.', 'Original-Beispieldaten unverändert. Während des Laufs genau ein ANA-Testhauptprozess', 'und ein Fensterprozess bestätigt; anschließend null ANA-Prozesse und null Testbrowser.', 'Frühere Angaben zur vollständigen Fensterbereinigung waren unzutreffend und sind', 'mit diesem Stand korrigiert. Keine neue EXE; keine visuelle Dokumentprüfung.', '']
+    # Änderung 2.033: Abgeschlossenen lokalen Zähler-Praxislauf dokumentieren.
+    bericht += ['Version 2.033: Alle ausgelagerten Zählermethoden und Adapter strukturell',
+                'gegen das Original geprüft. Gebundene Methoden mit lokalen Beispieldaten',
+                'für Import, Sortierung, Bearbeitung, Korrekturdialoge und CSV-Speicherung',
+                'verglichen. Visualisierungsimport einschließlich Zählerwechsel und',
+                'Formatabweisung geprüft. Echtes Zählerregister und vollständige Abrechnung',
+                'am 06.11.2026 mit isolierter Datenkopie bestanden: CSV-Referenz identisch,',
+                '73 neue Word-Dateien und 73 lesbare PDFs; Originalbestand per SHA256 unverändert.',
+                'Gegenüber dem vorherigen Praxislauf: alle Word-Paketinhalte sowie PDF-Seitenzahlen',
+                'und extrahierten Texte identisch.',
+                'Test-App, Fenster und Testbrowser vollständig beendet. Keine neue EXE.',
+                'Keine visuelle Dokumentprüfung im Modellkontext.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'

@@ -230,6 +230,19 @@ def pruefen():
         assert ast.dump(adapterfunktion) == ast.dump(erwartet)
     neue_funktionen.update(verschoben)
     # Änderung 2.02: Anbindung der neuen Ansicht zusätzlich exakt absichern.
+    # Änderung 2.033: Alle Zählermethoden und Adapter exakt gegen Original prüfen.
+    from tests.zaehler_struktur import methoden_als_funktionen as zaehlersmethoden
+    verschoben = zaehlersmethoden(basis, alte_funktionen)
+    for name in verschoben:
+        adapterfunktion = copy.deepcopy(neue_funktionen[name])
+        erwartet = copy.deepcopy(alte_funktionen[name])
+        aufruf = 'return zaehler_ansicht.' + name + '(' + ', '.join(a.arg for a in erwartet.args.args) + ')'
+        erwartet.body = ast.parse(aufruf).body
+        if name == 'zaehlerdaten_ui':
+            erwartet.body = ast.parse('global zaehler_ansicht\nzaehler_ansicht = ZaehlerOberflaeche(sys.modules[__name__])\n' + aufruf).body
+        assert ast.dump(adapterfunktion) == ast.dump(erwartet)
+    neue_funktionen.update(verschoben)
+    # Änderung 2.02: Anbindung der neuen Ansicht zusätzlich exakt absichern.
     adapter = {k.name: k for k in neu.body if isinstance(k, ast.FunctionDef)}
     # Änderung 2.03: Die zwei Einstiegspunkte der neuen Abrechnungsansicht absichern.
     erwartet = ast.parse('def jahre_abrechnung():\n'

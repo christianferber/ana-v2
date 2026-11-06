@@ -6,6 +6,7 @@ Stand: 06.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Zähleransicht gegen Original: bestanden.
 - Testprozesse und Startsperre: bestanden.
 - Abschlagsansicht gegen Original: bestanden.
 - Jahresabrechnung gegen Referenz: bestanden.
@@ -40,9 +41,6 @@ Bearbeiten und Speichern der Abschläge wurden über gebundene Methoden geprüft
 im Browser wurde die Tabellenanzeige geprüft. Keine visuelle Dokumentprüfung.
 Für 2.031 wurde keine neue Windows-EXE erstellt oder geprüft.
 
-Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
-Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
-
 Version 2.032: Windows-Prozessgruppe und Startsperre mit echten Unterprozessen
 geprüft. Auch ein nach dem Elternprozess weiterlaufendes Kind wurde nach Erfolg
 und simuliertem Testfehler beendet; ein konkurrierender Teststart wurde blockiert.
@@ -52,3 +50,18 @@ Original-Beispieldaten unverändert. Während des Laufs genau ein ANA-Testhauptp
 und ein Fensterprozess bestätigt; anschließend null ANA-Prozesse und null Testbrowser.
 Frühere Angaben zur vollständigen Fensterbereinigung waren unzutreffend und sind
 mit diesem Stand korrigiert. Keine neue EXE; keine visuelle Dokumentprüfung.
+
+Version 2.033: Alle ausgelagerten Zählermethoden und Adapter strukturell
+gegen das Original geprüft. Gebundene Methoden mit lokalen Beispieldaten
+für Import, Sortierung, Bearbeitung, Korrekturdialoge und CSV-Speicherung
+verglichen. Visualisierungsimport einschließlich Zählerwechsel und
+Formatabweisung geprüft. Echtes Zählerregister und vollständige Abrechnung
+am 06.11.2026 mit isolierter Datenkopie bestanden: CSV-Referenz identisch,
+73 neue Word-Dateien und 73 lesbare PDFs; Originalbestand per SHA256 unverändert.
+Gegenüber dem vorherigen Praxislauf: alle Word-Paketinhalte sowie PDF-Seitenzahlen
+und extrahierten Texte identisch.
+Test-App, Fenster und Testbrowser vollständig beendet. Keine neue EXE.
+Keine visuelle Dokumentprüfung im Modellkontext.
+
+Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
+Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

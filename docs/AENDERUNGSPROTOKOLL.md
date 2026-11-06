@@ -20,6 +20,24 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Version 2.033 – 06.11.2026
+
+<!-- Änderung 2.033: Technische Auslagerung getrennt von Anwenderhinweisen festhalten. -->
+- Zähleroberfläche nach `anwendung/zaehler_ui.py` ausgelagert: Import,
+  Sortierung, Prüfung, Korrekturdialoge, Tabellenbearbeitung und Speichern.
+- `ZaehlerOberflaeche` verwaltet Tabellen- und Dialogzustand. Gemeinsame
+  Datenbanken und Hilfen bleiben auf der Anwendung; Adapter erhalten Aufrufe
+  und refresh-Zugriffe. Programmlogik und Dialogtexte bleiben unverändert.
+- Strukturvergleich umfasst alle verschobenen Methoden und Adapter.
+  Gebundene Methoden werden mit lokalen Beispieldaten gegen das Original
+  geprüft, einschließlich Import, Überschreiben, Formatabweisung,
+  Fehlwertdialogen und byteidentischer CSV-Speicherung.
+- Quellfreigabe gemäß Freigabeprozess; keine Windows-EXE erstellt.
+- Vollständiger Praxislauf: Zählerregister, Abrechnung, CSV-Referenz und
+  73 Word-/PDF-Paare bestanden. Word-Paketinhalte, PDF-Seitenzahlen und
+  Texte gegenüber dem vorherigen Praxislauf identisch; Originalbestand
+  unverändert. Testprozesse vollständig beendet; keine visuelle Layoutprüfung.
+
 ## Überarbeitung der Dokumentation – 06.11.2026
 
 - Einträge für Version 2.x in den Release Notes auf Anwenderinformationen gekürzt.
