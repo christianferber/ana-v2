@@ -1,6 +1,17 @@
 ANA RELEASE NOTES
 =================
 
+Version 2.03 – 06.11.2026
+------------------------
+
+- Abrechnungsoberfläche in `anwendung/abrechnung_ui.py` ausgelagert.
+- Eigener Tabellen- und Bedienzustand einschließlich Speicherdialogen,
+  Mindestabnahme-Nachfragen und Plausibilitätsprüfung.
+- Gemeinsame Datenbanken und Einstellungen bleiben in der Anwendung verfügbar.
+- Berechnungen, Rundungen, Speichern, CSV-Download und Word-/PDF-Ablauf beibehalten.
+- Referenzprüfung führt echte Instanzmethoden aus; Strukturprüfung umfasst auch
+  verschachtelte Dialogfunktionen und den asynchronen Speicherablauf.
+
 Version 2.02 – 06.11.2026
 ------------------------
 

@@ -18,6 +18,13 @@ Windows-Paketierung und den Start unabhängig vom aktuellen Verzeichnis.
 | `build/`, `dist/`, `release/` | Erzeugte Builddateien, Windows-Anwendung und Freigabearchive; nicht in Git |
 
 Die aktive `ana.ini` bleibt im Projektordner und wird nicht veröffentlicht.
+<!-- Änderung 2.03: Zuständigkeit der Abrechnungsansicht dokumentieren. -->
+`anwendung/abrechnung_ui.py` enthält die Jahresabrechnung mit Speicherdialogen,
+Mindestabnahme-Nachfragen, Plausibilitätsprüfung und Dokumentaufrufen. Der
+Tabellen- und Bedienzustand gehört zur Ansicht; gemeinsame Datenbanken und
+Einstellungen werden über die übergebene Anwendung verwendet. Das Hauptmodul
+erzeugt die Ansicht und bindet die Jahresauswahl beim Registerwechsel an.
+
 <!-- Änderung 2.02: Zuständigkeit der ausgelagerten Rückvergütungsansicht dokumentieren. -->
 `anwendung/rueckverguetung_ui.py` enthält die Rückvergütungsoberfläche mit ihren
 Dialogen und dem eigenen Tabellen- und Bedienzustand. Das Hauptmodul erzeugt

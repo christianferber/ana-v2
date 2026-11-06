@@ -52,7 +52,6 @@ def funktionen_laden():
     # Änderung für v2: Originalfunktionen laden; keine Imports, GUI oder Startaktionen ausführen.
     namen = {
         'tablefields_to_int', 'tablefields_to_dotfloat',
-        'letzte_mindestabnahme', 'abrechnung_erstellen_gui', 'umsatz_berechnen',
     }
     baum = ast.parse((BASIS / 'anwendung' / 'oberflaeche.py').read_text(encoding='utf-8-sig'))
     funktionen = [knoten for knoten in baum.body
@@ -68,6 +67,22 @@ def funktionen_laden():
         'datum_in_string', 'datum_in_punkt', 'datum_tage_vorher')})
     umgebung['mindestabnahme_berechnen'] = berechnungen.letzte_mindestabnahme
     exec(compile(ast.Module(body=funktionen, type_ignores=[]), 'ana.py', 'exec'), umgebung)
+    # Änderung 2.03: Echte Instanzmethoden ausführen. Die bestehende Prüfoberfläche
+    # als Wörterbuch beibehalten, damit der unabhängige Originalvergleich weiterläuft.
+    from anwendung import abrechnung_ui
+    from unittest.mock import patch
+    ansicht = abrechnung_ui.AbrechnungOberflaeche(SimpleNamespace())
+    def abrechnung_erstellen():
+        for name in ('abrechnung', 'jahre_dropdown', 'mwst_jahr', 'za_switch', 'za_datum',
+                     'za_mwst', 'abr_button_speichern', 'abr_button_download',
+                     'abrechnung_grid_ui', 'label_umsatz'):
+            setattr(ansicht, name, umgebung[name])
+        for name in ('abnehmer_db', 'zaehler_db', 'abschlag_db', 'arbeitspreis', 'grundgebuehr'):
+            setattr(ansicht.anwendung, name, umgebung[name])
+        with patch.object(abrechnung_ui, 'ui', umgebung['ui']):
+            ansicht.abrechnung_erstellen_gui()
+        umgebung['abrechnung'] = ansicht.abrechnung
+    umgebung['abrechnung_erstellen_gui'] = abrechnung_erstellen
     return umgebung
 
 

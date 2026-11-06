@@ -214,8 +214,20 @@ def pruefen():
     # Änderung 2.02: Auch die ausgelagerten Methoden weiterhin vollständig vergleichen.
     from tests.rueckv_struktur import methoden_als_funktionen
     neue_funktionen.update(methoden_als_funktionen(basis, alte_funktionen))
+    # Änderung 2.03: Auch die Abrechnungsansicht samt verschachtelten Dialogen prüfen.
+    from tests.abrechnung_struktur import methoden_als_funktionen as abrechnungsmethoden
+    neue_funktionen.update(abrechnungsmethoden(basis, alte_funktionen))
     # Änderung 2.02: Anbindung der neuen Ansicht zusätzlich exakt absichern.
     adapter = {k.name: k for k in neu.body if isinstance(k, ast.FunctionDef)}
+    # Änderung 2.03: Die zwei Einstiegspunkte der neuen Abrechnungsansicht absichern.
+    erwartet = ast.parse('def jahre_abrechnung():\n'
+                         '    abrechnung_ansicht.jahre_abrechnung()').body[0]
+    assert ast.dump(adapter['jahre_abrechnung']) == ast.dump(erwartet)
+    erwartet = ast.parse('def abrechnung_ui():\n'
+        '    global abrechnung_ansicht\n'
+        '    abrechnung_ansicht = AbrechnungOberflaeche(sys.modules[__name__])\n'
+        '    abrechnung_ansicht.abrechnung_ui()').body[0]
+    assert ast.dump(adapter['abrechnung_ui']) == ast.dump(erwartet)
     erwartet = ast.parse('def rueckv_jahre_einlesen():\n'
                          '    rueckverguetung_ansicht.rueckv_jahre_einlesen()').body[0]
     assert ast.dump(adapter['rueckv_jahre_einlesen']) == ast.dump(erwartet)

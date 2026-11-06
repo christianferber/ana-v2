@@ -54,6 +54,12 @@ def main():
                 'lesbaren PDFs bestanden; CSV-Referenz und Originalbestand wurden geprüft.',
                 'Eine visuelle Dokumentprüfung fand aus',
                 'Datenschutzgründen nicht im KI-Kontext statt.', '']
+    # Änderung 2.03: Vollständigen Abrechnungslauf nach Auslagerung dokumentieren.
+    bericht += ['Am 06.11.2026 wurde auch der vollständige Abrechnungslauf nach der',
+                'Auslagerung der Oberfläche bestanden: 73 Word-Dateien und 73 lesbare PDFs.',
+                'CSV-Referenz und unveränderter Originalbestand wurden geprüft. Gegenüber',
+                'dem unmittelbar vorherigen Lauf sind Word-Paketinhalte, PDF-Seitenzahlen',
+                'und extrahierte PDF-Texte identisch. Keine visuelle Layoutprüfung.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'
