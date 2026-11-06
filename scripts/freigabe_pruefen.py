@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung: Parallele Tests und verwaiste Fensterprozesse verhindern.
+        ('Testprozesse und Startsperre', ['-m', 'tests.testprozesse_pruefen']),
         # Änderung: Ausgelagerte Abschlagsansicht mit Beispieldaten gegen Original prüfen.
         ('Abschlagsansicht gegen Original', ['-m', 'tests.abschlag_pruefen']),
         # Änderung für v2: Prüfprogramme aus ihrem eigenen Paket starten.
@@ -72,6 +74,8 @@ def main():
                 'Bearbeiten und Speichern der Abschläge wurden über gebundene Methoden geprüft;',
                 'im Browser wurde die Tabellenanzeige geprüft. Keine visuelle Dokumentprüfung.',
                 'Für 2.031 wurde keine neue Windows-EXE erstellt oder geprüft.', '']
+    # Änderung 2.032: Tatsächlich geprüfte vollständige Prozessbereinigung festhalten.
+    bericht += ['Version 2.032: Windows-Prozessgruppe und Startsperre mit echten Unterprozessen', 'geprüft. Auch ein nach dem Elternprozess weiterlaufendes Kind wurde nach Erfolg', 'und simuliertem Testfehler beendet; ein konkurrierender Teststart wurde blockiert.', 'Vollständiger Beispieldaten-Praxislauf am 06.11.2026 bestanden: Abschlagstabelle,', 'Abrechnung, CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs.', 'Original-Beispieldaten unverändert. Während des Laufs genau ein ANA-Testhauptprozess', 'und ein Fensterprozess bestätigt; anschließend null ANA-Prozesse und null Testbrowser.', 'Frühere Angaben zur vollständigen Fensterbereinigung waren unzutreffend und sind', 'mit diesem Stand korrigiert. Keine neue EXE; keine visuelle Dokumentprüfung.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'

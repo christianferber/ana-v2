@@ -6,6 +6,7 @@ Stand: 06.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Testprozesse und Startsperre: bestanden.
 - Abschlagsansicht gegen Original: bestanden.
 - Jahresabrechnung gegen Referenz: bestanden.
 - Berechnung und Abbruchbedingungen: bestanden.
@@ -41,3 +42,13 @@ Für 2.031 wurde keine neue Windows-EXE erstellt oder geprüft.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
+
+Version 2.032: Windows-Prozessgruppe und Startsperre mit echten Unterprozessen
+geprüft. Auch ein nach dem Elternprozess weiterlaufendes Kind wurde nach Erfolg
+und simuliertem Testfehler beendet; ein konkurrierender Teststart wurde blockiert.
+Vollständiger Beispieldaten-Praxislauf am 06.11.2026 bestanden: Abschlagstabelle,
+Abrechnung, CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs.
+Original-Beispieldaten unverändert. Während des Laufs genau ein ANA-Testhauptprozess
+und ein Fensterprozess bestätigt; anschließend null ANA-Prozesse und null Testbrowser.
+Frühere Angaben zur vollständigen Fensterbereinigung waren unzutreffend und sind
+mit diesem Stand korrigiert. Keine neue EXE; keine visuelle Dokumentprüfung.

@@ -83,7 +83,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung für v2: Erste freigegebene Version gemäß AGENTS.md.
 # Änderung 2.03: Neue Freigabe für die ausgelagerte Abrechnungsoberfläche.
 # Änderung: Versionsschritt um 0.001 gemäß aktueller AGENTS.md.
-version = 2.031
+# Änderung: Neue Quellfreigabe für die bereinigte Teststeuerung.
+version = 2.032
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []

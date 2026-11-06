@@ -66,3 +66,10 @@ ersetzen der Versionstag und die Freigabepakete die bisherige Bereitstellung von
 für Abschläge. Tabelle und Speichern-Schaltfläche liegen auf der Ansicht.
 Gemeinsame Abschlagsdaten bleiben in der Anwendung. Kleine Adapter erhalten
 bestehende Aufrufe einschließlich der aktualisierbaren Status- und Tabellenanzeige.
+
+<!-- Änderung 2.032: Lebensdauer der Testprozesse dokumentieren. -->
+`tests/testprozesse.py` sperrt parallele Oberflächentests und beendet vor dem Start
+vorhandene ANA-Prozesse. Eine Windows-Prozessgruppe umfasst Test-App, natives
+Fenster, Testbrowser und Unterprozesse. Sie wird nach Erfolg, Fehler und Abbruch
+vollständig beendet; auch beim Ende des Testtreibers schließt Windows den Job.
+`tests/testprozesse_pruefen.py` prüft echte verwaiste Kinder und konkurrierende Starts.

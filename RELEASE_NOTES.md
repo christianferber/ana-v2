@@ -1,6 +1,16 @@
 ANA RELEASE NOTES
 =================
 
+Version 2.032 – 06.11.2026
+-------------------------
+
+- Oberflächentests schließen App, Fenster und Browser einschließlich aller Unterprozesse.
+- Windows-Prozessgruppe räumt nach Erfolg, Fehler und Abbruch auf.
+- Eine Betriebssystem-Sperre verhindert parallele Oberflächentests.
+- Vor dem Start werden vorhandene ANA-Instanzen beendet und der Zustand kontrolliert.
+- Verhalten mit echten verwaisten Testprozessen und konkurrierendem Teststart geprüft.
+- Keine Änderung der Fachlogik; keine neue EXE.
+
 Version 2.031 – 06.11.2026
 -------------------------
 

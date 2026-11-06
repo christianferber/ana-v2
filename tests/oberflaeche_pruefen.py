@@ -25,6 +25,8 @@ from websockets.sync.client import connect
 from anwendung.datenhaltung import datei_oeffnen, dictlist_to_csv
 from anwendung.einstellungen import ini_datei_lesen, ini_datei_schreiben
 from tests.referenz_pruefen import ergebnisse_berechnen
+# Änderung: Ein Testlauf besitzt alle gestarteten Prozesse einschließlich Fenster.
+from tests.testprozesse import TestProzesse
 
 BASIS = Path(__file__).resolve().parents[1]
 SCHRITT = 'Vorbereitung'
@@ -56,6 +58,13 @@ def bestand(daten):
 
 
 def testen(rueckverguetung=False):
+    # Änderung: Sperre und vollständiges Aufräumen gelten auch bei Fehlern und Abbruch.
+    with TestProzesse(BASIS) as prozesse:
+        _testen(prozesse, rueckverguetung)
+    print('Test-App, Fenster und Testbrowser vollständig beendet.', flush=True)
+
+
+def _testen(prozesse, rueckverguetung=False):
     global SCHRITT
     config = ini_datei_lesen(BASIS / 'ana.ini')
     daten = Path(config['Anwendung']['Arbeitsordner']).resolve()
@@ -98,7 +107,7 @@ def testen(rueckverguetung=False):
     (run / 'port.txt').write_text(str(port))
     log = (run / 'app.log').open('w', encoding='utf-8')
     # Änderung für v2: Paketstart erhält den Projektordner im Python-Suchpfad.
-    app = subprocess.Popen([sys.executable, '-m', 'tests.oberflaeche_pruefen', '--app', str(run)],
+    app = prozesse.starten([sys.executable, '-m', 'tests.oberflaeche_pruefen', '--app', str(run)],
                            cwd=BASIS, stdout=log, stderr=log, creationflags=subprocess.CREATE_NO_WINDOW)
     (run / 'app.pid').write_text(str(app.pid))
     browser = None
@@ -120,7 +129,7 @@ def testen(rueckverguetung=False):
         print('Oberfläche mit neuem Code und Datenkopie gestartet.', flush=True)
         SCHRITT = 'Lokalen Testbrowser starten'
         profil = run / 'chrome'
-        browser = subprocess.Popen([
+        browser = prozesse.starten([
             r'C:\Program Files\Google\Chrome\Application\chrome.exe',
             '--headless=new', '--remote-debugging-port=0', '--user-data-dir=' + str(profil),
             '--disable-background-networking', '--disable-extensions', '--no-first-run',
@@ -291,11 +300,7 @@ def testen(rueckverguetung=False):
         print('Original-Beispieldaten unverändert. Oberflächentest bestanden.', flush=True)
         print('Lokale Testausgabe: ' + str(run), flush=True)
     finally:
-        if browser is not None:
-            browser.terminate()
-        # Änderung für v2: Erfolgreich getestete Anwendung für die lokale Ansicht geöffnet lassen.
-        if not erfolgreich:
-            app.terminate()
+        # Änderung: Der äußere TestProzesse-Kontext beendet immer den gesamten Prozessbaum.
         log.close()
 
 
