@@ -60,3 +60,9 @@ ersetzen der Versionstag und die Freigabepakete die bisherige Bereitstellung von
 - Starttests verwendeten leere lokale Umgebungen und wurden anschließend beendet.
 - Die Umstellung wurde zunächst getrennt von den veröffentlichten Archiven geprüft.
   Für die aktualisierte Freigabe 2.00 werden Quellarchiv, Windows-Paket, Prüfbericht und Prüfsummen ersetzt.
+
+<!-- Änderung: Zuständigkeit der ausgelagerten Abschlagsansicht dokumentieren. -->
+`anwendung/abschlag_ui.py` enthält Tabellenaufbau, Bearbeitung, Upload und Speichern
+für Abschläge. Tabelle und Speichern-Schaltfläche liegen auf der Ansicht.
+Gemeinsame Abschlagsdaten bleiben in der Anwendung. Kleine Adapter erhalten
+bestehende Aufrufe einschließlich der aktualisierbaren Status- und Tabellenanzeige.

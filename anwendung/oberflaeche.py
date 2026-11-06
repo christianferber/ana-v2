@@ -12,6 +12,8 @@ from anwendung.datenhaltung import (check_ordner_exists, datei_oeffnen, datei_sp
 from anwendung.einstellungen import pfade_erstellen, ini_datei_lesen, ini_datei_schreiben
 # Änderung 2.03: Abrechnungsansicht mit eigenem Bereichszustand einbinden.
 from anwendung.abrechnung_ui import AbrechnungOberflaeche
+# Änderung: Abschlagsbereich mit eigenem Bedienzustand einbinden.
+from anwendung.abschlag_ui import AbschlagOberflaeche
 # Änderung 2.02: Rückvergütungsansicht mit eigenem Bereichszustand einbinden.
 from anwendung.rueckverguetung_ui import RueckverguetungOberflaeche
 # Änderung für v2: Dokumentfeldformatierung ohne GUI- und Word-Abhängigkeiten laden.
@@ -80,7 +82,8 @@ ini = 'ana.ini'
 ini_betreiber = 'ana-betreiber.ini'
 # Änderung für v2: Erste freigegebene Version gemäß AGENTS.md.
 # Änderung 2.03: Neue Freigabe für die ausgelagerte Abrechnungsoberfläche.
-version = 2.03
+# Änderung: Versionsschritt um 0.001 gemäß aktueller AGENTS.md.
+version = 2.031
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -2420,128 +2423,35 @@ def jahre_abrechnung():
 ### ANFANG ABSCHLAG
 ###########################################################################################################################
 
+# Änderung: Bestehende Aufrufe und refresh-Zugriffe bleiben über kleine Adapter erhalten.
 @ui.refreshable
 def abschlag_label_ui(label):
-    ui.label(label).style('font-size:100%')
+    return abschlag_ansicht.abschlag_label_ui(label)
 
 def abschlag_aus_db():
-    global abschlag_db
-    global db_abschlag_found
-    print("Abschläge werden aus DB importiert")
-    abschlag_db = db_datei_oeffnen(db_abschlag)
-    abschlag_db = tablefields_to_dotfloat(abschlag_db)
-    abschlag_label_ui.refresh('Abschlags-Datenbank gefunden! Daten wurden geladen und können über einen neuen Upload überschrieben werden.')
-    abschlag_grid_ui.refresh()
-    db_abschlag_found = 1
+    return abschlag_ansicht.abschlag_aus_db()
 
 def abschlag_upload(e: events.UploadEventArguments):
-    global abschlag_db
-    with StringIO(e.content.read().decode('iso-8859-1', errors='ignore')) as f:
-        abschlag_import = import_csv_inhalt(f)
-    if string_in_dict(abschlag_import[0], 'Ident') == True and string_in_dict(abschlag_import[0], 'Name') == True and string_in_dict(abschlag_import[0], 'Vorname') == True and string_in_dict(abschlag_import[0], 'Abschlag') == True:
-        abschlag_db = abschlag_import
-    else:
-        ui.notify('Importdaten entsprechen nicht dem erforderlichen Format. Es müssen Tabellenspalten für Ident, Name, Vorname und Abschlag-<Jahr> enthalten sein.', type="warning")
-        return
-    db_sichern("Upload Abschlagsdaten")
-    abschlag_grid_ui.refresh()
-    abschlag_button_speichern.enable()
-
+    return abschlag_ansicht.abschlag_upload(e)
 
 def abschlag_speichern():
-    db_datei_speichern(db_abschlag, abschlag_db)
-    ui.notify('Abschlagsdaten gespeichert', type="positive")
-    abschlag_button_speichern.disable()
-
+    return abschlag_ansicht.abschlag_speichern()
 
 def abschlag_tabelle_on_change(event):
-    global abschlag_grid
-    global abschlag_db
-    if event["newValue"] == None:
-        return
-    abschlag_db[int(event["rowId"])][event["colId"]] = event["newValue"]
-    change_log("ABSCHLAG", event)
-    abschlag_button_speichern.enable()
+    return abschlag_ansicht.abschlag_tabelle_on_change(event)
 
 def abschlag_columns_erstellen(table):
-    columns = []
-
-    if table:
-        for key in table[0].keys():
-            column_element = {}
-            column_element["headerName"] = key
-            column_element["field"] = key
-
-            # Ident-Spalte schmal machen
-            if key == "Ident":
-                column_element["width"] = 90          # feste Breite
-                column_element["minWidth"] = 90
-                column_element["maxWidth"] = 90
-                column_element["flex"] = 0            # darf nicht wachsen
-                column_element["resizable"] = False
-                column_element["pinned"] = "left"
-            else:
-                column_element["flex"] = 1
-                column_element["minWidth"] = 160
-
-            if key in ("Ident", "Name", "Vorname"):
-                column_element["pinned"] = 'left'
-
-            column_element["filter"] = 'agTextColumnFilter'
-            column_element["floatingFilter"] = True
-
-            if key == "Kommentar":
-                column_element["editable"] = True
-                column_element["cellStyle"] = {'backgroundColor': col_cell_mod}
-                column_element["cellEditor"]='agStringCellEditor'
-            if "Abschlag-" in key:
-                column_element["editable"] = True
-                column_element["cellStyle"] = {'backgroundColor': col_cell_mod}
-                column_element["cellEditor"]='agNumberCellEditor'
-            columns.append(column_element)
-
-    return columns
-
+    return abschlag_ansicht.abschlag_columns_erstellen(table)
 
 @ui.refreshable
 def abschlag_grid_ui():
-    global abschlag_grid
-    abschlag_grid = ui.aggrid({
-        'defaultColDef': {
-            'editable': False,
-            'resizable': True,
-            'wrapHeaderText': True,
-            'autoHeaderHeight': True,
-        },
-        'columnDefs': abschlag_columns_erstellen(abschlag_db),
-        'rowData': abschlag_db,
-        'domLayout': 'autoHeight',
-        'pagination': True,
-        'paginationPageSize': pagination
-    }).on(
-        'cellValueChanged',
-        lambda event: abschlag_tabelle_on_change(event.args)
-    ).style('height: 100%')
-
+    return abschlag_ansicht.abschlag_grid_ui()
 
 def abschlag_ui():
-    global abschlag_db
-    global db_abschlag_found
-    global abschlag_button_speichern
-    global abschlag_grid
-    abschlag_label_ui("")
-    with ui.row():
-        ui.upload(on_upload=abschlag_upload, auto_upload=True, max_files=1).props("accept=.csv").classes('max-w-full')
-        abschlag_button_speichern = ui.button('Speichern', icon='save', on_click=lambda: abschlag_speichern()).props('color=' + speichernbutton)
-        abschlag_button_speichern.disable()
-    abschlag_grid_ui()
+    global abschlag_ansicht
+    abschlag_ansicht = AbschlagOberflaeche(sys.modules[__name__])
+    return abschlag_ansicht.abschlag_ui()
 
-    if db_datei_oeffnen(db_abschlag)[0] == "file not found":
-        abschlag_label_ui.refresh('Keine Abschlagsdaten in Datenbank! Upload Abschlag per CSV-Datei möglich.')
-    else:
-        db_abschlag_found = 1
-        abschlag_label_ui.refresh('Abschlagsdaten gefunden! Daten wurden geladen. Daten aus Datenbank können über einen neuen Upload überschrieben und ergänzt werden.')
-        abschlag_aus_db()   
 
 
 ###########################################################################################################################

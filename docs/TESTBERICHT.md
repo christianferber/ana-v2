@@ -6,6 +6,7 @@ Stand: 06.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Abschlagsansicht gegen Original: bestanden.
 - Jahresabrechnung gegen Referenz: bestanden.
 - Berechnung und Abbruchbedingungen: bestanden.
 - Rückvergütung gegen Referenz: bestanden.
@@ -27,6 +28,16 @@ Auslagerung der Oberfläche bestanden: 73 Word-Dateien und 73 lesbare PDFs.
 CSV-Referenz und unveränderter Originalbestand wurden geprüft. Gegenüber
 dem unmittelbar vorherigen Lauf sind Word-Paketinhalte, PDF-Seitenzahlen
 und extrahierte PDF-Texte identisch. Keine visuelle Layoutprüfung.
+
+Version 2.031: Abschlagsspalten, Bearbeiten, Upload und CSV-Speicherung
+wurden mit lokalen Beispieldaten gegen das Original geprüft. Der Strukturvergleich
+bestätigt alle verschobenen Methoden und die verbliebenen Einstiegspunkte.
+Die echte Abschlagstabelle und der anschließende vollständige Abrechnungslauf
+wurden am 06.11.2026 mit einer isolierten Datenkopie geprüft: CSV-Referenz
+identisch, 73 neue Word-Dateien und 73 lesbare PDFs, Originalbestand unverändert.
+Bearbeiten und Speichern der Abschläge wurden über gebundene Methoden geprüft;
+im Browser wurde die Tabellenanzeige geprüft. Keine visuelle Dokumentprüfung.
+Für 2.031 wurde keine neue Windows-EXE erstellt oder geprüft.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

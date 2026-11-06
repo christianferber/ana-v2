@@ -1,6 +1,18 @@
 ANA RELEASE NOTES
 =================
 
+Version 2.031 – 06.11.2026
+-------------------------
+
+- Abschlagsoberfläche in `anwendung/abschlag_ui.py` ausgelagert.
+- Tabelle und Speichern-Schaltfläche gehören zur Ansicht; gemeinsam genutzte Daten bleiben in der Anwendung.
+- Bestehende Einstiegspunkte und aktualisierbare Tabellen- und Statusanzeigen erhalten.
+- Spaltendefinitionen, Bearbeiten, Upload und CSV-Speicherung gegen Original geprüft.
+- Versionsschritt um 0.001 gemäß aktueller Projektvorgabe.
+- Sieben Freigabeprüfungen sowie Abschlagstabelle und vollständiger Abrechnungslauf bestanden.
+- 73 Word-Dateien und 73 lesbare PDFs neu erzeugt; CSV-Referenz identisch, Originaldaten unverändert.
+- Quellfreigabe ohne neue EXE.
+
 Version 2.03 – 06.11.2026
 ------------------------
 

@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung: Ausgelagerte Abschlagsansicht mit Beispieldaten gegen Original prüfen.
+        ('Abschlagsansicht gegen Original', ['-m', 'tests.abschlag_pruefen']),
         # Änderung für v2: Prüfprogramme aus ihrem eigenen Paket starten.
         ('Jahresabrechnung gegen Referenz', ['-m', 'tests.referenz_pruefen', 'pruefen']),
         ('Berechnung und Abbruchbedingungen', ['-m', 'tests.berechnungen_pruefen']),
@@ -60,6 +62,16 @@ def main():
                 'CSV-Referenz und unveränderter Originalbestand wurden geprüft. Gegenüber',
                 'dem unmittelbar vorherigen Lauf sind Word-Paketinhalte, PDF-Seitenzahlen',
                 'und extrahierte PDF-Texte identisch. Keine visuelle Layoutprüfung.', '']
+    # Änderung 2.031: Abgeschlossene Prüfung der Abschlagsauslagerung dokumentieren.
+    bericht += ['Version 2.031: Abschlagsspalten, Bearbeiten, Upload und CSV-Speicherung',
+                'wurden mit lokalen Beispieldaten gegen das Original geprüft. Der Strukturvergleich',
+                'bestätigt alle verschobenen Methoden und die verbliebenen Einstiegspunkte.',
+                'Die echte Abschlagstabelle und der anschließende vollständige Abrechnungslauf',
+                'wurden am 06.11.2026 mit einer isolierten Datenkopie geprüft: CSV-Referenz',
+                'identisch, 73 neue Word-Dateien und 73 lesbare PDFs, Originalbestand unverändert.',
+                'Bearbeiten und Speichern der Abschläge wurden über gebundene Methoden geprüft;',
+                'im Browser wurde die Tabellenanzeige geprüft. Keine visuelle Dokumentprüfung.',
+                'Für 2.031 wurde keine neue Windows-EXE erstellt oder geprüft.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'

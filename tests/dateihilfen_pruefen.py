@@ -217,6 +217,18 @@ def pruefen():
     # Änderung 2.03: Auch die Abrechnungsansicht samt verschachtelten Dialogen prüfen.
     from tests.abrechnung_struktur import methoden_als_funktionen as abrechnungsmethoden
     neue_funktionen.update(abrechnungsmethoden(basis, alte_funktionen))
+    # Änderung: Alle verschobenen Abschlagsmethoden und ihre Adapter prüfen.
+    from tests.abschlag_struktur import methoden_als_funktionen as abschlagsmethoden
+    verschoben = abschlagsmethoden(basis, alte_funktionen)
+    for name in verschoben:
+        adapterfunktion = copy.deepcopy(neue_funktionen[name])
+        erwartet = copy.deepcopy(alte_funktionen[name])
+        aufruf = 'return abschlag_ansicht.' + name + '(' + ', '.join(a.arg for a in erwartet.args.args) + ')'
+        erwartet.body = ast.parse(aufruf).body
+        if name == 'abschlag_ui':
+            erwartet.body = ast.parse('global abschlag_ansicht\nabschlag_ansicht = AbschlagOberflaeche(sys.modules[__name__])\n' + aufruf).body
+        assert ast.dump(adapterfunktion) == ast.dump(erwartet)
+    neue_funktionen.update(verschoben)
     # Änderung 2.02: Anbindung der neuen Ansicht zusätzlich exakt absichern.
     adapter = {k.name: k for k in neu.body if isinstance(k, ast.FunctionDef)}
     # Änderung 2.03: Die zwei Einstiegspunkte der neuen Abrechnungsansicht absichern.
