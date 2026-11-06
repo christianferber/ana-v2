@@ -82,7 +82,8 @@ changelog = 'ana-change.log'
 ini = 'ana.ini'
 ini_betreiber = 'ana-betreiber.ini'
 # Änderung für v2: Erste freigegebene Version gemäß AGENTS.md.
-version = 2.00
+# Änderung: Neue Freigabe für die Rückvergütungs-Stapelkonvertierung.
+version = 2.01
 zaehler_liste = []
 abrechnung = []
 abrechnung_fuer_pdf = []

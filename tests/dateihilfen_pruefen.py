@@ -219,6 +219,16 @@ def pruefen():
             neue_funktionen[name] = funktion
     assert alte_funktionen.keys() == neue_funktionen.keys()
     for name in alte_funktionen:
+        # Änderung: Die freigegebene Stapelkonvertierung hat einen neuen Ablauf.
+        # Ihren unveränderten GUI-Adapter hier, COM-Verhalten in dokumente_pruefen prüfen.
+        if name == 'rueckv_pdf_process':
+            erwartet = ast.parse('def rueckv_pdf_process():\n'
+                '    global ordner_rueckv_word\n'
+                '    global ordner_rueckv_pdf\n'
+                '    global pdfstop\n'
+                '    rueckverguetung_pdf_konvertieren(ordner_rueckv_word, ordner_rueckv_pdf, rueckv_progress_pdf.set_value)').body[0]
+            assert ast.dump(neue_funktionen[name]) == ast.dump(erwartet)
+            continue
         # Änderung für v2: Den umgebauten Pfadadapter unten durch Ausführen vergleichen.
         if name == 'pfade_setzen':
             continue

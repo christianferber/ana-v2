@@ -6,8 +6,8 @@ import os
 from mailmerge import MailMerge
 import pythoncom
 from win32com.client import Dispatch
-# Änderung für v2: Rückvergütungen verwenden weiterhin die bisherige docx2pdf-Konvertierung.
-from docx2pdf import convert
+# Änderung: Eigene Word-Instanz für den gesamten Rückvergütungsstapel verwenden.
+from win32com.client import DispatchEx
 
 
 def rueckverguetung_word_schreiben(rueckv_fuer_pdf, datei_vorlage_rueckv,
@@ -23,7 +23,6 @@ def rueckverguetung_word_schreiben(rueckv_fuer_pdf, datei_vorlage_rueckv,
 
 def rueckverguetung_pdf_konvertieren(ordner_rueckv_word, ordner_rueckv_pdf, fortschritt):
     # Änderung für v2: Dateifilter, Konvertierung und Fortschrittsreihenfolge beibehalten.
-    pythoncom.CoInitialize()
     word_ordner = [
         f for f in os.listdir(ordner_rueckv_word)
         if f.lower().endswith(".docx")
@@ -33,17 +32,32 @@ def rueckverguetung_pdf_konvertieren(ordner_rueckv_word, ordner_rueckv_pdf, fort
         return
     pdfstep = 100 / len(word_ordner)
     pdfstatus = 0.0
-    for i, datei in enumerate(word_ordner):
-        pdfstatus += pdfstep
-        pdfstatus_int = int(pdfstatus)
-        if i % 2 == 0 or i == len(word_ordner) - 1:
-            fortschritt(pdfstatus_int)
-        word_datei = os.path.join(ordner_rueckv_word, datei)
-        pdf_datei = os.path.join(
-            ordner_rueckv_pdf,
-            datei[:-4] + "pdf"
-        )
-        convert(word_datei, pdf_datei)
+    # Änderung: Word nur einmal starten und auch bei Konvertierungsfehlern
+    # schließen. Die eigene Instanz lässt bereits geöffnete Benutzerdateien in Ruhe.
+    pythoncom.CoInitialize()
+    word = None
+    try:
+        word = DispatchEx("Word.Application")
+        word.Visible = False
+        for i, datei in enumerate(word_ordner):
+            # Änderung: Dateiauswahl, Namen und bisherige Fortschrittswerte erhalten.
+            pdfstatus += pdfstep
+            pdfstatus_int = int(pdfstatus)
+            if i % 2 == 0 or i == len(word_ordner) - 1:
+                fortschritt(pdfstatus_int)
+            word_datei = os.path.join(ordner_rueckv_word, datei)
+            pdf_datei = os.path.join(ordner_rueckv_pdf, datei[:-4] + "pdf")
+            dokument = word.Documents.Open(os.path.abspath(word_datei))
+            try:
+                dokument.SaveAs(os.path.abspath(pdf_datei), FileFormat=17)
+            finally:
+                dokument.Close(False)
+    finally:
+        try:
+            if word is not None:
+                word.Quit()
+        finally:
+            pythoncom.CoUninitialize()
 
 
 def abrechnung_word_schreiben(abrechnung_fuer_pdf, datei_vorlage_abrechnung,

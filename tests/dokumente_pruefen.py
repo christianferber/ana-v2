@@ -96,14 +96,16 @@ def pruefen():
         assert protokoll == vorher
     assert gefunden
 
-    # Änderung für v2: Bisherige Rückvergütungs-Konvertierung einschließlich leerer Ordner prüfen.
+    # Änderung: Dateifilter und Fortschritt weiterhin gegen das Original prüfen;
+    # zusätzlich eine einzige Word-Sitzung und Freigabe im Fehlerfall absichern.
     for dateien in (['a.docx', 'b.DOCX', 'c.docx', 'd.docx', 'ignorieren.txt'], []):
         protokoll = []
         def konvertieren(quelle, ziel):
             protokoll.append(('konvertieren', quelle, ziel))
         def rueckv_fortschritt(wert):
             protokoll.append(('fortschritt', wert))
-        com = SimpleNamespace(CoInitialize=lambda: protokoll.append(('com',)))
+        com = SimpleNamespace(CoInitialize=lambda: None,
+                              CoUninitialize=lambda: None)
         umgebung.update({'pythoncom': com, 'os': dokumente.os, 'convert': konvertieren,
                          'ordner_rueckv_word': 'word', 'ordner_rueckv_pdf': 'pdf',
                          'rueckv_progress_pdf': SimpleNamespace(set_value=rueckv_fortschritt)})
@@ -111,9 +113,59 @@ def pruefen():
             umgebung['rueckv_pdf_process']()
             vorher = copy.deepcopy(protokoll)
             protokoll.clear()
-            with patch.object(dokumente, 'pythoncom', com), patch.object(dokumente, 'convert', konvertieren):
+            sitzungen = []
+            class RueckvWord:
+                def __init__(self):
+                    self.Documents = self
+                def Open(self, datei):
+                    self.quelle = datei
+                    return self
+                def SaveAs(self, datei, FileFormat):
+                    assert FileFormat == 17
+                    konvertieren(self.quelle, datei)
+                def Close(self, speichern):
+                    assert speichern is False
+                def Quit(self):
+                    sitzungen.append('beendet')
+            def rueckv_starten(name):
+                assert name == 'Word.Application'
+                sitzungen.append('gestartet')
+                return RueckvWord()
+            # Änderung: Neue COM-Aufrufe nutzen absolute Pfade; die Dateiauswahl
+            # und Zielfile-Namen müssen weiterhin dem Original entsprechen.
+            vorher = [(eintrag[0], dokumente.os.path.abspath(eintrag[1]),
+                       dokumente.os.path.abspath(eintrag[2]))
+                      if eintrag[0] == 'konvertieren' else eintrag for eintrag in vorher]
+            with patch.object(dokumente, 'pythoncom', com), patch.object(dokumente, 'DispatchEx', rueckv_starten):
                 dokumente.rueckverguetung_pdf_konvertieren('word', 'pdf', rueckv_fortschritt)
             assert protokoll == vorher
+            assert sitzungen == (['gestartet', 'beendet'] if dateien else [])
+
+    # Änderung: Beim Scheitern der PDF-Erstellung Dokument, Word und COM freigeben.
+    aufraeumen = []
+    class FehlerWord:
+        def __init__(self):
+            self.Documents = self
+        def Open(self, datei):
+            return self
+        def SaveAs(self, datei, FileFormat):
+            raise RuntimeError('Simulierter Konvertierungsfehler')
+        def Close(self, speichern):
+            aufraeumen.append('Dokument')
+        def Quit(self):
+            aufraeumen.append('Word')
+    com = SimpleNamespace(CoInitialize=lambda: None,
+                          CoUninitialize=lambda: aufraeumen.append('COM'))
+    with patch.object(dokumente.os, 'listdir', return_value=['a.docx']), \
+            patch.object(dokumente, 'pythoncom', com), \
+            patch.object(dokumente, 'DispatchEx', lambda name: FehlerWord()):
+        try:
+            dokumente.rueckverguetung_pdf_konvertieren('word', 'pdf', lambda wert: None)
+        except RuntimeError:
+            pass
+        else:
+            raise AssertionError('Konvertierungsfehler wurde verschluckt')
+    assert aufraeumen == ['Dokument', 'Word', 'COM']
 
     # Änderung für v2: COM-Reihenfolge, Dateifilter und Fortschrittswerte vergleichen.
     for dateien in (['a.docx', 'b.docx', 'ignorieren.txt'], ['a.DOCX'], []):

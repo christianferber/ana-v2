@@ -2,7 +2,7 @@
 
 <!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
 
-Stand: 05.11.2026
+Stand: 06.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
@@ -16,9 +16,10 @@ Umgebung: Windows, Python 3.13.5.
 
 Bereits durchgeführte Praxistests: Jahresabrechnung und Rückvergütung über die
 Oberfläche berechnet, gespeichert und als echte Word-/PDF-Dateien erzeugt.
-Dafür wurden isolierte lokale Datenkopien verwendet; bei der Rückvergütung
-ein vorhandener Datensatz. Der vollständige Rückvergütungs-Dokumentlauf
-überschritt das Testzeitlimit. Eine visuelle Dokumentprüfung fand aus
+Dafür wurden isolierte lokale Datenkopien verwendet. Am 06.11.2026 wurde
+der vollständige Rückvergütungs-Dokumentlauf mit 73 Word-Dateien und 73
+lesbaren PDFs bestanden; CSV-Referenz und Originalbestand wurden geprüft.
+Eine visuelle Dokumentprüfung fand aus
 Datenschutzgründen nicht im KI-Kontext statt.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.

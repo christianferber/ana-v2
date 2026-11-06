@@ -1,6 +1,14 @@
 ANA RELEASE NOTES
 =================
 
+Version 2.01 – 06.11.2026
+------------------------
+
+- Rückvergütung: Eine eigene Word-Sitzung für den vollständigen PDF-Stapel verwenden.
+- Dokument, Word und COM auch bei Konvertierungsfehlern zuverlässig freigeben.
+- Berechnungen, CSV-Ausgabe, Word-Felder, Dateinamen und Dateiauswahl bleiben erhalten.
+- Dokumenttests für gemeinsame Word-Sitzung und Fehlerbehandlung ergänzt.
+
 Version 2.00 – 05.11.2026
 ------------------------
 
