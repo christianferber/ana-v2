@@ -1,6 +1,15 @@
 ANA RELEASE NOTES
 =================
 
+Version 2.02 – 06.11.2026
+------------------------
+
+- Rückvergütungsoberfläche und Dialoge in `anwendung/rueckverguetung_ui.py` ausgelagert.
+- Eigener Bereichszustand für Tabellen und Bedienelemente statt globaler Variablen.
+- Gemeinsame Pfade und Einstellungen werden weiterhin aus der Anwendung gelesen.
+- Berechnungen, Speichern, CSV-Download und Word-/PDF-Ablauf bleiben erhalten.
+- Referenzprüfung auf echte Instanzmethoden umgestellt; Strukturvergleich erweitert.
+
 Version 2.01 – 06.11.2026
 ------------------------
 

@@ -18,6 +18,13 @@ Windows-Paketierung und den Start unabhängig vom aktuellen Verzeichnis.
 | `build/`, `dist/`, `release/` | Erzeugte Builddateien, Windows-Anwendung und Freigabearchive; nicht in Git |
 
 Die aktive `ana.ini` bleibt im Projektordner und wird nicht veröffentlicht.
+<!-- Änderung 2.02: Zuständigkeit der ausgelagerten Rückvergütungsansicht dokumentieren. -->
+`anwendung/rueckverguetung_ui.py` enthält die Rückvergütungsoberfläche mit ihren
+Dialogen und dem eigenen Tabellen- und Bedienzustand. Das Hauptmodul erzeugt
+die Ansicht und ruft beim Registerwechsel die Jahresauswahl auf. Gemeinsame
+Pfade, Einstellungen und Hilfsfunktionen werden über die übergebene Anwendung
+verwendet; die Berechnungen bleiben im Berechnungsmodul.
+
 Arbeitsdaten und Secrets bleiben außerhalb des Quellcodes. Die Namen der
 Datenbankdateien sowie die Struktur des Arbeitsordners wurden nicht geändert.
 

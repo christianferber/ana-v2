@@ -31,19 +31,22 @@ class Knopf:
 
 
 def funktionen_laden(original):
-    quelle = BASIS.parent / '_Vorlagen' / 'ana' / 'ana.py' if original else BASIS / 'anwendung' / 'oberflaeche.py'
+    # Änderung 2.02: Neue Referenzprüfung führt die tatsächlichen gebundenen
+    # Methoden aus; der alte Referenzcode bleibt als unabhängiger Vergleich bestehen.
+    if not original:
+        from anwendung.rueckverguetung_ui import RueckverguetungOberflaeche
+        ansicht = RueckverguetungOberflaeche(SimpleNamespace())
+        return {'ansicht': ansicht,
+                'rueckv_tabelle_erstellen': ansicht.rueckv_tabelle_erstellen,
+                'rueckv_tabelle_berechnen': ansicht.rueckv_tabelle_berechnen}
+    # Änderung 2.02: Nach dem frühen Rücksprung nur noch den Originalcode laden.
+    quelle = BASIS.parent / '_Vorlagen' / 'ana' / 'ana.py'
     baum = ast.parse(quelle.read_text(encoding='utf-8-sig'))
     namen = {'rueckv_tabelle_erstellen', 'rueckv_tabelle_berechnen', 'rueckv_erstellen'}
-    if original:
-        namen.add('mwst_berechnen')
+    namen.add('mwst_berechnen')
     funktionen = [k for k in baum.body if isinstance(k, ast.FunctionDef) and k.name in namen]
     assert {k.name for k in funktionen} == namen
     umgebung = {'datei_oeffnen': datei_oeffnen}
-    if not original:
-        # Änderung für v2: Tatsächliche Rechenfunktionen des neuen Moduls verwenden.
-        from anwendung import berechnungen
-        umgebung.update({name: getattr(berechnungen, name) for name in (
-            'mwst_berechnen', 'rueckverguetung_vorbereiten', 'rueckverguetung_berechnen')})
     exec(compile(ast.Module(body=funktionen, type_ignores=[]), 'rueckverguetung', 'exec'), umgebung)
     return umgebung
 
@@ -69,6 +72,13 @@ def ergebnisse(original):
             'rueckv_datum_beschluss': SimpleNamespace(value=datum),
             'rueckv_button_speichern': Knopf(), 'rueckv_button_download': Knopf(),
         })
+        # Änderung 2.02: Referenzwerte auf die Instanz statt globale Variablen setzen.
+        if not original:
+            ansicht = umgebung['ansicht']
+            ansicht.anwendung.ordner_abrechnungen = umgebung['ordner_abrechnungen']
+            for name in ('rueckv_jahre_dropdown', 'rueckv_prozent', 'rueckv_datum_beschluss',
+                         'rueckv_button_speichern', 'rueckv_button_download'):
+                setattr(ansicht, name, umgebung[name])
         tabelle = umgebung['rueckv_tabelle_erstellen']()
         assert umgebung['rueckv_button_speichern'].aktiv and umgebung['rueckv_button_download'].aktiv
         # Änderung für v2: Neuberechnung bestehender Tabellen inklusive Materialumsatz prüfen.

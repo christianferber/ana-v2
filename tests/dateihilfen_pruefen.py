@@ -211,6 +211,19 @@ def pruefen():
     alte_funktionen['csv_rueckv'] = korrekturen.visit(copy.deepcopy(alte_funktionen['csv_rueckv']))
     assert korrekturen.anzahl == 2
     neue_funktionen = {k.name: k for k in neu.body + modul.body + feldmodul.body if isinstance(k, ast.FunctionDef)}
+    # Änderung 2.02: Auch die ausgelagerten Methoden weiterhin vollständig vergleichen.
+    from tests.rueckv_struktur import methoden_als_funktionen
+    neue_funktionen.update(methoden_als_funktionen(basis, alte_funktionen))
+    # Änderung 2.02: Anbindung der neuen Ansicht zusätzlich exakt absichern.
+    adapter = {k.name: k for k in neu.body if isinstance(k, ast.FunctionDef)}
+    erwartet = ast.parse('def rueckv_jahre_einlesen():\n'
+                         '    rueckverguetung_ansicht.rueckv_jahre_einlesen()').body[0]
+    assert ast.dump(adapter['rueckv_jahre_einlesen']) == ast.dump(erwartet)
+    erwartet = ast.parse('def rueckverguetung_ui():\n'
+        '    global rueckverguetung_ansicht\n'
+        '    rueckverguetung_ansicht = RueckverguetungOberflaeche(sys.modules[__name__])\n'
+        '    rueckverguetung_ansicht.rueckverguetung_ui()').body[0]
+    assert ast.dump(adapter['rueckverguetung_ui']) == ast.dump(erwartet)
     # Änderung für v2: Verschobene Rechenhilfen prüfen, den vorhandenen Adapter beibehalten.
     rechenmodul = ast.parse((basis / 'anwendung' / 'berechnungen.py').read_text(encoding='utf-8'))
     rechenfunktionen = {k.name: k for k in rechenmodul.body if isinstance(k, ast.FunctionDef)}

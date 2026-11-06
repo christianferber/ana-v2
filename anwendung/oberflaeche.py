@@ -12,8 +12,8 @@ from anwendung.datenhaltung import (check_ordner_exists, datei_oeffnen, datei_sp
 from anwendung.einstellungen import pfade_erstellen, ini_datei_lesen, ini_datei_schreiben
 # Änderung für v2: Dokumentverarbeitung erhält Daten, Pfade und Fortschrittsrückruf explizit.
 from anwendung.dokumente import abrechnung_word_schreiben, abrechnung_pdf_konvertieren
-# Änderung für v2: Auch die Rückvergütungsdokumente über das Dokumentmodul verarbeiten.
-from anwendung.dokumente import rueckverguetung_word_schreiben, rueckverguetung_pdf_konvertieren
+# Änderung 2.02: Rückvergütungsansicht mit eigenem Bereichszustand einbinden.
+from anwendung.rueckverguetung_ui import RueckverguetungOberflaeche
 # Änderung für v2: Dokumentfeldformatierung ohne GUI- und Word-Abhängigkeiten laden.
 from anwendung.dokumentfelder import (format_fuer_serienbrief, form_betrag, form_zaehler,
                             form_mwst, form_rvsatz, mapping_wordfelder)
@@ -22,9 +22,6 @@ from anwendung.dokumentfelder import (format_fuer_serienbrief, form_betrag, form
 from anwendung.berechnungen import (abrechnung_berechnen, abnehmer_aus_daten, mwst_berechnen,
                            datum_in_string, datum_in_punkt, datum_tage_vorher)
 from anwendung.berechnungen import letzte_mindestabnahme as mindestabnahme_berechnen
-
-# Änderung für v2: Rückvergütung ohne Oberfläche berechnen.
-from anwendung.berechnungen import rueckverguetung_vorbereiten, rueckverguetung_berechnen
 
 # Änderung für v2: CSV-Inhalte ohne Oberfläche erzeugen; Speicher- und Eingabedialoge bleiben hier.
 from anwendung.buchungsvorlagen import (grundgebuehr_csv, abschlag_csv, abrechnung_lastschrift_csv,
@@ -82,8 +79,8 @@ changelog = 'ana-change.log'
 ini = 'ana.ini'
 ini_betreiber = 'ana-betreiber.ini'
 # Änderung für v2: Erste freigegebene Version gemäß AGENTS.md.
-# Änderung: Neue Freigabe für die Rückvergütungs-Stapelkonvertierung.
-version = 2.01
+# Änderung 2.02: Neue Freigabe für die ausgelagerte Rückvergütungsoberfläche.
+version = 2.02
 zaehler_liste = []
 abrechnung = []
 abrechnung_fuer_pdf = []
@@ -3096,325 +3093,16 @@ def abschlag_ui():
 ### ANFANG RÜCKVERGÜTUNG
 ###########################################################################################################################
 
-def rueckv_jahre_einlesen():
-    global rueckv_jahre_dropdown
-    global rueckv_button_einlesen
-    global rueckv_jahre_einlesbar
-    global rueckv_jahre_erstellbar
-    rueckv_button_einlesen.disable()
-    rueckv_jahr_liste = []
-    rueckv_jahre_erstellbar = []
-    rueckv_jahre_einlesbar = []
-    pfad_ordner_abrechnungen = Path(ordner_abrechnungen)
-    for item in pfad_ordner_abrechnungen.iterdir():
-        if item.is_dir():
-            if item.name[:-4] == 'Abrechnung-':
-                datei_abrechnung = ordner_abrechnungen + "\\" + item.name + "\\" + "Abrechnung-" + item.name[-4:] + ".csv"
-                if Path(datei_abrechnung).is_file():
-                    rueckv_jahr_liste.append(item.name[-4:])
-                    rueckv_jahre_erstellbar.append(item.name[-4:])
-    pfad_ordner_rueckv = Path(ordner_rueckv)
-    for item in pfad_ordner_rueckv.iterdir():
-        if item.is_dir():
-            if item.name[:-4] == "Rückvergütung-":
-                datei_rueckv = ordner_rueckv + "\\" + item.name + "\\" + "Rückvergütung-" + item.name[-4:] + ".csv"
-                if Path(datei_rueckv).is_file():
-                    rueckv_jahre_einlesbar.append(item.name[-4:])
-                    if item.name[-4:] not in rueckv_jahr_liste:
-                        rueckv_jahr_liste.append(item.name[-4:])
-    rueckv_jahr_liste.sort()
-    rueckv_jahre_dropdown.set_options(rueckv_jahr_liste)
-
-
-def reset_rueckv():
-    rueckv_prozent.value = 0.00
-    rueckv_datum_beschluss.value = ""
-    rueckv_button_erstellen.disable()
-    rueckv_button_einlesen.disable()
-    if rueckv_jahre_dropdown.value in rueckv_jahre_einlesbar:
-        rueckv_button_einlesen.enable()
-        rueckv_prozent.disable()
-        rueckv_datum_beschluss.disable()
-        rueckv_button_speichern.disable()
-    else:
-        rueckv_button_einlesen.disable()
-    if rueckv_jahre_dropdown.value in rueckv_jahre_erstellbar:
-        rueckv_button_erstellen.enable()
-        rueckv_prozent.enable()
-        rueckv_datum_beschluss.enable()
-        rueckv_button_speichern.disable()
-    rueckv_button_download.disable()
-    rueckv_button_pdf.disable()
-    rueckv_grid_ui.refresh()
-
-
-
-###### Muss Abrechnungs-File, nicht Abschlag überprüfen
-
-def rueckv_tabelle_erstellen():
-    global rueckv_button_speichern
-    global rueckv_button_download
-    global rueckv_mwst
-    global rueckv_mwst2
-
-    rueckv_tabelle = []
-    if rueckv_jahre_dropdown.value == None:
-        return
-    abrechnung_datei = []
-    abrechnung_datei = datei_oeffnen(ordner_abrechnungen + "\\" + "Abrechnung-" + str(rueckv_jahre_dropdown.value) + "\\" + "Abrechnung-" + str(rueckv_jahre_dropdown.value) + ".csv")
-    # Änderung für v2: Reinen Tabellenaufbau ins Berechnungsmodul verlagern.
-    rueckv_tabelle = rueckverguetung_vorbereiten(abrechnung_datei, rueckv_jahre_dropdown.value)
-    # Änderung für v2: Wie bisher gelten anschließend die Steuersätze der letzten Zeile.
-    if abrechnung_datei:
-        rueckv_mwst = abrechnung_datei[-1]["MwSt-Satz"]
-        if "Abrechnung ab ZA" in abrechnung_datei[0].keys():
-            rueckv_mwst2 = abrechnung_datei[-1]["ZA MwSt"]
-    rueckv_tabelle = rueckv_tabelle_berechnen(rueckv_tabelle)
-    rueckv_button_speichern.enable()
-    rueckv_button_download.enable()
-    return rueckv_tabelle
-
-def rueckv_tabelle_berechnen(table):
-    # Änderung für v2: Leere Tabellen weiterhin ohne Zugriff auf Eingabefelder zurückgeben.
-    if table == []:
-        return table
-    # Änderung für v2: Steuerwerte explizit übergeben; vorhandene Tabellen weiter direkt ändern.
-    return rueckverguetung_berechnen(
-        table, rueckv_prozent.value, rueckv_datum_beschluss.value, rueckv_mwst,
-        rueckv_mwst2 if "MwSt bis ZA" in table[0].keys() else None)
-
-def rueckv_tabelle_on_change(event):
-    global rueckv_grid
-    global rueckv_table
-    global rueckv_button_speichern
-    if event["newValue"] == None:
-        return
-    change_log("RÜCKVERGÜTUNG " + str(rueckv_jahre_dropdown.value), event)
-    rueckv_table[int(event["rowId"])][event["colId"]] = event["newValue"]
-    rueckv_table = rueckv_tabelle_berechnen(rueckv_table)
-
-def rueckv_erstellen():
-    global rueckv_table
-    if rueckv_jahre_dropdown.value == None or rueckv_prozent.value == None or rueckv_datum_beschluss.value == "":
-        ui.notify("Bitte Jahr, Mwst., Rückvergütungssatz und Beschlussdatum spezifiziern.", type="info")
-        return
-    rueckv_table = rueckv_tabelle_erstellen()
-    rueckv_grid_ui.refresh()
-    rueckv_button_speichern.enable()
-
-def rueckv_speichern():
-    global dialog_rueckv_bestaetigung
-    global rueckv_checkbox_ueberschreiben
-    global dialog_rueckv_label01
-    global datei_rueckv_aktuell
-    rueckv_checkbox_ueberschreiben.set_visibility(visible=False)
-    if rueckv_table == []:
-        ui.notify("Bitte erst Rückvergütung erstellen, dann speichern.", type="info")
-        return
-    ordner_rueckv_aktuell = ordner_rueckv + "\\" + "Rückvergütung-" + str(rueckv_jahre_dropdown.value)
-    datei_rueckv_aktuell = ordner_rueckv_aktuell + "\\" + "Rückvergütung-" + str(rueckv_jahre_dropdown.value) + ".csv"
-    pfad_ordner_rueckv_aktuell = Path(ordner_rueckv_aktuell)
-    if not pfad_ordner_rueckv_aktuell.exists():
-        pfad_ordner_rueckv_aktuell.mkdir()
-    if Path(datei_rueckv_aktuell).exists():
-        rueckv_checkbox_ueberschreiben.set_visibility(visible=True)
-    dialog_rueckv_bestaetigung.open()
-
-def rueckv_speichern_ja():
-    global dialog_abr_bestaetigung
-    if rueckv_checkbox_ueberschreiben.visible == True:
-        if rueckv_checkbox_ueberschreiben.value == True:
-            ui.notify("Bestehende Rückvergütungsdatei überschrieben.", type="info")
-            datei_speichern(datei_rueckv_aktuell, rueckv_table)
-            rueckv_von_db()         
-            dialog_rueckv_bestaetigung.close()
-    else:
-            ui.notify("Rückvergütungsdatei gespeichert.", type="positive")
-            datei_speichern(datei_rueckv_aktuell, rueckv_table)
-            rueckv_von_db()
-            dialog_rueckv_bestaetigung.close()
-
-
-def rueckv_von_db():
-    global rueckv_table
-    datei_rueckv = ordner_rueckv + "\\" + "Rückvergütung-" + str(rueckv_jahre_dropdown.value) + "\\" + "Rückvergütung-" + str(rueckv_jahre_dropdown.value) + ".csv"
-    rueckv_table = datei_oeffnen(datei_rueckv)
-    rueckv_table = tablefields_to_dotfloat(rueckv_table)
-    rueckv_grid_ui.refresh()
-    rueckv_button_speichern.enable()
-    rueckv_button_download.enable()
-    rueckv_button_pdf.enable()
-
-async def csv_komma_rueckv_download():
-    filename = "Rückvergütung " + rueckv_jahre_dropdown.value + ".csv"
-    await komma_datei_speichern(rueckv_table, filename)
-
-def rueckv_columns_erstellen(table):
-    columns = []
-
-    if table:
-        for key in table[0].keys():
-            column_element = {}
-            column_element["headerName"] = key
-            column_element["field"] = key
-
-            # Ident-Spalte schmal machen
-            if key == "Ident":
-                column_element["width"] = 90          # feste Breite
-                column_element["minWidth"] = 90
-                column_element["maxWidth"] = 90
-                column_element["flex"] = 0            # darf nicht wachsen
-                column_element["resizable"] = False
-            else:
-                column_element["flex"] = 1
-                column_element["minWidth"] = 160
-
-            if key in ("Ident", "Name", "Vorname"):
-                column_element["pinned"] = 'left'
-
-            column_element["filter"] = 'agTextColumnFilter'
-            column_element["floatingFilter"] = True
-            if key == "Materialumsatz":
-                column_element["editable"] = True
-                column_element["cellStyle"] = {'backgroundColor': col_cell_mod}
-                column_element["cellEditor"]='agNumberCellEditor'
-
-            columns.append(column_element)
-
-    return columns
-
-
-@ui.refreshable
-def rueckv_grid_ui():
-    global rueckv_grid
-    rueckv_grid = ui.aggrid({
-        'defaultColDef': {
-            'editable': False,
-            'resizable': True,
-            'wrapHeaderText': True,
-            'autoHeaderHeight': True,
-        },
-        'columnDefs': rueckv_columns_erstellen(rueckv_table),
-        'rowData': rueckv_table,
-        'domLayout': 'autoHeight',
-        'pagination': True,
-        'paginationPageSize': pagination
-    }).on(
-        'cellValueChanged',
-        lambda event: rueckv_tabelle_on_change(event.args)
-    ).style('height: 100%')
-
-
+# Änderung 2.02: Nur die beiden Einstiegspunkte bleiben im Hauptmodul.
+# Der Bereich besitzt seinen eigenen Zustand; gemeinsame Einstellungen bleiben aktuell.
 def rueckverguetung_ui():
-    global rueckv_jahre_dropdown
-    global rueckv_mwst
-    global rueckv_prozent
-    global rueckv_grid
-    global mwst_jahr
-    global rueckv_datum_beschluss
-    global rueckv_checkbox_ueberschreiben
-    global dialog_rueckv_label01
-    global dialog_rueckv_bestaetigung
-    global rueckv_progress_pdf
-    global rueckv_button_einlesen
-    global rueckv_button_erstellen
-    global rueckv_button_speichern
-    global rueckv_button_download
-    global rueckv_button_pdf
-    global rueckv_table
-    rueckv_table = []
-    ui.label('Rückvergütung').classes("text-2xl font-bold")
-    with ui.row():
-        rueckv_jahre_dropdown = ui.select([], label='Jahr der Rückvergütung', on_change=reset_rueckv).classes('w-48')
-        rueckv_prozent = ui.number(label='Rückergütung in %', format='%.2f')
-        with ui.input('Datum Beschluss') as date:
-            with date.add_slot('append'):
-                ui.icon('edit_calendar').on('click', lambda: menu.open()).classes('cursor-pointer')
-            with ui.menu() as menu:
-                rueckv_datum_beschluss = ui.date({'from':'2024-01-01', 'to':'2024-12-31'},mask='DD.MM.YYYY').bind_value(date).props('range')
-        rueckv_button_speichern = ui.button('Speichern', icon='save', on_click=rueckv_speichern).props('color=' + speichernbutton)
-        rueckv_button_speichern.disable()
-    with ui.row():
-        rueckv_button_erstellen = ui.button('Erstellung Rückvergütung', icon='calculate', on_click=rueckv_erstellen)
-        rueckv_button_erstellen.disable()
-        rueckv_button_einlesen = ui.button('Rückvergütung von DB einlesen', icon='file_open', on_click=rueckv_von_db)
-        rueckv_button_einlesen.disable()
-        rueckv_button_download = ui.button('CSV mit Kommas herunterladen', icon='file_download', on_click=csv_komma_rueckv_download)
-        rueckv_button_download.disable()
-        rueckv_button_pdf = ui.button('Word/PDF-Rückvergütungen erzeugen', icon='picture_as_pdf', on_click=rueckv_dateien_erstellen).props('color=red-5')
-        rueckv_button_pdf.disable()
-        rueckv_progress_pdf = ui.circular_progress(min=0, max=100, color="black").classes('invisible')
-    with ui.dialog() as dialog_rueckv_bestaetigung, ui.card():
-        dialog_rueckv_label01 = ui.label('Möchten Sie die Rückvergütung wirklich speichern?')
-        rueckv_checkbox_ueberschreiben = ui.checkbox('bestehende Daten überschreiben')
-        with ui.row():
-            ui.button('Ja', on_click=rueckv_speichern_ja)
-            ui.button('Nein', on_click=dialog_rueckv_bestaetigung.close)
-    rueckv_grid_ui()
-
-def rueckv_dateien_erstellen():
-    rueckv_word_erstellen()
-    rueckv_pdf_erstellen()
-
-def rueckv_word_erstellen():
-    global ordner_rueckv_word
-    global rueckv_fuer_pdf
-    ordner_rueckv_word = ordner_rueckv + "\\" + "Rückvergütung-" + rueckv_jahre_dropdown.value + "\\word"
-    pfad_ordner_rueckv_word = Path(ordner_rueckv_word)
-    if not pfad_ordner_rueckv_word.exists():
-        pfad_ordner_rueckv_word.mkdir()
-    dateien_in_ordner_loeschen(ordner_rueckv_word)
-    ordner_rueckv_jahr = ordner_rueckv + "\\" + "Rückvergütung-" + str(rueckv_jahre_dropdown.value)
-    datei_rueckv =  ordner_rueckv_jahr + "\\" + "Rückvergütung-" + str(rueckv_jahre_dropdown.value) + ".csv"
-    pfad_datei_rueckv = Path(datei_rueckv)
-    if not pfad_datei_rueckv.exists():
-        ui.notify("Bitte erst Rückvergütung für Jahr " + rueckv_jahre_dropdown.value + " abspeichern.", type="info")
-        return
-    dateiname_vorlage = "Vorlage-Rückvergütung-" + str(rueckv_jahre_dropdown.value) + ".docx"
-    datei_vorlage_rueckv = ordner_vorlagen + "\\" + dateiname_vorlage
-    pfad_datei_vorlage_rueckv = Path(datei_vorlage_rueckv)
-    if not pfad_datei_vorlage_rueckv.exists():
-        ui.notify("Bitte Datei " + dateiname_vorlage + " in Ordner " + ordner_vorlagen + " ablegen.", type="info")
-        return
-    rueckv_fuer_pdf = datei_oeffnen(datei_rueckv)
-    # Änderung für v2: Vorprüfungen bleiben in der Oberfläche, Serienschleife auslagern.
-    rueckverguetung_word_schreiben(rueckv_fuer_pdf, datei_vorlage_rueckv,
-                                  ordner_rueckv_word, rueckv_jahre_dropdown.value,
-                                  mapping_wordfelder)
-
-def rueckv_pdf_erstellen():
-    global ordner_rueckv_word
-    global ordner_rueckv_pdf
-    global rueckv_progress_pdf
-    global rueckv_pdf_background
-    docx_files_found = 0
-    ordner_rueckv_pdf = ordner_rueckv + "\\" + "Rückvergütung-" + rueckv_jahre_dropdown.value + "\\pdf"
-    pfad_ordner_rueckv_pdf = Path(ordner_rueckv_pdf)
-    if not pfad_ordner_rueckv_pdf.exists():
-        pfad_ordner_rueckv_pdf.mkdir()
-    word_ordner = os.listdir(ordner_rueckv_word)
-    for datei in word_ordner:
-            if datei.endswith('docx'):
-                docx_files_found = 1
-    if docx_files_found == 0:
-        return
-    dateien_in_ordner_loeschen(ordner_rueckv_pdf)
-    rueckv_pdf_background = threading.Thread(target=rueckv_pdf_process)
-    rueckv_pdf_background.start()
-    rueckv_progress_pdf.classes(remove='invisible')
-
-# PDF-Erzeugung Performance-optimiert (Word wird nur 1x gestartet)
-
-def rueckv_pdf_process():
-    global ordner_rueckv_word
-    global ordner_rueckv_pdf
-    global pdfstop
-
-    # Änderung für v2: Bestehenden Thread an die ausgelagerte Konvertierung anbinden.
-    rueckverguetung_pdf_konvertieren(ordner_rueckv_word, ordner_rueckv_pdf,
-                                    rueckv_progress_pdf.set_value)
+    global rueckverguetung_ansicht
+    rueckverguetung_ansicht = RueckverguetungOberflaeche(sys.modules[__name__])
+    rueckverguetung_ansicht.rueckverguetung_ui()
 
 
+def rueckv_jahre_einlesen():
+    rueckverguetung_ansicht.rueckv_jahre_einlesen()
 
 
 ###########################################################################################################################
