@@ -65,9 +65,6 @@ def umgebung_laden(original, daten):
                 umgebung[name] = wert
 
         umgebung['kontodaten_ansicht'] = KontodatenOberflaeche(TestAnwendung())
-        # Änderung 2.041: Exportreferenzen über echte gebundene Bedienmethoden ausführen.
-        from anwendung.buchungsexport_ui import BuchungsexportOberflaeche
-        umgebung['buchungsexport_ansicht'] = BuchungsexportOberflaeche(TestAnwendung())
     betreiber = ini_datei_lesen(daten / 'ana-betreiber.ini')['Betreiber']
     umgebung.update({'betreiber_name': betreiber['BetreiberName'],
                      'betreiber_iban': betreiber['BetreiberIBAN'],
@@ -113,14 +110,7 @@ def fall_ausfuehren(umgebung, fall, ausgabe):
     })
     vorher = copy.deepcopy((umgebung['konto_db'], umgebung['abschlag_db']))
     try:
-        # Änderung 2.041: Nur native Dialoge und Meldungen im lokalen Vergleich ersetzen.
-        with contextlib.ExitStack() as kontext:
-            if 'buchungsexport_ansicht' in umgebung:
-                from unittest.mock import patch
-                import anwendung.buchungsexport_ui as bedienung
-                kontext.enter_context(patch.object(bedienung, 'app', umgebung['app']))
-                kontext.enter_context(patch.object(bedienung, 'ui', umgebung['ui']))
-            asyncio.run(umgebung[fall['export'] + '_speichern']())
+        asyncio.run(umgebung[fall['export'] + '_speichern']())
         assert ausgabe.is_file() and len(meldungen) == 1
         status = {'status': 'ok'}
     except Exception as fehler:

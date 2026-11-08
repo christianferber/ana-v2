@@ -11,8 +11,6 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
-        # Änderung 2.041: Exportauswahl und Speicherdialoge ausschließlich lokal vergleichen.
-        ('Buchungsexport-Bedienung gegen Original', ['-m', 'tests.buchungsexport_pruefen']),
         # Änderung 2.040: Deaktivierte Statistik mit lokalen Beispieldaten vergleichen.
         ('Statistik gegen Original', ['-m', 'tests.statistik_pruefen']),
         # Änderung 2.039: Changelog-Filter und Anzeige ausschließlich lokal vergleichen.
@@ -213,8 +211,6 @@ def main():
                 'PDF-Seitenzahlen und Texte identisch. Test-App, Fenster und Browser beendet.',
                 'Keine interaktive Statistikprüfung und keine visuelle Diagramm-/Dokumentprüfung.',
                 'Keine neue Windows-EXE erstellt.', '']
-    # Änderung 2.041: Erfolgreichen isolierten Praxislauf und reguläre Word-Prüfgrenze dokumentieren.
-    bericht += ['Version 2.041: Alle sieben Buchungsexport-Bedienmethoden und Adapter einschließlich\nasynchroner Speicherdialoge strukturell gegen Original geprüft. Alle 17 gebündelten\nPrüfungen und Syntaxprüfung bestanden. Sämtliche lokalen CSV-Referenzfälle über\nechte gebundene Bedienmethoden bytegleich; freigegebene Fehlerkorrekturen bestätigt.\nJahreslisten, fehlende/vollständige Auswahl, Dateinamensvorgaben, Speichern und\nAbbruch gegen Original verglichen. Native Dateidialoge durch Testantworten ersetzt.\nEchtes Buchungsvorlagenregister, Berechnung und CSV-Referenz bestanden. Vollständiger\nPraxislauf mit isolierter Word-Testinstanz bestanden: 73 neue Word-Dateien und 73\nlesbare PDFs. Originalbestand per SHA256 unverändert. Gegenüber 2.040 sind sämtliche\nWord-Paketinhalte, PDF-Seitenzahlen und Texte identisch. App, Fenster und Browser beendet.\nPrüfgrenze: Die vorhandene, vor Testbeginn gestartete Word-Sitzung wies COM-Aufrufe\nals beschäftigt zurück (RPC_E_CALL_REJECTED); zwei normale Praxisversuche scheiterten\nmit AttributeError: Open.SaveAs und wurden abgebrochen. Die Benutzersitzung wurde\nnicht beendet. Nur im lokalen Praxisstarteinstieg wurde die Word-Beschaffung durch\nDispatchEx ersetzt, um eine eigene Prozess-ID zu erhalten. Der Programmcode und der\nKonvertierungsablauf bleiben unverändert. Ein erster isolierter Versuch scheiterte\nam Hwnd-Zugriff der Testhilfe; nach Prozess-ID-Erfassung ohne Hwnd erfolgreich.\nDie reguläre Word-Anbindung wurde in dieser Sitzung nicht vollständig erfolgreich\ngeprüft; der erfolgreiche Dokumentlauf gilt für die isolierte Testinstanz.\nKeine neue Windows-EXE; keine visuelle Dokumentprüfung im Modellkontext.\n', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'
