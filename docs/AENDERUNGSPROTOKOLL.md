@@ -128,3 +128,19 @@ Version 2.00 – 05.11.2026
   zusätzlich mit lokalen Beispieldaten für Spalten, Bearbeitung einschließlich
   Nullwerten, Abschlagsänderung, CSV-Speicherung, Upload und Formatabweisung.
 - Keine neue Windows-EXE. Prüfstand und Einschränkungen siehe TESTBERICHT.md.
+
+<!-- Änderung 2.035: Technischen Umbau versionsbezogen dokumentieren. -->
+## Version 2.035 – 08.11.2026
+
+- Mitgliederbereich mit 22 Methoden in `MitgliederOberflaeche` in
+  `anwendung/mitglieder_ui.py` ausgelagert: Tabellenaufbau und Filter,
+  Wartungsdialoge, Anschlusswechsel, Mitgliederbearbeitung, Import,
+  Speichern, CSV-/Word-Export und Serienbriefdialog.
+- Anzeige- und Dialogzustand liegt auf der Ansicht; gemeinsame Daten und Hilfen
+  werden über die Anwendung gelesen. Adapter erhalten bestehende Aufrufe und
+  refresh-Zugriffe, einschließlich der beiden asynchronen Einstiegspunkte.
+- Alle Methoden samt verschachtelten Funktionen und Adapter strukturell gegen
+  Original geprüft. Gebundene Methoden mit lokalen Beispieldaten verglichen;
+  vollständiger Register-/Abrechnungspraxislauf bestanden. Details und bestehende
+  Einschränkung des Wartungsfilters stehen im Prüfbericht.
+- Keine neue Windows-EXE erstellt.

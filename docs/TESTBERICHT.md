@@ -6,6 +6,7 @@ Stand: 08.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Mitgliederansicht gegen Original: bestanden.
 - Abnehmeransicht gegen Original: bestanden.
 - Zähleransicht gegen Original: bestanden.
 - Testprozesse und Startsperre: bestanden.
@@ -76,6 +77,23 @@ Test-App, Fenster und Testbrowser vollständig beendet. Keine neue EXE.
 Keine visuelle Dokumentprüfung. Eine vorzeitig neben dem Praxislauf gestartete
 Prozessprüfung wurde von der Startsperre blockiert; die abschließende gebündelte
 Freigabeprüfung erfolgte nach Ende des Praxislaufs.
+
+Version 2.035: Alle 22 Mitgliedermethoden und Adapter einschließlich
+asynchroner Abläufe und verschachtelter Dialogfunktionen strukturell gegen
+das Original geprüft. Gebundene Methoden für Filter, Sortierungen, Auswahl,
+Upload/Formatabweisung, Speichern, CSV-Export und beide Word-Mitgliederlisten
+mit lokalen Beispieldaten verglichen. Bei lückenhaften Wartungsspalten bleibt
+der bereits im Original vorhandene KeyError unverändert; dies wurde verglichen.
+Die Auslagerung behebt diesen bestehenden Daten-/Filterfehler nicht.
+Echtes Mitgliederregister und vollständige Abrechnung am 08.11.2026 mit
+isolierter Datenkopie bestanden: CSV-Referenz identisch, 73 neue Word-Dateien
+und 73 lesbare PDFs. Originalbestand per SHA256 unverändert.
+Gegenüber 2.034: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.
+Test-App, Fenster und Testbrowser vollständig beendet. Keine neue EXE.
+Keine visuelle Dokumentprüfung im Modellkontext. Bearbeitungs-, Wartungs-
+und Serienbriefdialoge strukturell geprüft; kein vollständiger interaktiver
+Durchlauf aller Dialogkombinationen. Erster App-Start wegen fehlender
+Hilfsimporte fehlgeschlagen; nach Korrektur vollständiger Praxislauf bestanden.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

@@ -217,6 +217,9 @@ def pruefen():
     # Änderung 2.03: Auch die Abrechnungsansicht samt verschachtelten Dialogen prüfen.
     from tests.abrechnung_struktur import methoden_als_funktionen as abrechnungsmethoden
     neue_funktionen.update(abrechnungsmethoden(basis, alte_funktionen))
+    # Änderung 2.035: Mitgliederansicht einschließlich verschachtelter Dialoge und Async-Adapter prüfen.
+    from tests.mitglieder_struktur import methoden_als_funktionen as mitgliedermethoden
+    neue_funktionen.update(mitgliedermethoden(basis, alte_funktionen))
     # Änderung: Alle verschobenen Abnehmermethoden und ihre Adapter prüfen.
     from tests.abnehmer_struktur import methoden_als_funktionen as abnehmersmethoden
     verschoben = abnehmersmethoden(basis, alte_funktionen)

@@ -90,3 +90,10 @@ Anwender. `docs/AENDERUNGSPROTOKOLL.md` enthält die technischen Details pro Ver
 Speichern der Abnehmerdaten. Tabelle und Speichern-Schaltfläche gehören zur
 Ansicht; gemeinsame Abnehmer- und Abschlagsdaten bleiben auf der Anwendung.
 Die bisherigen Aufrufe und refresh-Zugriffe bleiben über Adapter erhalten.
+
+<!-- Änderung 2.035: Zuständigkeit der Mitgliederansicht dokumentieren. -->
+`anwendung/mitglieder_ui.py` enthält Mitgliederverwaltung, Wartungsdialoge,
+Anschlusswechsel, Tabellenfilter, Upload, Speichern sowie CSV-/Word-Export und
+Serienbriefdialog. Gemeinsame Daten bleiben auf der Anwendung; Tabellen-,
+Schaltflächen- und Dialogzustand liegt auf der Ansicht. Die bisherigen
+Einstiegspunkte bleiben im Hauptmodul erhalten.

@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.035: Mitgliederansicht mit lokalen Beispieldaten vergleichen.
+        ('Mitgliederansicht gegen Original', ['-m', 'tests.mitglieder_pruefen']),
         # Änderung 2.034: Abnehmeransicht mit lokalen Beispieldaten vergleichen.
         ('Abnehmeransicht gegen Original', ['-m', 'tests.abnehmer_pruefen']),
         # Änderung 2.033: Gebundene Zählermethoden mit lokalen Beispieldaten vergleichen.
@@ -105,6 +107,23 @@ def main():
                 'Keine visuelle Dokumentprüfung. Eine vorzeitig neben dem Praxislauf gestartete',
                 'Prozessprüfung wurde von der Startsperre blockiert; die abschließende gebündelte',
                 'Freigabeprüfung erfolgte nach Ende des Praxislaufs.', '']
+    # Änderung 2.035: Abgeschlossenen Mitglieder-Praxislauf dokumentieren.
+    bericht += ['Version 2.035: Alle 22 Mitgliedermethoden und Adapter einschließlich',
+                'asynchroner Abläufe und verschachtelter Dialogfunktionen strukturell gegen',
+                'das Original geprüft. Gebundene Methoden für Filter, Sortierungen, Auswahl,',
+                'Upload/Formatabweisung, Speichern, CSV-Export und beide Word-Mitgliederlisten',
+                'mit lokalen Beispieldaten verglichen. Bei lückenhaften Wartungsspalten bleibt',
+                'der bereits im Original vorhandene KeyError unverändert; dies wurde verglichen.',
+                'Die Auslagerung behebt diesen bestehenden Daten-/Filterfehler nicht.',
+                'Echtes Mitgliederregister und vollständige Abrechnung am 08.11.2026 mit',
+                'isolierter Datenkopie bestanden: CSV-Referenz identisch, 73 neue Word-Dateien',
+                'und 73 lesbare PDFs. Originalbestand per SHA256 unverändert.',
+                'Gegenüber 2.034: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.',
+                'Test-App, Fenster und Testbrowser vollständig beendet. Keine neue EXE.',
+                'Keine visuelle Dokumentprüfung im Modellkontext. Bearbeitungs-, Wartungs-',
+                'und Serienbriefdialoge strukturell geprüft; kein vollständiger interaktiver',
+                'Durchlauf aller Dialogkombinationen. Erster App-Start wegen fehlender',
+                'Hilfsimporte fehlgeschlagen; nach Korrektur vollständiger Praxislauf bestanden.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'
