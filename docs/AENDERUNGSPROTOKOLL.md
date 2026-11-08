@@ -115,3 +115,16 @@ Version 2.00 – 05.11.2026
 - Prüfgrenze: Der vollständige Rückvergütungs-Dokumentlauf überschritt das Testzeitlimit;
   der Praxistest mit einem vorhandenen Datensatz war erfolgreich. Keine visuelle Dokumentprüfung im KI-Kontext.
 
+
+<!-- Änderung 2.034: Technischen Umbau versionsbezogen dokumentieren. -->
+## Version 2.034 – 08.11.2026
+
+- Abnehmeroberfläche in `AbnehmerOberflaeche` in `anwendung/abnehmer_ui.py`
+  ausgelagert: Tabelle, CSV-Upload, Bearbeitung und Speichern.
+- Tabellen- und Schaltflächenzustand liegt auf der Ansicht. Gemeinsame Daten,
+  Speicherhilfen und die verbundene Abschlagsanpassung bleiben unverändert.
+- Acht Adapter erhalten bisherige Aufrufe und refresh-Zugriffe. Alle Methoden
+  und Adapter werden strukturell gegen das Original geprüft; gebundene Methoden
+  zusätzlich mit lokalen Beispieldaten für Spalten, Bearbeitung einschließlich
+  Nullwerten, Abschlagsänderung, CSV-Speicherung, Upload und Formatabweisung.
+- Keine neue Windows-EXE. Prüfstand und Einschränkungen siehe TESTBERICHT.md.

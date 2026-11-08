@@ -13,6 +13,8 @@ from anwendung.einstellungen import pfade_erstellen, ini_datei_lesen, ini_datei_
 # Änderung 2.03: Abrechnungsansicht mit eigenem Bereichszustand einbinden.
 from anwendung.abrechnung_ui import AbrechnungOberflaeche
 # Änderung: Abschlagsbereich mit eigenem Bedienzustand einbinden.
+# Änderung 2.034: Abnehmeransicht einbinden.
+from anwendung.abnehmer_ui import AbnehmerOberflaeche
 from anwendung.abschlag_ui import AbschlagOberflaeche
 # Änderung 2.033: Zählerbereich mit eigenem Bedienzustand einbinden.
 from anwendung.zaehler_ui import ZaehlerOberflaeche
@@ -87,7 +89,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung: Versionsschritt um 0.001 gemäß aktueller AGENTS.md.
 # Änderung: Neue Quellfreigabe für die bereinigte Teststeuerung.
 # Änderung: Versionsschritt gemäß Freigabeprozess.
-version = 2.033
+# Änderung 2.034: Abnehmerauslagerung kennzeichnen.
+version = 2.034
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -1814,171 +1817,35 @@ def mitglieder_ui():
 ### ANFANG ABNEHMER / BASISDATEN
 ###########################################################################################################################
 
+# Änderung 2.034: Bestehende Aufrufe und refresh-Zugriffe erhalten.
 @ui.refreshable
 def abnehmer_label_ui(label):
-    ui.label(label).style('font-size:100%')
-
-# Daten wie Ident, Name und Vorname werden aus Abnehmerdaten extrahiert
-
-# Änderung für v2: abnehmer_aus_daten unverändert aus berechnungen importiert.
+    return abnehmer_ansicht.abnehmer_label_ui(label)
 
 def abnehmer_upload(e: events.UploadEventArguments):
-    global abnehmer_db
-    if mitglieder_db == []:
-        ui.notify('Mitglieder sind noch nicht erfasst. Bitte vorher Mitgliederliste anlegen.', type="info")
-        return
-    with StringIO(e.content.read().decode('iso-8859-1', errors='ignore')) as f:
-        abnehmer_import = import_csv_inhalt(f)
-    if string_in_dict(abnehmer_import[0], 'Ident') == True and string_in_dict(abnehmer_import[0], 'Name') == True and string_in_dict(abnehmer_import[0], 'Vorname') == True and string_in_dict(abnehmer_import[0], 'Original-Vertragsleistung') == True and string_in_dict(abnehmer_import[0], 'Mindest-Vertragsleistung') == True:
-        for mrow in mitglieder_db:
-            ident_found = 0
-            temprow = {}
-            for row in abnehmer_import:
-                if mrow["Ident"] == row["Ident"]:
-                    for key,value in row.items():
-                        if key == "Ident" or key == "Name" or key == "Vorname":
-                            temprow[key] = mrow[key]
-                        else:
-                            temprow[key] = row[key]
-                    abnehmer_db.append(temprow)
-                    ident_found = 1
-            if ident_found != 1 and mrow["Ident"] != "":
-                temprow = {}
-                temprow["Ident"] = mrow["Ident"]
-                temprow["Name"] = mrow["Name"]
-                temprow["Voranme"] = mrow["Vorname"]
-                ui.notify("Ident " + mrow["Ident"] + " nicht gefunden.", type="warning")
-                abnehmer_db.append(temprow)
-    else:
-        ui.notify('Importdaten entsprechen nicht dem erforderlichen Format. Es müssen Tabellenspalten für Ident, Name, Vorname, Original-Vertragsleistung und Mindest-Vertragsleistung-<Jahr> enthalten sein.', type="Warning")
-        return
-    abnehmer_db = sorted(abnehmer_db, key=lambda x: int(x["Ident"]))  
-    for row in abnehmer_db:
-        for key,value in row.items():
-            if "Ident" in key or "Vertragsleistung" in key:
-                row[key] = int(value)
-    db_sichern("Upload Abnehmerdaten")
-    button_abnehmer_speichern.enable()
-    abnehmer_grid_ui.refresh()
+    return abnehmer_ansicht.abnehmer_upload(e)
 
 def abnehmer_aus_db():
-    global abnehmer_db
-    abnehmer_db = db_datei_oeffnen(db_abnehmer)
-    abnehmer_db = tablefields_to_int(abnehmer_db)
-    abnehmer_grid_ui.refresh()
-    button_abnehmer_speichern.disable()
-
-# Abnehmerdaten werden bei Zellveränderung automatisch gespeichert
+    return abnehmer_ansicht.abnehmer_aus_db()
 
 def abnehmerdaten_speichern():
-    db_datei_speichern(db_abnehmer, abnehmer_db)
-    abschlag_speichern()
-    abschlag_grid_ui.refresh()
-    button_abnehmer_speichern.disable()
-    ui.notify("Abnehmerdaten gespeichert", type='positive')
-
+    return abnehmer_ansicht.abnehmerdaten_speichern()
 
 def abnehmer_tabelle_on_change(event):
-    global abnehmer_grid
-    global abnehmer_db
-    global abschlag_db
-    if event["newValue"] == None:
-        return
-    abnehmer_db[int(event["rowId"])][event["colId"]] = event["newValue"]
-    if "Mindest" in event["colId"]:
-        abschlag_db_wert_alt = abschlag_db[int(event["rowId"])]["Abschlag-" + str(event["colId"])[-4:]]
-        if event["newValue"] != 0:
-            abschlag_db[int(event["rowId"])]["Abschlag-" + str(event["colId"])[-4:]] = round((event["newValue"] / 100 * arbeitspreis / 4),2)
-        abschlag_db_wert_neu = abschlag_db[int(event["rowId"])]["Abschlag-" + str(event["colId"])[-4:]]
-        log_daten = event["data"]["Ident"] + " " + event["data"]["Name"] + " " + event["data"]["Vorname"] + " ::: " + "Abschlag-" + str(event["colId"])[-4:] + " ::: " + str(abschlag_db_wert_alt) + " ===> " + str(abschlag_db_wert_neu)
-        change_log_info("ABSCHLAG", log_daten)
-    change_log("ABNEHMER", event)
-    button_abnehmer_speichern.enable()
-
-
-
-# Spalten für Tabelle definieren
+    return abnehmer_ansicht.abnehmer_tabelle_on_change(event)
 
 def abnehmer_columns_erstellen(table):
-    columns = []
-
-    if table:
-        for key in table[0].keys():
-            column_element = {}
-            column_element["headerName"] = key
-            column_element["field"] = key
-
-            # Ident-Spalte schmal machen
-            if key == "Ident":
-                column_element["width"] = 90          # feste Breite
-                column_element["minWidth"] = 90
-                column_element["maxWidth"] = 90
-                column_element["flex"] = 0            # darf nicht wachsen
-                column_element["resizable"] = False
-                column_element["pinned"] = "left"
-            else:
-                column_element["flex"] = 1
-                column_element["minWidth"] = 160
-
-            if key in ("Ident", "Name", "Vorname"):
-                column_element["pinned"] = 'left'
-
-            column_element["filter"] = 'agTextColumnFilter'
-            column_element["floatingFilter"] = True
-
-            if key == "Kommentar":
-                column_element["editable"] = True
-                column_element["cellStyle"] = {'backgroundColor': col_cell_mod}
-                column_element["cellEditor"]='agStringCellEditor'
-            if "Mindest-" in key:
-                column_element["editable"] = True
-                column_element["cellStyle"] = {'backgroundColor': col_cell_mod}
-                column_element["cellEditor"]='agNumberCellEditor'
-
-            columns.append(column_element)
-    return columns
-
-# Tabelle erstellen
-
-
+    return abnehmer_ansicht.abnehmer_columns_erstellen(table)
 
 @ui.refreshable
 def abnehmer_grid_ui():
-    global abnehmer_grid
-    abnehmer_grid = ui.aggrid({
-        'defaultColDef': {
-            'editable': False,
-            'resizable': True,
-            'wrapHeaderText': True,
-            'autoHeaderHeight': True,
-        },
-        'columnDefs': abnehmer_columns_erstellen(abnehmer_db),
-        'rowData': abnehmer_db,
-        'domLayout': 'autoHeight',
-        'pagination': True,
-        'paginationPageSize': pagination
-    }).on(
-        'cellValueChanged',
-        lambda event: abnehmer_tabelle_on_change(event.args)
-    ).style('height: 100%')
+    return abnehmer_ansicht.abnehmer_grid_ui()
 
 def abnehmer_ui():
-    global abnehmer_db
-    global db_abnehmer_found
-    global button_abnehmer_speichern
+    global abnehmer_ansicht
+    abnehmer_ansicht = AbnehmerOberflaeche(sys.modules[__name__])
+    return abnehmer_ansicht.abnehmer_ui()
 
-    abnehmer_label_ui('')
-    with ui.row():
-        ui.upload(label='Upload Vorlage Abnehmerdaten',on_upload=abnehmer_upload, auto_upload=True, max_files=1).props("accept=.csv").classes('max-w-full')
-        button_abnehmer_speichern = ui.button('Speichern', icon='save', on_click=lambda: (abnehmerdaten_speichern())).props('color=' + speichernbutton)
-        button_abnehmer_speichern.disable()
-    abnehmer_grid_ui()
-    if db_datei_oeffnen(db_abnehmer)[0] == "file not found":
-        abnehmer_label_ui.refresh('Keine Abnehmerdaten in Datenbank. Upload CSV-Datei mit Basisdaten der Abnehmer.')
-    else:
-        db_abnehmer_found = 1
-        abnehmer_label_ui.refresh('Abnehmer-Datenbank gefunden! Daten wurden geladen und können über einen neuen Upload überschrieben und ergänzt werden.')
-        abnehmer_aus_db()   
 
 ###########################################################################################################################
 ### ENDE ABNEHMER / BASISDATEN

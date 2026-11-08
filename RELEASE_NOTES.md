@@ -5,6 +5,12 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.034: Wartung aus Anwendersicht dokumentieren. -->
+Version 2.034 – 08.11.2026
+-------------------------
+
+Interne Wartung der Abnehmerverwaltung; Bedienung, Datenimport und Ergebnisse bleiben unverändert.
+
 <!-- Änderung 2.033: Wartung aus Anwendersicht dokumentieren. -->
 Version 2.033 – 06.11.2026
 -------------------------

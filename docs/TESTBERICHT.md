@@ -2,10 +2,11 @@
 
 <!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
 
-Stand: 06.11.2026
+Stand: 08.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Abnehmeransicht gegen Original: bestanden.
 - Zähleransicht gegen Original: bestanden.
 - Testprozesse und Startsperre: bestanden.
 - Abschlagsansicht gegen Original: bestanden.
@@ -62,6 +63,19 @@ Gegenüber dem vorherigen Praxislauf: alle Word-Paketinhalte sowie PDF-Seitenzah
 und extrahierten Texte identisch.
 Test-App, Fenster und Testbrowser vollständig beendet. Keine neue EXE.
 Keine visuelle Dokumentprüfung im Modellkontext.
+
+Version 2.034: Alle acht ausgelagerten Abnehmermethoden und Adapter gegen
+das Original strukturell geprüft. Gebundene Methoden mit lokalen Beispieldaten
+für Spalten, Bearbeiten einschließlich Nullwerten und Abschlagsänderung,
+CSV-Speicherung, Upload und Formatabweisung verglichen.
+Echtes Abnehmerregister und vollständiger Abrechnungslauf am 08.11.2026
+mit isolierter Datenkopie bestanden: CSV-Referenz identisch, 73 neue Word-Dateien
+und 73 lesbare PDFs; Originalbestand per SHA256 unverändert.
+Gegenüber 2.033: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.
+Test-App, Fenster und Testbrowser vollständig beendet. Keine neue EXE.
+Keine visuelle Dokumentprüfung. Eine vorzeitig neben dem Praxislauf gestartete
+Prozessprüfung wurde von der Startsperre blockiert; die abschließende gebündelte
+Freigabeprüfung erfolgte nach Ende des Praxislaufs.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

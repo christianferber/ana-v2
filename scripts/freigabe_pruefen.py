@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.034: Abnehmeransicht mit lokalen Beispieldaten vergleichen.
+        ('Abnehmeransicht gegen Original', ['-m', 'tests.abnehmer_pruefen']),
         # Änderung 2.033: Gebundene Zählermethoden mit lokalen Beispieldaten vergleichen.
         ('Zähleransicht gegen Original', ['-m', 'tests.zaehler_pruefen']),
         # Änderung: Parallele Tests und verwaiste Fensterprozesse verhindern.
@@ -90,6 +92,19 @@ def main():
                 'und extrahierten Texte identisch.',
                 'Test-App, Fenster und Testbrowser vollständig beendet. Keine neue EXE.',
                 'Keine visuelle Dokumentprüfung im Modellkontext.', '']
+    # Änderung 2.034: Abgeschlossenen Abnehmer-Praxislauf festhalten.
+    bericht += ['Version 2.034: Alle acht ausgelagerten Abnehmermethoden und Adapter gegen',
+                'das Original strukturell geprüft. Gebundene Methoden mit lokalen Beispieldaten',
+                'für Spalten, Bearbeiten einschließlich Nullwerten und Abschlagsänderung,',
+                'CSV-Speicherung, Upload und Formatabweisung verglichen.',
+                'Echtes Abnehmerregister und vollständiger Abrechnungslauf am 08.11.2026',
+                'mit isolierter Datenkopie bestanden: CSV-Referenz identisch, 73 neue Word-Dateien',
+                'und 73 lesbare PDFs; Originalbestand per SHA256 unverändert.',
+                'Gegenüber 2.033: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.',
+                'Test-App, Fenster und Testbrowser vollständig beendet. Keine neue EXE.',
+                'Keine visuelle Dokumentprüfung. Eine vorzeitig neben dem Praxislauf gestartete',
+                'Prozessprüfung wurde von der Startsperre blockiert; die abschließende gebündelte',
+                'Freigabeprüfung erfolgte nach Ende des Praxislaufs.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'

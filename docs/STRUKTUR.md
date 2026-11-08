@@ -84,3 +84,9 @@ vollständig beendet; auch beim Ende des Testtreibers schließt Windows den Job.
 `RELEASE_NOTES.md` beschreibt Features, Verbesserungen und Fehlerkorrekturen für
 Anwender. `docs/AENDERUNGSPROTOKOLL.md` enthält die technischen Details pro Version;
 `docs/TESTBERICHT.md` dokumentiert die Prüfungen und ihre Grenzen.
+
+<!-- Änderung 2.034: Zuständigkeit der Abnehmeransicht dokumentieren. -->
+`anwendung/abnehmer_ui.py` enthält Tabellenaufbau, CSV-Upload, Bearbeitung und
+Speichern der Abnehmerdaten. Tabelle und Speichern-Schaltfläche gehören zur
+Ansicht; gemeinsame Abnehmer- und Abschlagsdaten bleiben auf der Anwendung.
+Die bisherigen Aufrufe und refresh-Zugriffe bleiben über Adapter erhalten.
