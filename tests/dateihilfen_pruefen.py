@@ -211,6 +211,16 @@ def pruefen():
     alte_funktionen['csv_rueckv'] = korrekturen.visit(copy.deepcopy(alte_funktionen['csv_rueckv']))
     assert korrekturen.anzahl == 2
     neue_funktionen = {k.name: k for k in neu.body + modul.body + feldmodul.body if isinstance(k, ast.FunctionDef)}
+    # Änderung 2.044: Unveränderte Hilfen und sämtliche direkten Imports zusätzlich prüfen.
+    aufbereitung = ast.parse((basis / 'anwendung/datenaufbereitung.py').read_text(encoding='utf-8'))
+    hilfen = {k.name: k for k in aufbereitung.body if isinstance(k, ast.FunctionDef)}
+    assert set(hilfen) == {'string_in_dict', 'listcsv_to_dict', 'jahr_in_datum',
+                           'tablefields_to_dotfloat', 'tablefields_to_int'}
+    importe = [k for k in neu.body if isinstance(k, ast.ImportFrom) and k.module == 'anwendung.datenaufbereitung']
+    assert len(importe) == 1
+    assert {k.name for k in importe[0].names} == set(hilfen)
+    assert all(k.asname is None for k in importe[0].names)
+    neue_funktionen.update(hilfen)
     # Änderung 2.043: Sicherung und Protokollierung samt Adaptern vollständig vergleichen.
     from tests.gemeinsame_hilfen_struktur import methoden_als_funktionen as gemeinsame_hilfen
     neue_funktionen.update(gemeinsame_hilfen(basis, alte_funktionen))

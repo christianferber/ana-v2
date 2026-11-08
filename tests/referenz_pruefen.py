@@ -53,7 +53,9 @@ def funktionen_laden():
     namen = {
         'tablefields_to_int', 'tablefields_to_dotfloat',
     }
-    baum = ast.parse((BASIS / 'anwendung' / 'oberflaeche.py').read_text(encoding='utf-8-sig'))
+    # Änderung 2.044: Die tatsächlich importierten Hilfen statt kopierter Funktionskörper prüfen.
+    from anwendung import datenaufbereitung
+    baum = ast.parse((BASIS / 'anwendung' / 'datenaufbereitung.py').read_text(encoding='utf-8-sig'))
     funktionen = [knoten for knoten in baum.body
                   if isinstance(knoten, ast.FunctionDef) and knoten.name in namen]
     if {knoten.name for knoten in funktionen} != namen:
@@ -66,7 +68,7 @@ def funktionen_laden():
         'abrechnung_berechnen', 'abnehmer_aus_daten', 'mwst_berechnen',
         'datum_in_string', 'datum_in_punkt', 'datum_tage_vorher')})
     umgebung['mindestabnahme_berechnen'] = berechnungen.letzte_mindestabnahme
-    exec(compile(ast.Module(body=funktionen, type_ignores=[]), 'ana.py', 'exec'), umgebung)
+    umgebung.update({name: getattr(datenaufbereitung, name) for name in namen})
     # Änderung 2.03: Echte Instanzmethoden ausführen. Die bestehende Prüfoberfläche
     # als Wörterbuch beibehalten, damit der unabhängige Originalvergleich weiterläuft.
     from anwendung import abrechnung_ui

@@ -37,6 +37,9 @@ def umgebung_laden(original, daten):
     namen |= {'buchung_datei_speichern', 'konto_aus_db', 'db_datei_oeffnen', 'tablefields_to_dotfloat'}
     if original:
         namen |= {'round_half_up', 'dictlist_to_csv'}
+    else:
+        # Änderung 2.044: Ausgelagerte Aufbereitung als echte importierte Funktion verwenden.
+        namen.remove('tablefields_to_dotfloat')
     funktionen = [k for k in baum.body if isinstance(k, (ast.FunctionDef, ast.AsyncFunctionDef)) and k.name in namen]
     assert {k.name for k in funktionen} == namen
     umgebung = {'datetime': datetime, 'Decimal': Decimal, 'ROUND_HALF_UP': ROUND_HALF_UP,
@@ -47,6 +50,8 @@ def umgebung_laden(original, daten):
                 'konto_grid_ui': SimpleNamespace(refresh=lambda: None),
                 'webview': SimpleNamespace(SAVE_DIALOG=0)}
     if not original:
+        from anwendung.datenaufbereitung import tablefields_to_dotfloat
+        umgebung['tablefields_to_dotfloat'] = tablefields_to_dotfloat
         # Änderung für v2: Tatsächliche ausgelagerte Exportfunktionen verwenden.
         from anwendung import buchungsvorlagen
         umgebung.update({name: getattr(buchungsvorlagen, name) for name in (

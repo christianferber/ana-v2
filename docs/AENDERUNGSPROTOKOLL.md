@@ -20,6 +20,23 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Version 2.044 – 08.11.2026
+
+<!-- Änderung 2.044: Auslagerung der Datenaufbereitung getrennt dokumentieren. -->
+- Fünf unveränderte Funktionen nach `anwendung/datenaufbereitung.py` verschoben:
+  `string_in_dict`, `listcsv_to_dict`, `jahr_in_datum`, `tablefields_to_dotfloat`
+  und `tablefields_to_int`. Direkte Importe erhalten bisherige Namen und Aufrufe.
+- Strukturvergleich um Funktionskörper und vollständige Importliste erweitert.
+  Referenz- und Buchungstests verwenden die tatsächlichen importierten Funktionen.
+- Neuer Vergleich mit lokalen Beispieldaten und Sonderfällen prüft Rückgabewerte,
+  Eingabemutationen, Rückgabeidentität und bisheriges Fehlerverhalten gegen Original.
+- Der separat festgestellte Anzeigefehler mit zwei Nachkommastellen bleibt unverändert.
+- Alle 19 Freigabeprüfungen und Syntaxprüfung bestanden. Vollständiger regulärer
+  Praxislauf mit normaler Word-Anbindung bestanden: 73 neue Word-Dateien und 73
+  lesbare PDFs, CSV-Referenz identisch, Original-Beispieldaten unverändert.
+  Gegen 2.043: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.
+  Testprozesse beendet. Keine visuelle Dokumentprüfung und keine neue EXE.
+
 ## Version 2.043 – 08.11.2026
 
 <!-- Änderung 2.043: Gemeinsame Hilfen und unveränderte Einstiegspunkte dokumentieren. -->

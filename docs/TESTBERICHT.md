@@ -6,6 +6,7 @@ Stand: 08.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Datenaufbereitung gegen Original: bestanden.
 - Sicherung gegen Original: bestanden.
 - Buchungsexport-Bedienung gegen Original: bestanden.
 - Statistik gegen Original: bestanden.
@@ -236,3 +237,17 @@ Keine neue EXE und keine visuelle Dokumentprüfung.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
+
+Version 2.044: Fünf unveränderte Funktionen zur Datenaufbereitung ausgelagert.
+Funktionskörper und vollständige direkte Importliste strukturell gegen Original
+geprüft. Referenz- und Buchungsläufe verwenden echte importierte Funktionen.
+Neuer Vergleich mit lokalen Beispieldaten und Sonderfällen für Rückgabewerte,
+Eingabemutationen, Rückgabeidentität und bisherige Fehler bestanden.
+Alle 19 Freigabeprüfungen und Syntaxprüfung bestanden. Regulärer vollständiger
+Praxislauf am 08.11.2026: Buchungsvorlagenregister, Berechnung, CSV-Referenz,
+73 neue Word-Dateien und 73 lesbare PDFs. Normales Dispatch ohne isolierten
+Word-Ersatz. Original-Beispieldaten unverändert. Gegen 2.043: Word-Paketinhalte,
+PDF-Seitenzahlen und PDF-Texte identisch. Test-App, Fenster und Browser beendet.
+Unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.
+Keine neue EXE, keine visuelle Dokumentprüfung. Versionsanzeige mit zwei
+Nachkommastellen bleibt unverändert; dies ist keine Korrektur dieses Anzeigefehlers.

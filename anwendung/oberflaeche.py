@@ -1,3 +1,6 @@
+# Änderung 2.044: Bisherige Namen durch direkte Importe der unveränderten Hilfen erhalten.
+from anwendung.datenaufbereitung import (string_in_dict, listcsv_to_dict, jahr_in_datum,
+                                         tablefields_to_dotfloat, tablefields_to_int)
 # Änderung für v2: In anwendung/ eingeordnet; Modul- und Dateipfade angepasst.
 
 # Mail bei Mitglieder implementieren
@@ -121,7 +124,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.041: Buchungsexport-Auslagerung kennzeichnen.
 # Änderung 2.042: Erneute Auslagerung erst nach vollständig erfolgreicher regulärer Prüfung freigeben.
 # Änderung 2.043: Gemeinsame Sicherungs- und Protokollhilfen auslagern.
-version = 2.043
+# Änderung 2.044: Gemeinsame Datenaufbereitung auslagern.
+version = 2.044
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -307,11 +311,6 @@ def db_datei_speichern(dbfile, csvdict):
 
 # Änderung für v2: datei_speichern ist unverändert in datenhaltung.py ausgelagert.
 
-def string_in_dict(my_dict, my_string):
-    for key in my_dict:
-        if my_string in key:
-            return True
-    return False
 
 # Änderung für v2: dictlist_to_csv ist unverändert in datenhaltung.py ausgelagert.
 
@@ -336,20 +335,6 @@ def dateien_in_ordner_loeschen(ordner):
         except Exception as e:
             print(f"Fehler beim Löschen {datei_pfad}: {e}")
 
-def listcsv_to_dict(listcsv):
-    dictrow = {}
-    vardict = []
-    dictkeys = listcsv[0].split(";")
-    del dictkeys[-1]
-    del listcsv[0]
-    for row in listcsv:
-        dictvalues = row.split(";")
-        del dictvalues[-1]
-        for x in range(len(dictkeys)):
-            dictrow[dictkeys[x]] = dictvalues[x]
-        vardict.append(dictrow)
-        dictrow = {}
-    return vardict
 
 
 # Änderung für v2: import_file ist unverändert in datenhaltung.py ausgelagert.
@@ -378,14 +363,6 @@ def datum_mit_strich(datum):
 
 ### Liest Jahr aus Datumsstring aus
 
-def jahr_in_datum(datum):
-    if "." in datum:
-        datum_split = datum.split(".")
-        jahr = datum_split[2]
-    elif "-" in datum:
-        datum_split = datum.split("-")
-        jahr = datum_split[0]
-    return jahr
 
 
 ### Zieht Tage x von Datum ab und speichert Datum im Format YYYY-MM-DD
@@ -442,37 +419,7 @@ def dbs_mitglieder_aktualisieren():
 
 # Tabellenfelder werden als floats markiert, wenn Zahlen enthalten sind. Ansonsten kann man Tabellenzellen im Grid nicht mit numerischen Werten anpassen
 
-def tablefields_to_dotfloat(table):
-    for row in table:
-        for key,value in row.items():
-            if key != "Ident" and key != "Name" and key != "Vorname" and key != "Kommentar" and "Datum" not in key:
-                modifiedvalue = str(value).replace(".","")
-                modifiedvalue = modifiedvalue.replace(",","")
-                if modifiedvalue.isnumeric() and modifiedvalue != None:
-                    row[key] = float(str(value).replace(",","."))
-    return table
 
-def tablefields_to_int(table):
-    table_new = []
-
-    for row in table:
-        row_new = {}
-        for key, value in row.items():
-            if (
-                key not in ("Ident", "Name", "Vorname", "Kommentar") and "datum" not in key):
-                if value is None or value == "":
-                    row_new[key] = None
-                else:
-                    try:
-                        row_new[key] = int(value)
-                    except (TypeError, ValueError):
-                        row_new[key] = None
-            else:
-                row_new[key] = value
-
-        table_new.append(row_new)
-
-    return table_new
 
 
 def tablefield_to_int(table, field):

@@ -5,6 +5,12 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.044: Interne Wartung aus Anwendersicht dokumentieren. -->
+Version 2.044 – 08.11.2026
+-------------------------
+
+Interne Wartung der Datenaufbereitung; Datenimport, Zahlenumwandlung und Berechnungsergebnisse bleiben unverändert.
+
 <!-- Änderung 2.043: Interne Wartung aus Anwendersicht dokumentieren. -->
 Version 2.043 – 08.11.2026
 -------------------------

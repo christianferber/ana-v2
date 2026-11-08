@@ -1,5 +1,11 @@
 # Projektstruktur
 
+<!-- Änderung 2.044: Gemeinsame Datenaufbereitung dokumentieren. -->
+`anwendung/datenaufbereitung.py` enthält Schlüsselsuche, CSV-Listenaufbereitung,
+Jahresentnahme und die beiden Tabellenumwandlungen in Zahlen. Die fünf Funktionen
+benötigen keine Oberfläche oder globalen Anwendungswerte. Direkte Importe erhalten
+die bisherigen Namen im Hauptmodul und damit die Aufrufe aus allen Ansichten.
+
 <!-- Änderung 2.043: Gemeinsame Sicherungs- und Protokollhilfen dokumentieren. -->
 `anwendung/sicherung.py` enthält Datenbanksicherung und Aufbewahrung der neun
 neuesten Sicherungsordner. `anwendung/protokollierung.py` schreibt Änderungs-
