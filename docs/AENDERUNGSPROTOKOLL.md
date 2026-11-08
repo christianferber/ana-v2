@@ -216,3 +216,20 @@ Version 2.00 – 05.11.2026
   lokalen Beispieldaten sowie ein gefundener-Werte-Zweig mit expliziten Text-Identen
   und Plotly-Figuren gegen Original verglichen. Prüfgrenzen siehe TESTBERICHT.md.
 - Keine neue Windows-EXE erstellt.
+
+<!-- Änderung 2.041: Technischen Umbau versionsbezogen dokumentieren. -->
+## Version 2.041 – 08.11.2026
+
+- Sieben Bedienmethoden in `BuchungsexportOberflaeche` in
+  `anwendung/buchungsexport_ui.py` ausgelagert: Einlesen der Jahreslisten,
+  fünf Export-Speicheraufrufe und nativer CSV-Speicherdialog.
+- Auswahlfelder, gemeinsame Daten und CSV-Funktionen bleiben auf der Anwendung.
+  Die Bedienhilfe wird ohne UI-Start an diese Anwendung angebunden. Sieben Adapter
+  erhalten bestehende Aufrufe; Kontodatenansicht bleibt unverändert.
+- Alle Methoden samt asynchronen Adaptern strukturell gegen Original geprüft.
+  CSV-Referenztest führt die tatsächlichen gebundenen Bedienmethoden aus und
+  ersetzt nur native Dialoge und Meldungen. Sämtliche Referenzfälle bytegleich;
+  bestehende freigegebene Fehlerkorrekturen weiter bestätigt.
+- Jahreslisten, fehlende/vollständige Auswahl, Dateinamensvorgaben, Speichern
+  und Abbruch separat gegen Original geprüft. Prüfgrenzen siehe TESTBERICHT.md.
+- Keine neue Windows-EXE erstellt.

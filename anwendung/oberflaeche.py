@@ -25,6 +25,8 @@ from anwendung.einstellungen_ui import EinstellungenOberflaeche
 from anwendung.changelog_ui import ChangelogOberflaeche
 # Änderung 2.040: Statistikansicht einbinden; Register bleibt deaktiviert.
 from anwendung.statistik_ui import StatistikOberflaeche
+# Änderung 2.041: Buchungsexport-Bedienabläufe einbinden.
+from anwendung.buchungsexport_ui import BuchungsexportOberflaeche
 # Änderung 2.035: Mitgliederansicht mit eigenem Bedienzustand einbinden.
 from anwendung.mitglieder_ui import MitgliederOberflaeche
 from anwendung.abschlag_ui import AbschlagOberflaeche
@@ -84,6 +86,9 @@ import pandas as pd
 RESSOURCEN = (Path(sys.executable).resolve().parent if getattr(sys, "frozen", False)
               else Path(__file__).resolve().parents[1]) / "ressourcen"
 
+# Änderung 2.041: Bedienhilfe ohne UI-Start an aktuelle gemeinsame Daten anbinden.
+buchungsexport_ansicht = BuchungsexportOberflaeche(sys.modules[__name__])
+
 ### Settings
 
 db_mitglieder = 'db_mitglieder.csv'
@@ -108,7 +113,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.038: Einstellungsauslagerung kennzeichnen.
 # Änderung 2.039: Changelog-Auslagerung kennzeichnen.
 # Änderung 2.040: Statistikauslagerung kennzeichnen.
-version = 2.040
+# Änderung 2.041: Buchungsexport-Auslagerung kennzeichnen.
+version = 2.041
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -768,16 +774,9 @@ def rueckv_jahre_einlesen():
 def konto_label_ui(label):
     return kontodaten_ansicht.konto_label_ui(label)
 
+# Änderung 2.041: Bestehenden Export-Einstiegspunkt erhalten.
 async def buchung_datei_speichern(content, dateiprefix):
-    current_datetime = datetime.now().strftime("%Y-%m-%d")
-    dateiname = str(dateiprefix) + "-" + current_datetime + ".csv"
-    datei = await app.native.main_window.create_file_dialog(webview.SAVE_DIALOG, directory="%USERPROFILE\\Downloads", allow_multiple=False, save_filename=dateiname)
-    if datei != None:
-        with open(datei,'w') as f: 
-            f.write(content)
-            ui.notify(datei + " wurde gespeichert.", type="positive")
-    else:
-        return
+    return await buchungsexport_ansicht.buchung_datei_speichern(content, dateiprefix)
 
 # Änderung 2.036: Bestehenden Einstiegspunkt für die Kontodatenansicht erhalten.
 def konto_upload(e: events.UploadEventArguments):
@@ -804,8 +803,9 @@ def konto_grid_ui():
 def buchung_tabelle_on_change(event):
     return kontodaten_ansicht.buchung_tabelle_on_change(event)
 
+# Änderung 2.041: Bestehenden Export-Einstiegspunkt erhalten.
 async def csv_grundgebuehr_speichern():
-    await buchung_datei_speichern(csv_grundgebuehr(),'csv_grundgebuehr')
+    return await buchungsexport_ansicht.csv_grundgebuehr_speichern()
 
 def csv_grundgebuehr():
     konto_aus_db()
@@ -813,11 +813,9 @@ def csv_grundgebuehr():
     return grundgebuehr_csv(konto_db, grundgebuehr, betreiber_iban,
                             betreiber_name, betreiber_glaeubigerid)
 
+# Änderung 2.041: Bestehenden Export-Einstiegspunkt erhalten.
 async def csv_abschlag_speichern():
-    if abschlagsjahr_dropdown.value == None or quartal_dropdown.value == None:
-        ui.notify('Bitte Abschlagsjahr und Quartal auswählen.', type="info")
-        return 
-    await buchung_datei_speichern(csv_abschlag(), "csv_abschlag_" + quartal_dropdown.value + "_" + abschlagsjahr_dropdown.value)
+    return await buchungsexport_ansicht.csv_abschlag_speichern()
 
 
 def csv_abschlag():
@@ -825,11 +823,9 @@ def csv_abschlag():
     return abschlag_csv(konto_db, abschlag_db, abschlagsjahr_dropdown.value,
                         quartal_dropdown.value, betreiber_iban, betreiber_name, betreiber_glaeubigerid)
 
+# Änderung 2.041: Bestehenden Export-Einstiegspunkt erhalten.
 async def csv_abrechnung_lastschrift_speichern():
-    if abrechnungsjahr_dropdown.value == None:
-        ui.notify('Bitte Abrechnungsjahr auswählen.', type="info")
-        return 
-    await buchung_datei_speichern(csv_abrechnung_lastschrift(), "csv_abrechnung_ls_" + abrechnungsjahr_dropdown.value)
+    return await buchungsexport_ansicht.csv_abrechnung_lastschrift_speichern()
 
 
 def csv_abrechnung_lastschrift():
@@ -839,11 +835,9 @@ def csv_abrechnung_lastschrift():
     return abrechnung_lastschrift_csv(konto_db, abrechnung, abrechnungsjahr_dropdown.value,
                                       vonnetto_switch.value, betreiber_iban, betreiber_name, betreiber_glaeubigerid)
 
+# Änderung 2.041: Bestehenden Export-Einstiegspunkt erhalten.
 async def csv_abrechnung_ueberweisung_speichern():
-    if abrechnungsjahr_dropdown.value == None:
-        ui.notify('Bitte Abrechnungsjahr auswählen.', type="info")
-        return 
-    await buchung_datei_speichern(csv_abrechnung_ueberweisung(), "csv_abrechnung_üw_" + abrechnungsjahr_dropdown.value)
+    return await buchungsexport_ansicht.csv_abrechnung_ueberweisung_speichern()
 
 def csv_abrechnung_ueberweisung():
     datei_abrechnung = ordner_abrechnungen + "\\" + "Abrechnung-" + str(abrechnungsjahr_dropdown.value) + "\\" + "Abrechnung-" + str(abrechnungsjahr_dropdown.value) + ".csv"
@@ -852,11 +846,9 @@ def csv_abrechnung_ueberweisung():
     return abrechnung_ueberweisung_csv(konto_db, abrechnung, abrechnungsjahr_dropdown.value,
                                        vonnetto_switch.value, betreiber_iban, betreiber_name)
 
+# Änderung 2.041: Bestehenden Export-Einstiegspunkt erhalten.
 async def csv_rueckv_speichern():
-    if rueckvjahr_dropdown.value == None:
-        ui.notify('Bitte Rückvergütungsjahr auswählen.', type="info")
-        return 
-    await buchung_datei_speichern(csv_rueckv(), "csv_rückvergütung_" + rueckvjahr_dropdown.value)
+    return await buchungsexport_ansicht.csv_rueckv_speichern()
 
 def csv_rueckv():
     datei_rueckv = ordner_rueckv + "\\" + "Rückvergütung-" + str(rueckvjahr_dropdown.value) + "\\" + "Rückvergütung-" + str(rueckvjahr_dropdown.value) + ".csv"
@@ -865,45 +857,9 @@ def csv_rueckv():
     return rueckverguetung_csv(konto_db, rueckv, rueckvjahr_dropdown.value,
                                vonnetto_switch.value, betreiber_iban, betreiber_name)
 
+# Änderung 2.041: Bestehenden Export-Einstiegspunkt erhalten.
 def dropdowns_einlesen():
-    global abschlagsjahr_dropdown
-    global abrechnungsjahr_dropdown
-    global rueckvjahr_dropdown
-    jahrliste = []
-    if abschlag_db != []:
-        for key in abschlag_db[0].keys():
-            if "Abschlag-" in key:
-                jahrliste.append(key[-4:])
-        jahrliste.sort()
-        abschlagsjahr_dropdown.set_options(jahrliste)
-    else:
-        ui.notify("Abschlag-Datenbank nicht gefüllt.", type="info")
-    
-    jahrliste = []
-    pfad_ordner_abrechnungen = Path(ordner_abrechnungen)
-    for item in pfad_ordner_abrechnungen.iterdir():
-        if item.is_dir():
-            if item.name[:-4] == 'Abrechnung-':
-                datei_abrechnung = ordner_abrechnungen + "\\" + item.name + "\\" + "Abrechnung-" + item.name[-4:] + ".csv"
-                if Path(datei_abrechnung).is_file():
-                    jahrliste.append(item.name[-4:])
-    jahrliste.sort()
-    if len(jahrliste) == 0:
-        ui.notify("Keine Abrechnungen abgespeichert.", type="info")
-    abrechnungsjahr_dropdown.set_options(jahrliste)
-
-    jahrliste = []
-    pfad_ordner_rueckv = Path(ordner_rueckv)
-    for item in pfad_ordner_rueckv.iterdir():
-        if item.is_dir():
-            if item.name[:-4] == "Rückvergütung-":
-                datei_rueckv = ordner_rueckv + "\\" + item.name + "\\" + "Rückvergütung-" + item.name[-4:] + ".csv"
-                if Path(datei_rueckv).is_file():
-                    jahrliste.append(item.name[-4:])
-    jahrliste.sort()
-    if len(jahrliste) == 0:
-        ui.notify("Keine Rückvergütungen gespeichert.", type="info")
-    rueckvjahr_dropdown.set_options(jahrliste)
+    return buchungsexport_ansicht.dropdowns_einlesen()
 
 
 
