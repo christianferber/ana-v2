@@ -5,6 +5,12 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.036: Wartung aus Anwendersicht dokumentieren. -->
+Version 2.036 – 08.11.2026
+-------------------------
+
+Interne Wartung der Kontodatenverwaltung; Bedienung, Datenimport und Ergebnisse bleiben unverändert.
+
 <!-- Änderung 2.035: Wartung aus Anwendersicht dokumentieren. -->
 Version 2.035 – 08.11.2026
 -------------------------

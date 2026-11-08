@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.036: Gebundene Kontodatenmethoden mit lokalen Beispieldaten vergleichen.
+        ('Kontodatenansicht gegen Original', ['-m', 'tests.kontodaten_pruefen']),
         # Änderung 2.035: Mitgliederansicht mit lokalen Beispieldaten vergleichen.
         ('Mitgliederansicht gegen Original', ['-m', 'tests.mitglieder_pruefen']),
         # Änderung 2.034: Abnehmeransicht mit lokalen Beispieldaten vergleichen.
@@ -124,6 +126,22 @@ def main():
                 'und Serienbriefdialoge strukturell geprüft; kein vollständiger interaktiver',
                 'Durchlauf aller Dialogkombinationen. Erster App-Start wegen fehlender',
                 'Hilfsimporte fehlgeschlagen; nach Korrektur vollständiger Praxislauf bestanden.', '']
+    # Änderung 2.036: Abgeschlossenen Kontodaten-Praxislauf dokumentieren.
+    bericht += ['Version 2.036: Alle acht ausgelagerten Kontodatenmethoden und Adapter',
+                'strukturell gegen das Original geprüft. Gebundene Methoden mit lokalen',
+                'Beispieldaten für Spalten, Freitext-/Datumsänderung, leere Eingabe, gültige',
+                'und ungültige IBAN, Laden, byteidentische CSV-Speicherung und Upload verglichen.',
+                'Ungeeignete Uploadformate lösen weiterhin denselben Fehler wie im Original aus.',
+                'Buchungs-CSV-Referenzprüfung verwendet die echte gebundene Kontolademethode.',
+                'Register Buchungsvorlagen mit echter Kontodatentabelle und vollständiger',
+                'Abrechnung am 08.11.2026 mit isolierter Datenkopie bestanden: CSV-Referenz',
+                'identisch, 73 neue Word-Dateien und 73 lesbare PDFs. Originalbestand per',
+                'SHA256 unverändert. Gegenüber 2.035: Word-Paketinhalte, PDF-Seitenzahlen',
+                'und Texte identisch. Test-App, Fenster und Browser vollständig beendet.',
+                'Erster Praxisversuch wegen falscher Registerbezeichnung im Test gescheitert;',
+                'korrigierter vollständiger Lauf bestanden. Keine neue Windows-EXE.',
+                'Keine visuelle Dokumentprüfung im Modellkontext. Bearbeitung und Import',
+                'über gebundene Methoden geprüft; im Browser wurde die Tabellenanzeige geprüft.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'

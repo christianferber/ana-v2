@@ -6,6 +6,7 @@ Stand: 08.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Kontodatenansicht gegen Original: bestanden.
 - Mitgliederansicht gegen Original: bestanden.
 - Abnehmeransicht gegen Original: bestanden.
 - Zähleransicht gegen Original: bestanden.
@@ -94,6 +95,22 @@ Keine visuelle Dokumentprüfung im Modellkontext. Bearbeitungs-, Wartungs-
 und Serienbriefdialoge strukturell geprüft; kein vollständiger interaktiver
 Durchlauf aller Dialogkombinationen. Erster App-Start wegen fehlender
 Hilfsimporte fehlgeschlagen; nach Korrektur vollständiger Praxislauf bestanden.
+
+Version 2.036: Alle acht ausgelagerten Kontodatenmethoden und Adapter
+strukturell gegen das Original geprüft. Gebundene Methoden mit lokalen
+Beispieldaten für Spalten, Freitext-/Datumsänderung, leere Eingabe, gültige
+und ungültige IBAN, Laden, byteidentische CSV-Speicherung und Upload verglichen.
+Ungeeignete Uploadformate lösen weiterhin denselben Fehler wie im Original aus.
+Buchungs-CSV-Referenzprüfung verwendet die echte gebundene Kontolademethode.
+Register Buchungsvorlagen mit echter Kontodatentabelle und vollständiger
+Abrechnung am 08.11.2026 mit isolierter Datenkopie bestanden: CSV-Referenz
+identisch, 73 neue Word-Dateien und 73 lesbare PDFs. Originalbestand per
+SHA256 unverändert. Gegenüber 2.035: Word-Paketinhalte, PDF-Seitenzahlen
+und Texte identisch. Test-App, Fenster und Browser vollständig beendet.
+Erster Praxisversuch wegen falscher Registerbezeichnung im Test gescheitert;
+korrigierter vollständiger Lauf bestanden. Keine neue Windows-EXE.
+Keine visuelle Dokumentprüfung im Modellkontext. Bearbeitung und Import
+über gebundene Methoden geprüft; im Browser wurde die Tabellenanzeige geprüft.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

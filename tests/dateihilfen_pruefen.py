@@ -220,6 +220,18 @@ def pruefen():
     # Änderung 2.035: Mitgliederansicht einschließlich verschachtelter Dialoge und Async-Adapter prüfen.
     from tests.mitglieder_struktur import methoden_als_funktionen as mitgliedermethoden
     neue_funktionen.update(mitgliedermethoden(basis, alte_funktionen))
+    # Änderung: Alle verschobenen Kontodatenmethoden und ihre Adapter prüfen.
+    from tests.kontodaten_struktur import methoden_als_funktionen as kontodatenmethoden
+    verschoben = kontodatenmethoden(basis, alte_funktionen)
+    for name in verschoben:
+        adapterfunktion = copy.deepcopy(neue_funktionen[name])
+        erwartet = copy.deepcopy(alte_funktionen[name])
+        aufruf = 'return kontodaten_ansicht.' + name + '(' + ', '.join(a.arg for a in erwartet.args.args) + ')'
+        erwartet.body = ast.parse(aufruf).body
+        if name == 'buchung_ui':
+            erwartet.body = ast.parse('global kontodaten_ansicht\nkontodaten_ansicht = KontodatenOberflaeche(sys.modules[__name__])\n' + aufruf).body
+        assert ast.dump(adapterfunktion) == ast.dump(erwartet)
+    neue_funktionen.update(verschoben)
     # Änderung: Alle verschobenen Abnehmermethoden und ihre Adapter prüfen.
     from tests.abnehmer_struktur import methoden_als_funktionen as abnehmersmethoden
     verschoben = abnehmersmethoden(basis, alte_funktionen)

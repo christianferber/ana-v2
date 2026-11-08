@@ -144,3 +144,18 @@ Version 2.00 – 05.11.2026
   vollständiger Register-/Abrechnungspraxislauf bestanden. Details und bestehende
   Einschränkung des Wartungsfilters stehen im Prüfbericht.
 - Keine neue Windows-EXE erstellt.
+
+<!-- Änderung 2.036: Technischen Umbau versionsbezogen dokumentieren. -->
+## Version 2.036 – 08.11.2026
+
+- Acht Kontodatenmethoden nach `anwendung/kontodaten_ui.py` in die Klasse
+  `KontodatenOberflaeche` ausgelagert: Tabellenaufbau, Upload, Laden,
+  Bearbeiten einschließlich IBAN-Prüfung, Speichern und Aufbau des Registers.
+- Tabelle und Speichern-Schaltfläche gehören zur Ansicht. Gemeinsame Daten und
+  die Auswahlfelder für bestehende Buchungsexporte bleiben auf der Anwendung.
+  CSV-Berechnungen, Exportfunktionen und Speicherdialoge bleiben unverändert.
+- Acht Adapter erhalten bisherige Aufrufe und refresh-Zugriffe. Alle Methoden
+  und Adapter strukturell gegen das Original geprüft; gebundene Methoden mit
+  lokalen Beispieldaten für Spalten, Bearbeiten, IBAN, Laden, Speichern und Import
+  verglichen. Prüfstand und Grenzen siehe TESTBERICHT.md.
+- Keine neue Windows-EXE erstellt.

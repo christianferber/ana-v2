@@ -15,6 +15,8 @@ from anwendung.abrechnung_ui import AbrechnungOberflaeche
 # Änderung: Abschlagsbereich mit eigenem Bedienzustand einbinden.
 # Änderung 2.034: Abnehmeransicht einbinden.
 from anwendung.abnehmer_ui import AbnehmerOberflaeche
+# Änderung 2.036: Kontodatenansicht einbinden.
+from anwendung.kontodaten_ui import KontodatenOberflaeche
 # Änderung 2.035: Mitgliederansicht mit eigenem Bedienzustand einbinden.
 from anwendung.mitglieder_ui import MitgliederOberflaeche
 from anwendung.abschlag_ui import AbschlagOberflaeche
@@ -93,7 +95,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung: Versionsschritt gemäß Freigabeprozess.
 # Änderung 2.034: Abnehmerauslagerung kennzeichnen.
 # Änderung 2.035: Auslagerung der Mitgliederoberfläche kennzeichnen.
-version = 2.035
+# Änderung 2.036: Kontodatenauslagerung kennzeichnen.
+version = 2.036
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -799,9 +802,10 @@ def rueckv_jahre_einlesen():
 ### ANFANG KONTOTRANSAKTIONEN
 ###########################################################################################################################
 
+# Änderung 2.036: Bestehenden Einstiegspunkt für die Kontodatenansicht erhalten.
 @ui.refreshable
 def konto_label_ui(label):
-    ui.label(label).style('font-size:100%')
+    return kontodaten_ansicht.konto_label_ui(label)
 
 async def buchung_datei_speichern(content, dateiprefix):
     current_datetime = datetime.now().strftime("%Y-%m-%d")
@@ -814,121 +818,30 @@ async def buchung_datei_speichern(content, dateiprefix):
     else:
         return
 
+# Änderung 2.036: Bestehenden Einstiegspunkt für die Kontodatenansicht erhalten.
 def konto_upload(e: events.UploadEventArguments):
-    global konto_db
-    with StringIO(e.content.read().decode('iso-8859-1', errors='ignore')) as f:
-        konto_db = import_csv_inhalt(f)
-    templist = []
-    for row in konto_db:
-        temprow = {}
-        for key,value in row.items():
-            if key == "Ident":
-                temprow[key] = int(value)
-            elif key == "Name" or key == "Vorname" or key == "Zahlungspflichtiger":
-                temprow[key] = str(value)
-            elif key == "IBAN des Zahlungspflichtigen":
-                temprow["IBAN"] = IBAN(str(value)).formatted
-            elif key == "BIC":
-                temprow["BIC"] = str(value)
-            elif key == "Bei Kreditinstitut":
-                temprow["Bank"] = str(value)
-            elif key == "Unterschrieben am":
-                temprow["Datum SEPA-Auftrag"] = str(value)
-        iban = IBAN(temprow["IBAN"])
-        temprow["BIC"] = iban.bic
-        temprow["Bank"] = iban.bank_name
-        templist.append(temprow)
-    konto_db = templist
-    konto_db = sorted(konto_db, key=lambda k: k['Ident'])
-    konto_grid_ui.refresh()
+    return kontodaten_ansicht.konto_upload(e)
 
+# Änderung 2.036: Bestehenden Einstiegspunkt für die Kontodatenansicht erhalten.
 def db_konto_speichern():
-    db_datei_speichern(db_konto, konto_db)
-    button_konto_speichern.disable()
-    ui.notify("Kontodaten gespeichert.", type="positive")
+    return kontodaten_ansicht.db_konto_speichern()
 
+# Änderung 2.036: Bestehenden Einstiegspunkt für die Kontodatenansicht erhalten.
 def konto_aus_db():
-    global konto_db
-    konto_db = db_datei_oeffnen(db_konto)
-    konto_grid_ui.refresh()
+    return kontodaten_ansicht.konto_aus_db()
 
+# Änderung 2.036: Bestehenden Einstiegspunkt für die Kontodatenansicht erhalten.
 def konto_columns_erstellen(table):
-    columns = []
+    return kontodaten_ansicht.konto_columns_erstellen(table)
 
-    if table:
-        for key in table[0].keys():
-            column_element = {}
-            column_element["headerName"] = key
-            column_element["field"] = key
-
-            # Ident-Spalte schmal machen
-            if key == "Ident":
-                column_element["width"] = 90          # feste Breite
-                column_element["minWidth"] = 90
-                column_element["maxWidth"] = 90
-                column_element["flex"] = 0            # darf nicht wachsen
-                column_element["resizable"] = False
-                column_element["pinned"] = "left"
-            else:
-                column_element["flex"] = 1
-                column_element["minWidth"] = 200
-
-            if key in ("Ident", "Name", "Vorname"):
-                column_element["pinned"] = 'left'
-
-            column_element["filter"] = 'agTextColumnFilter'
-            column_element["floatingFilter"] = True
-
-            if key in ("Zahlungspflichtiger", "IBAN", "Datum SEPA-Auftrag"):
-                column_element["editable"] = True
-                column_element["cellStyle"] = {'backgroundColor': col_cell_mod}
-                column_element["cellEditor"] = 'agStringCellEditor'
-
-            columns.append(column_element)
-
-    return columns
-
+# Änderung 2.036: Bestehenden Einstiegspunkt für die Kontodatenansicht erhalten.
 @ui.refreshable
 def konto_grid_ui():
-    global konto_grid
-    konto_grid = ui.aggrid({
-        'defaultColDef': {
-            'editable': False,
-            'resizable': True,
-            'wrapHeaderText': True,
-            'autoHeaderHeight': True,
-        },
-        'columnDefs': konto_columns_erstellen(konto_db),
-        'rowData': konto_db,
-        'domLayout': 'autoHeight',
-        'pagination': True,
-        'paginationPageSize': pagination
-    }).on(
-        'cellValueChanged',
-        lambda event: buchung_tabelle_on_change(event.args)
-    ).style('height: 100%')
+    return kontodaten_ansicht.konto_grid_ui()
 
+# Änderung 2.036: Bestehenden Einstiegspunkt für die Kontodatenansicht erhalten.
 def buchung_tabelle_on_change(event):
-    global konto_grid
-    global konto_db
-    if event["newValue"] == None:
-        return
-    # IBAN wird geprüft und nur bei ok eingesetzt. Dazu wird sie mit Leerzeichen formatiert
-    if event["colId"] == "IBAN":
-        if IBAN(str(event["newValue"]).replace(" ",""), allow_invalid=True).is_valid:
-            iban = IBAN(event["newValue"])
-            konto_db[int(event["rowId"])][event["colId"]] = iban.formatted
-            konto_db[int(event["rowId"])]["BIC"] = iban.bic 
-            konto_db[int(event["rowId"])]["Bank"] = iban.bank_name
-            konto_grid_ui.refresh()
-        else:
-            ui.notify('IBAN ist nicht korrekt. Änderung nicht gespeichert.', type="negative")
-            konto_grid_ui.refresh()
-            return
-    else:
-        konto_db[int(event["rowId"])][event["colId"]] = event["newValue"]
-    button_konto_speichern.enable()
-    change_log("KONTODATEN", event)
+    return kontodaten_ansicht.buchung_tabelle_on_change(event)
 
 async def csv_grundgebuehr_speichern():
     await buchung_datei_speichern(csv_grundgebuehr(),'csv_grundgebuehr')
@@ -1035,52 +948,11 @@ def dropdowns_einlesen():
 
 
 
+# Änderung 2.036: Bestehenden Einstiegspunkt für die Kontodatenansicht erhalten.
 def buchung_ui():
-    global konto_grid
-    global abschlagsjahr_dropdown
-    global abrechnungsjahr_dropdown
-    global quartal_dropdown
-    global rueckvjahr_dropdown
-    global vonnetto_switch
-    global db_konto_found
-    global button_konto_speichern
-    konto_label_ui('')
-    with ui.row():      
-        ui.upload(label='Upload Lastschriftvorlage',on_upload=konto_upload, auto_upload=True, max_files=1).props("accept=.csv").classes('max-w-full')
-        button_konto_speichern = ui.button('Speichern', icon='save', on_click=lambda: (db_konto_speichern())).props('color=' + speichernbutton)
-        button_konto_speichern.disable()
-    konto_grid_ui()
-    ui.label('Betreiber Name: ' + betreiber_name)
-    ui.label('Betreiber IBAN: ' + betreiber_iban)
-    ui.label('Betreiber Mandatsreferenz: ' + betreiber_glaeubigerid)
-    with ui.row():
-        ui.button('CSV Grundgebühr erzeugen', icon='save_alt', on_click=lambda: (csv_grundgebuehr_speichern()))
-    with ui.row():
-        abschlagsjahr_dropdown = ui.select([], label='Jahr Abschlag').classes('w-48')
-        quartal_dropdown = ui.select(['Q1','Q2','Q3','Q4'], label='Quartal').classes('w-48')
-    with ui.row():
-        ui.button('CSV Abschlag erzeugen', icon='save_alt', on_click=lambda: (csv_abschlag_speichern()))
-    with ui.row():
-        vonnetto_switch = ui.switch("Abrechnungsbeträge von Netto erzeugen", value=True)
-    with ui.row():
-        abrechnungsjahr_dropdown = ui.select([], label='Jahr Abrechnung').classes('w-48')
-#   with ui.row():
-#       ui.button('CSV Lexware Rechnungen für Jahresabrechnung erzeugen', icon='euro').props('color=red-5')
-    with ui.row():
-        ui.button('CSV Lastschriften für Jahresabrechnung erzeugen', icon='save_alt', on_click=lambda: (csv_abrechnung_lastschrift_speichern()))
-        ui.button('CSV Überweisungen für Jahresabrechnung erzeugen', icon='save_alt', on_click=lambda: (csv_abrechnung_ueberweisung_speichern()))
-    with ui.row():
-        rueckvjahr_dropdown = ui.select([], label='Jahr Rückvergütung').classes('w-48')
-#   with ui.row():
-#       ui.button('CSV Lexware Rechnungskorrekturen für Rückvergütung erzeugen', icon='euro').props('color=red-5')
-    with ui.row():
-        ui.button('CSV Überweisungen für Rückvergütung erzeugen', icon='save_alt', on_click=lambda: (csv_rueckv_speichern()))
-    if db_datei_oeffnen(db_konto)[0] == "file not found":
-        konto_label_ui.refresh('Keine Kontodaten in Datenbank! Upload Kontodaten per CSV-Datei möglich.')
-    else:
-        db_konto_found = 1
-        konto_label_ui.refresh('Kontodaten wurden aus DB geladen. Daten aus Datenbank können über einen neuen Upload überschrieben werden.')
-        konto_aus_db()  
+    global kontodaten_ansicht
+    kontodaten_ansicht = KontodatenOberflaeche(sys.modules[__name__])
+    return kontodaten_ansicht.buchung_ui()
 
 
 ###########################################################################################################################

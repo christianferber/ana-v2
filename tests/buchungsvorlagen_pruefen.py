@@ -53,6 +53,18 @@ def umgebung_laden(original, daten):
             'grundgebuehr_csv', 'abschlag_csv', 'abrechnung_lastschrift_csv',
             'abrechnung_ueberweisung_csv', 'rueckverguetung_csv')})
     exec(compile(ast.Module(body=funktionen, type_ignores=[]), 'buchungsexporte', 'exec'), umgebung)
+    if not original:
+        # Änderung 2.036: Kontoladen im Exportvergleich als echte gebundene Methode ausführen.
+        # Der Adapter sieht denselben veränderlichen Datenstand wie die Exportfunktionen.
+        from anwendung.kontodaten_ui import KontodatenOberflaeche
+        class TestAnwendung:
+            def __getattr__(self, name):
+                return umgebung[name]
+
+            def __setattr__(self, name, wert):
+                umgebung[name] = wert
+
+        umgebung['kontodaten_ansicht'] = KontodatenOberflaeche(TestAnwendung())
     betreiber = ini_datei_lesen(daten / 'ana-betreiber.ini')['Betreiber']
     umgebung.update({'betreiber_name': betreiber['BetreiberName'],
                      'betreiber_iban': betreiber['BetreiberIBAN'],

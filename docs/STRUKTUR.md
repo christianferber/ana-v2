@@ -97,3 +97,10 @@ Anschlusswechsel, Tabellenfilter, Upload, Speichern sowie CSV-/Word-Export und
 Serienbriefdialog. Gemeinsame Daten bleiben auf der Anwendung; Tabellen-,
 Schaltflächen- und Dialogzustand liegt auf der Ansicht. Die bisherigen
 Einstiegspunkte bleiben im Hauptmodul erhalten.
+
+<!-- Änderung 2.036: Zuständigkeit der Kontodatenansicht dokumentieren. -->
+`anwendung/kontodaten_ui.py` enthält Tabelle, Import, Laden, Bearbeiten und
+Speichern der Kontodaten sowie den Registeraufbau für Buchungsvorlagen.
+Die Ansicht besitzt Tabelle und Speichern-Schaltfläche; Kontodaten und
+Exportauswahl bleiben gemeinsam auf der Anwendung verfügbar. Die bisherigen
+CSV-Exportfunktionen und deren Speicherdialoge bleiben im Hauptmodul.
