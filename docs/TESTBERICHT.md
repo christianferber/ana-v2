@@ -6,6 +6,7 @@ Stand: 08.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Einstellungsansicht gegen Original: bestanden.
 - Werkzeuge gegen Original: bestanden.
 - Kontodatenansicht gegen Original: bestanden.
 - Mitgliederansicht gegen Original: bestanden.
@@ -127,6 +128,21 @@ Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch. Test-App, Fenster
 und Browser vollständig beendet. Keine neue Windows-EXE.
 Keine visuelle Dokumentprüfung im Modellkontext. PDF-Zusammenfügen über
 gebundene Methoden geprüft; im Browser die Werkzeugeanzeige geprüft.
+
+Version 2.038: Alle vier Einstellungsmethoden und Adapter einschließlich
+asynchroner Ordnerwahl strukturell gegen Original geprüft. Gebundene Methoden
+mit lokalen Konfigurationskopien verglichen: bytegleiche Anwendungs- und
+Betreiber-INI, unveränderter/geänderter/leerer Arbeitsordner, Neustartnachfrage,
+Dialogabschluss, erneuter Ladeaufruf, Standard-Rücksetzung, Ordnerwahl und Abbruch.
+Originalkonfigurationen unverändert. Native Ordnerdialoge durch Testantworten
+ersetzt; tatsächliches Herunterfahren nach Arbeitsordnerwechsel nicht ausgeführt.
+Echter Einstellungsdialog geöffnet und abgebrochen; vollständige Abrechnung
+am 08.11.2026 mit isolierter Datenkopie bestanden: CSV-Referenz identisch,
+73 neue Word-Dateien und 73 lesbare PDFs. Originalbestand per SHA256 unverändert.
+Gegenüber 2.037: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.
+Test-App, Fenster und Browser vollständig beendet. Erster Dialogtest startete
+zu früh; nach Warten auf den Button vollständiger Praxislauf bestanden.
+Keine neue Windows-EXE; keine visuelle Dokumentprüfung im Modellkontext.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

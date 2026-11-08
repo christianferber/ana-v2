@@ -173,3 +173,18 @@ Version 2.00 – 05.11.2026
   fehlende und mehrfache Zuordnungen, leere Ordner, Fortschritt und bytegleichen
   PDF-Inhalt einschließlich Seitenreihenfolge mit dem Original verglichen.
 - Keine neue Windows-EXE; Prüfstand und Grenzen siehe TESTBERICHT.md.
+
+<!-- Änderung 2.038: Technischen Umbau versionsbezogen dokumentieren. -->
+## Version 2.038 – 08.11.2026
+
+- Vier Oberflächenmethoden in `EinstellungenOberflaeche` in
+  `anwendung/einstellungen_ui.py` ausgelagert: Dialogaufbau, Standard-Rücksetzung,
+  asynchrone Arbeitsordnerauswahl und Speichern.
+- Eingabefelder und Dialoge gehören zur Ansicht. Gemeinsame Konfiguration,
+  Einlesen und Pfadbildung bleiben auf der Anwendung. Vier Adapter erhalten
+  bestehende Aufrufe; Speicherreihenfolge und Neustartnachfrage bleiben gleich.
+- Alle Methoden und Adapter strukturell gegen Original geprüft; bestehende
+  INI-Hilfsaufrufe nur für diesen Vergleich in ihre Originalzugriffe zurückgeführt.
+- Lokale Konfigurationskopien für bytegleiche INI-Speicherung, Arbeitsordnerwechsel,
+  Standard-Rücksetzung, Ordnerwahl/Abbruch und Dialogaufrufe verglichen.
+- Keine neue Windows-EXE; Prüfstand und Grenzen siehe TESTBERICHT.md.

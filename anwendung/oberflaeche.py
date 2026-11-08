@@ -19,6 +19,8 @@ from anwendung.abnehmer_ui import AbnehmerOberflaeche
 from anwendung.kontodaten_ui import KontodatenOberflaeche
 # Änderung 2.037: Werkzeugeansicht einbinden.
 from anwendung.werkzeuge_ui import WerkzeugeOberflaeche
+# Änderung 2.038: Einstellungsansicht einbinden.
+from anwendung.einstellungen_ui import EinstellungenOberflaeche
 # Änderung 2.035: Mitgliederansicht mit eigenem Bedienzustand einbinden.
 from anwendung.mitglieder_ui import MitgliederOberflaeche
 from anwendung.abschlag_ui import AbschlagOberflaeche
@@ -99,7 +101,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.035: Auslagerung der Mitgliederoberfläche kennzeichnen.
 # Änderung 2.036: Kontodatenauslagerung kennzeichnen.
 # Änderung 2.037: Werkzeugeauslagerung kennzeichnen.
-version = 2.037
+# Änderung 2.038: Einstellungsauslagerung kennzeichnen.
+version = 2.038
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -218,74 +221,23 @@ def ini_einlesen():
     pfade_setzen()
     
 
+# Änderung 2.038: Bestehenden Einstiegspunkt der Einstellungen erhalten.
 def einstellungen_ui():
-    global ini_betreiber_name, ini_glaeubiger_id, ini_betreiber_iban, ini_arbeitspreis, ini_grundgebuehr, ini_farbe_spezial, ini_farbe_tabelle_edit, ini_tabelle_pagination, ini_arbeitsordner, dialog_einstellungen, dialog_neustart
-    ini_einlesen()
-    with ui.dialog() as dialog_einstellungen, ui.card():
-        ui.label('Betreiberdaten').style('font-size: 120%')
-        ini_betreiber_name = ui.input(label='Betreiber Name', value=betreiber_name).props("size=60")
-        ini_glaeubiger_id = ui.input(label='Gläubiger ID', value=betreiber_glaeubigerid).props("size=60")
-        ini_betreiber_iban = ui.input(label='Betreiber IBAN', value=betreiber_iban).props("size=60")
-        ini_arbeitspreis = ui.input(label='Wärmepreis (Ct/kWh)', value=arbeitspreis).props("size=60")
-        ini_grundgebuehr = ui.input(label='Grundgebühr (€ pro Monat)', value=grundgebuehr).props("size=60")
-        ui.label('')
-        ui.label('Programmkonfiguration').style('font-size: 120%')
-        ini_farbe_spezial = ui.input(label='Farbe für besondere Hervorhebungen (Farbe als Text)', value=col_special).props("size=60")
-        ini_farbe_tabelle_edit = ui.input(label='Farbe für editierbare Tabellenzellen (#ABCDEF)', value=col_cell_mod).props("size=60")
-        ini_tabelle_pagination = ui.input(label='Anzahl Zeilen pro Tabellenseite', value=pagination).props("size=60")
-        ui.label('Arbeitsordner:')
-        with ui.row():
-            ui.button("auswählen", icon='folder', on_click=lambda: (ordner_auswaehlen()))
-            ui.button("Auf standard zurücksetzen", icon='folder_special', on_click=lambda: (ordner_standard()))
-        ini_arbeitsordner = ui.label(arbeitsordner)
-        with ui.row():
-            ui.button("Speichern", icon='save', on_click=lambda: (ini_speichern())).props('color=' + speichernbutton)
-            ui.button("Abbrechen", icon='close', on_click=dialog_einstellungen.close)
-    with ui.dialog() as dialog_neustart, ui.card():
-        ui.label('Der Arbeitsordner wurde geändert. Das Programm wird jetzt automatisch geschlossen. Beim nächsten Programmstart wird die neue Arbeitsordnereinstellung verwendet.')
-        ui.button("OK", on_click=app.shutdown)
-    dialog_einstellungen.open()
+    global einstellungen_ansicht
+    einstellungen_ansicht = EinstellungenOberflaeche(sys.modules[__name__])
+    return einstellungen_ansicht.einstellungen_ui()
 
+# Änderung 2.038: Bestehenden Einstiegspunkt der Einstellungen erhalten.
 def ordner_standard():
-    global ini_arbeitsordner
-    ini_arbeitsordner.set_text('')
+    return einstellungen_ansicht.ordner_standard()
 
+# Änderung 2.038: Bestehenden Einstiegspunkt der Einstellungen erhalten.
 async def ordner_auswaehlen():
-    global ini_arbeitsordner
-    ordner_pfad = await app.native.main_window.create_file_dialog(webview.FOLDER_DIALOG)
-    ordner_pfad = str(ordner_pfad).replace("(","")
-    ordner_pfad = str(ordner_pfad).replace(")","")
-    ordner_pfad = str(ordner_pfad).replace(",","")
-    ordner_pfad = str(ordner_pfad).replace("'","")
-    ordner_pfad = str(ordner_pfad).replace("\\\\","\\")
-    ini_arbeitsordner.set_text(ordner_pfad)
+    return await einstellungen_ansicht.ordner_auswaehlen()
 
+# Änderung 2.038: Bestehenden Einstiegspunkt der Einstellungen erhalten.
 def ini_speichern():
-    global dialog_einstellungen
-    config = configparser.ConfigParser()
-    config['Anwendung'] = { 'FarbeSpezial' : ini_farbe_spezial.value,
-                            'FarbeTabelleEdit' : ini_farbe_tabelle_edit.value,
-                            'TabellenZeilenProSeite' : ini_tabelle_pagination.value,
-                            'Arbeitsordner' : ini_arbeitsordner.text}
-    # Änderung für v2: Nur der Dateizugriff ist ausgelagert; Dialogablauf bleibt bestehen.
-    ini_datei_schreiben(ini, config)
-    if arbeitsordner != ini_arbeitsordner.text:
-        dialog_neustart.open()
-    dialog_einstellungen.close()
-
-    config_betreiber = configparser.ConfigParser()
-    inibetreiberfile = Path(str(arbeitsordner) + "\\" + ini_betreiber)
-
-    config_betreiber['Betreiber'] = { 'BetreiberName' : ini_betreiber_name.value,
-                            'GlaeubigerID' : ini_glaeubiger_id.value,
-                            'BetreiberIBAN' : ini_betreiber_iban.value,
-                            'Waermepreis' : ini_arbeitspreis.value,
-                            'Grundgebuehr' : ini_grundgebuehr.value}
-
-    # Änderung für v2: Betreiberdaten wie bisher nach dem Dialogabschluss speichern.
-    ini_datei_schreiben(inibetreiberfile, config_betreiber)
-
-    ini_einlesen()
+    return einstellungen_ansicht.ini_speichern()
 
 
 ###########################################################################################################################

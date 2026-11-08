@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.038: Einstellungsdialog und INI-Speicherung lokal vergleichen.
+        ('Einstellungsansicht gegen Original', ['-m', 'tests.einstellungen_pruefen']),
         # Änderung 2.037: Werkzeuge mit ausschließlich lokalen PDF-Beispieldaten vergleichen.
         ('Werkzeuge gegen Original', ['-m', 'tests.werkzeuge_pruefen']),
         # Änderung 2.036: Gebundene Kontodatenmethoden mit lokalen Beispieldaten vergleichen.
@@ -159,6 +161,21 @@ def main():
                 'und Browser vollständig beendet. Keine neue Windows-EXE.',
                 'Keine visuelle Dokumentprüfung im Modellkontext. PDF-Zusammenfügen über',
                 'gebundene Methoden geprüft; im Browser die Werkzeugeanzeige geprüft.', '']
+    # Änderung 2.038: Abgeschlossenen Einstellungs-Praxislauf dokumentieren.
+    bericht += ['Version 2.038: Alle vier Einstellungsmethoden und Adapter einschließlich',
+                'asynchroner Ordnerwahl strukturell gegen Original geprüft. Gebundene Methoden',
+                'mit lokalen Konfigurationskopien verglichen: bytegleiche Anwendungs- und',
+                'Betreiber-INI, unveränderter/geänderter/leerer Arbeitsordner, Neustartnachfrage,',
+                'Dialogabschluss, erneuter Ladeaufruf, Standard-Rücksetzung, Ordnerwahl und Abbruch.',
+                'Originalkonfigurationen unverändert. Native Ordnerdialoge durch Testantworten',
+                'ersetzt; tatsächliches Herunterfahren nach Arbeitsordnerwechsel nicht ausgeführt.',
+                'Echter Einstellungsdialog geöffnet und abgebrochen; vollständige Abrechnung',
+                'am 08.11.2026 mit isolierter Datenkopie bestanden: CSV-Referenz identisch,',
+                '73 neue Word-Dateien und 73 lesbare PDFs. Originalbestand per SHA256 unverändert.',
+                'Gegenüber 2.037: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.',
+                'Test-App, Fenster und Browser vollständig beendet. Erster Dialogtest startete',
+                'zu früh; nach Warten auf den Button vollständiger Praxislauf bestanden.',
+                'Keine neue Windows-EXE; keine visuelle Dokumentprüfung im Modellkontext.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'

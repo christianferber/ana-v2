@@ -110,3 +110,9 @@ CSV-Exportfunktionen und deren Speicherdialoge bleiben im Hauptmodul.
 ID-Ermittlung und PDF-Zusammenfügen. Beschriftungen und Hinweisfeld gehören
 zur Ansicht, die bisherigen Ordnerpfade bleiben auf der Anwendung. Die
 Einstiegspunkte im Hauptmodul bleiben über Adapter erhalten.
+
+<!-- Änderung 2.038: Zuständigkeit der Einstellungsansicht dokumentieren. -->
+`anwendung/einstellungen_ui.py` enthält Einstellungsdialoge, Arbeitsordnerauswahl,
+Standard-Rücksetzung und Speichern. Eingabefelder und Dialogzustand gehören zur
+Ansicht; Konfigurationswerte, Einlesen und Pfadbildung bleiben auf der Anwendung.
+Die bisherigen Einstiegspunkte bleiben über Adapter erhalten.
