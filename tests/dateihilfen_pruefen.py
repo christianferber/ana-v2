@@ -217,6 +217,9 @@ def pruefen():
     # Änderung 2.03: Auch die Abrechnungsansicht samt verschachtelten Dialogen prüfen.
     from tests.abrechnung_struktur import methoden_als_funktionen as abrechnungsmethoden
     neue_funktionen.update(abrechnungsmethoden(basis, alte_funktionen))
+    # Änderung 2.039: Changelog-Anzeige und Filter gegen Original prüfen.
+    from tests.changelog_struktur import methoden_als_funktionen as changelogmethoden
+    neue_funktionen.update(changelogmethoden(basis, alte_funktionen))
     # Änderung 2.038: Einstellungen einschließlich Ordnerwahl und Speicherablauf prüfen.
     from tests.einstellungen_struktur import methoden_als_funktionen as einstellungsmethoden
     neue_funktionen.update(einstellungsmethoden(basis, alte_funktionen))

@@ -21,6 +21,8 @@ from anwendung.kontodaten_ui import KontodatenOberflaeche
 from anwendung.werkzeuge_ui import WerkzeugeOberflaeche
 # Änderung 2.038: Einstellungsansicht einbinden.
 from anwendung.einstellungen_ui import EinstellungenOberflaeche
+# Änderung 2.039: Changelog-Ansicht einbinden.
+from anwendung.changelog_ui import ChangelogOberflaeche
 # Änderung 2.035: Mitgliederansicht mit eigenem Bedienzustand einbinden.
 from anwendung.mitglieder_ui import MitgliederOberflaeche
 from anwendung.abschlag_ui import AbschlagOberflaeche
@@ -102,7 +104,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.036: Kontodatenauslagerung kennzeichnen.
 # Änderung 2.037: Werkzeugeauslagerung kennzeichnen.
 # Änderung 2.038: Einstellungsauslagerung kennzeichnen.
-version = 2.038
+# Änderung 2.039: Changelog-Auslagerung kennzeichnen.
+version = 2.039
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -1113,33 +1116,19 @@ def change_log_info(modul, info):
     file.close()
     changelog_markdown_ui_refresh() 
 
+# Änderung 2.039: Bestehenden Einstiegspunkt der Changelog-Anzeige erhalten.
 def changelog_markdown_ui():
-    global changelog_markdown
-    global filter_toggle
-    with ui.row():
-        ui.button('Changelog aktualisieren', icon='refresh', on_click=changelog_markdown_ui_refresh).props('color=secondary')
-        filter_toggle = ui.toggle(['ALLE', 'MITGLIEDER','WARTUNG','ABNEHMER','ZÄHLER','ABSCHLAG','RÜCKVERGÜTUNG','KONTODATEN'], value='ALLE', on_change=changelog_markdown_ui_refresh)
-    changelog_markdown = ui.markdown('')
-    changelog_markdown_ui_refresh()
+    return changelog_ansicht.changelog_markdown_ui()
 
+# Änderung 2.039: Bestehenden Einstiegspunkt der Changelog-Anzeige erhalten.
 def changelog_markdown_ui_refresh():
-    global changelog_markdown
-    content_present = ""
-    if Path(ordner_logs + "\\" + changelog).is_file():
-        with open(ordner_logs + "\\" + changelog,'r') as datei:
-            content = datei.read()
-            datei.close()
-            if filter_toggle.value == 'ALLE':
-                content_present = content 
-            else:
-                for line in content.split("\n"):
-                    if filter_toggle.value in line:
-                        content_present = content_present + line + "\n"
-            content_present = content_present.replace("\n","  \n")
-            changelog_markdown.set_content(content_present)
+    return changelog_ansicht.changelog_markdown_ui_refresh()
 
+# Änderung 2.039: Bestehenden Einstiegspunkt der Changelog-Anzeige erhalten.
 def changelog_ui():
-    changelog_markdown_ui()
+    global changelog_ansicht
+    changelog_ansicht = ChangelogOberflaeche(sys.modules[__name__])
+    return changelog_ansicht.changelog_ui()
 
 ###########################################################################################################################
 ### ENDE CHANGELOG

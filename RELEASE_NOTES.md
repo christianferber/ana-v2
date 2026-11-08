@@ -5,6 +5,12 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.039: Wartung aus Anwendersicht dokumentieren. -->
+Version 2.039 – 08.11.2026
+-------------------------
+
+Interne Wartung der Changelog-Anzeige; Protokollierung, Bedienung und Filter bleiben unverändert.
+
 <!-- Änderung 2.038: Wartung aus Anwendersicht dokumentieren. -->
 Version 2.038 – 08.11.2026
 -------------------------

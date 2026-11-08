@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.039: Changelog-Filter und Anzeige ausschließlich lokal vergleichen.
+        ('Changelog-Anzeige gegen Original', ['-m', 'tests.changelog_pruefen']),
         # Änderung 2.038: Einstellungsdialog und INI-Speicherung lokal vergleichen.
         ('Einstellungsansicht gegen Original', ['-m', 'tests.einstellungen_pruefen']),
         # Änderung 2.037: Werkzeuge mit ausschließlich lokalen PDF-Beispieldaten vergleichen.
@@ -175,6 +177,21 @@ def main():
                 'Gegenüber 2.037: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.',
                 'Test-App, Fenster und Browser vollständig beendet. Erster Dialogtest startete',
                 'zu früh; nach Warten auf den Button vollständiger Praxislauf bestanden.',
+                'Keine neue Windows-EXE; keine visuelle Dokumentprüfung im Modellkontext.', '']
+    # Änderung 2.039: Abgeschlossenen Changelog-Praxislauf dokumentieren.
+    bericht += ['Version 2.039: Alle drei Changelog-Anzeigemethoden und Adapter strukturell',
+                'gegen Original geprüft. Schreibfunktionen unverändert. Gebundene Methoden für',
+                'alle acht Filter sowie Filter ohne Treffer, fehlende/leere Protokolldateien',
+                'und Markdown-Zeilenumbrüche gegen Original verglichen. Aktualisierung nach',
+                'beiden Schreibfunktionen geprüft; Protokolldateien bei festen Zeitstempeln',
+                'bytegleich. Die Beispieldaten enthalten kein Changelog; Prüfeinträge wurden',
+                'ausschließlich lokal aus Beispielmitgliederdaten abgeleitet.',
+                'Echtes Changelog-Register mit Filteranzeige und vollständige Abrechnung am',
+                '08.11.2026 mit isolierter Datenkopie bestanden: CSV-Referenz identisch,',
+                '73 neue Word-Dateien und 73 lesbare PDFs. Originalbestand per SHA256 unverändert.',
+                'Gegenüber 2.038: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.',
+                'Test-App, Fenster und Browser vollständig beendet. Filterinhalte über gebundene',
+                'Methoden geprüft; im Browser die Register- und Filteranzeige geprüft.',
                 'Keine neue Windows-EXE; keine visuelle Dokumentprüfung im Modellkontext.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'

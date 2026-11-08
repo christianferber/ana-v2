@@ -188,3 +188,16 @@ Version 2.00 – 05.11.2026
 - Lokale Konfigurationskopien für bytegleiche INI-Speicherung, Arbeitsordnerwechsel,
   Standard-Rücksetzung, Ordnerwahl/Abbruch und Dialogaufrufe verglichen.
 - Keine neue Windows-EXE; Prüfstand und Grenzen siehe TESTBERICHT.md.
+
+<!-- Änderung 2.039: Technischen Umbau versionsbezogen dokumentieren. -->
+## Version 2.039 – 08.11.2026
+
+- Drei Anzeigemethoden in `ChangelogOberflaeche` in `anwendung/changelog_ui.py`
+  ausgelagert: Registeraufbau, Markdown-Anzeige und Aktualisierung mit Filter.
+- Anzeigeelement und Filter gehören zur Ansicht. Protokollpfad und unveränderte
+  Schreibfunktionen bleiben auf der Anwendung. Drei Adapter erhalten bisherige Aufrufe.
+- Methoden und Adapter strukturell gegen Original geprüft. Gebundene Methoden
+  für alle Filter, fehlende/leere Dateien sowie Aktualisierung nach Schreibzugriffen
+  verglichen; Protokolldateien bytegleich. Mangels Beispielprotokoll werden
+  Prüfeinträge ausschließlich lokal aus Mitgliederdaten der Beispiele abgeleitet.
+- Keine neue Windows-EXE; Prüfstand und Grenzen siehe TESTBERICHT.md.

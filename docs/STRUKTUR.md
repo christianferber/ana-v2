@@ -116,3 +116,8 @@ Einstiegspunkte im Hauptmodul bleiben über Adapter erhalten.
 Standard-Rücksetzung und Speichern. Eingabefelder und Dialogzustand gehören zur
 Ansicht; Konfigurationswerte, Einlesen und Pfadbildung bleiben auf der Anwendung.
 Die bisherigen Einstiegspunkte bleiben über Adapter erhalten.
+
+<!-- Änderung 2.039: Zuständigkeit der Changelog-Ansicht dokumentieren. -->
+`anwendung/changelog_ui.py` enthält Registeraufbau und gefilterte Markdown-Anzeige
+für das Changelog. Anzeige- und Filterzustand liegt auf der Ansicht. Protokollpfad
+und Schreibfunktionen bleiben auf der Anwendung; Adapter erhalten bestehende Aufrufe.

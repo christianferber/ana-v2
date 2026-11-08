@@ -6,6 +6,7 @@ Stand: 08.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Changelog-Anzeige gegen Original: bestanden.
 - Einstellungsansicht gegen Original: bestanden.
 - Werkzeuge gegen Original: bestanden.
 - Kontodatenansicht gegen Original: bestanden.
@@ -142,6 +143,21 @@ am 08.11.2026 mit isolierter Datenkopie bestanden: CSV-Referenz identisch,
 Gegenüber 2.037: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.
 Test-App, Fenster und Browser vollständig beendet. Erster Dialogtest startete
 zu früh; nach Warten auf den Button vollständiger Praxislauf bestanden.
+Keine neue Windows-EXE; keine visuelle Dokumentprüfung im Modellkontext.
+
+Version 2.039: Alle drei Changelog-Anzeigemethoden und Adapter strukturell
+gegen Original geprüft. Schreibfunktionen unverändert. Gebundene Methoden für
+alle acht Filter sowie Filter ohne Treffer, fehlende/leere Protokolldateien
+und Markdown-Zeilenumbrüche gegen Original verglichen. Aktualisierung nach
+beiden Schreibfunktionen geprüft; Protokolldateien bei festen Zeitstempeln
+bytegleich. Die Beispieldaten enthalten kein Changelog; Prüfeinträge wurden
+ausschließlich lokal aus Beispielmitgliederdaten abgeleitet.
+Echtes Changelog-Register mit Filteranzeige und vollständige Abrechnung am
+08.11.2026 mit isolierter Datenkopie bestanden: CSV-Referenz identisch,
+73 neue Word-Dateien und 73 lesbare PDFs. Originalbestand per SHA256 unverändert.
+Gegenüber 2.038: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.
+Test-App, Fenster und Browser vollständig beendet. Filterinhalte über gebundene
+Methoden geprüft; im Browser die Register- und Filteranzeige geprüft.
 Keine neue Windows-EXE; keine visuelle Dokumentprüfung im Modellkontext.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
