@@ -5,6 +5,12 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.043: Interne Wartung aus Anwendersicht dokumentieren. -->
+Version 2.043 – 08.11.2026
+-------------------------
+
+Interne Wartung der Datensicherung und Änderungsprotokolle; Sicherungsverhalten, Protokolle und Bedienung bleiben unverändert.
+
 <!-- Änderung 2.042: Erneute Umsetzung aus Anwendersicht dokumentieren. -->
 Version 2.042 – 08.11.2026
 -------------------------

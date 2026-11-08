@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.043: Sicherungen mit lokalen Beispieldaten gegen Original prüfen.
+        ('Sicherung gegen Original', ['-m', 'tests.sicherung_pruefen']),
         # Änderung 2.041: Exportauswahl und Speicherdialoge ausschließlich lokal vergleichen.
         ('Buchungsexport-Bedienung gegen Original', ['-m', 'tests.buchungsexport_pruefen']),
         # Änderung 2.040: Deaktivierte Statistik mit lokalen Beispieldaten vergleichen.
@@ -217,6 +219,22 @@ def main():
     bericht += ['Zurückgezogene Version 2.041 (historischer Prüfstand): Alle sieben Buchungsexport-Bedienmethoden und Adapter einschließlich\nasynchroner Speicherdialoge strukturell gegen Original geprüft. Alle 17 gebündelten\nPrüfungen und Syntaxprüfung bestanden. Sämtliche lokalen CSV-Referenzfälle über\nechte gebundene Bedienmethoden bytegleich; freigegebene Fehlerkorrekturen bestätigt.\nJahreslisten, fehlende/vollständige Auswahl, Dateinamensvorgaben, Speichern und\nAbbruch gegen Original verglichen. Native Dateidialoge durch Testantworten ersetzt.\nEchtes Buchungsvorlagenregister, Berechnung und CSV-Referenz bestanden. Vollständiger\nPraxislauf mit isolierter Word-Testinstanz bestanden: 73 neue Word-Dateien und 73\nlesbare PDFs. Originalbestand per SHA256 unverändert. Gegenüber 2.040 sind sämtliche\nWord-Paketinhalte, PDF-Seitenzahlen und Texte identisch. App, Fenster und Browser beendet.\nPrüfgrenze: Die vorhandene, vor Testbeginn gestartete Word-Sitzung wies COM-Aufrufe\nals beschäftigt zurück (RPC_E_CALL_REJECTED); zwei normale Praxisversuche scheiterten\nmit AttributeError: Open.SaveAs und wurden abgebrochen. Die Benutzersitzung wurde\nnicht beendet. Nur im lokalen Praxisstarteinstieg wurde die Word-Beschaffung durch\nDispatchEx ersetzt, um eine eigene Prozess-ID zu erhalten. Der Programmcode und der\nKonvertierungsablauf bleiben unverändert. Ein erster isolierter Versuch scheiterte\nam Hwnd-Zugriff der Testhilfe; nach Prozess-ID-Erfassung ohne Hwnd erfolgreich.\nDie reguläre Word-Anbindung wurde in dieser Sitzung nicht vollständig erfolgreich\ngeprüft; der erfolgreiche Dokumentlauf gilt für die isolierte Testinstanz.\nKeine neue Windows-EXE; keine visuelle Dokumentprüfung im Modellkontext.\n', '']
     # Änderung 2.042: Vollständig erfolgreichen regulären Praxislauf festhalten.
     bericht += ['Version 2.042: Erneute Buchungsexport-Auslagerung nach Rücknahme von 2.041.\nAlle sieben Bedienmethoden und Adapter strukturell gegen Original geprüft.\nAlle lokalen CSV-Referenzfälle bytegleich; freigegebene Fehlerkorrekturen bestätigt.\nJahreslisten, fehlende/vollständige Auswahl, Dateinamensvorgaben, Speichern und\nAbbruch über echte gebundene Methoden mit lokalen Beispieldaten gegen Original verglichen.\nNative Dateidialoge wurden im Methodentest durch lokale Testantworten ersetzt.\nVollständiger REGULÄRER Praxislauf am 08.11.2026 erfolgreich: Buchungsvorlagenregister,\nBerechnung und CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs. Die normale\nWord-Beschaffung über Dispatch wurde unverändert verwendet, ohne DispatchEx-Ersatz\noder isolierten Word-Starteinstieg. Originalbestand per SHA256 unverändert.\nGegenüber 2.040: sämtliche Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.\nTest-App, Fenster und Browser beendet. Die frühere reguläre Word-Blockierung trat\nin diesem Lauf nicht auf. Keine dauerhafte Fehlerbehebung der Word-Umgebung behauptet.\nVersion 2.041 bleibt zurückgezogen; damalige isolierte Tests sind kein Ersatz für\ndiesen regulären Lauf. Kein neues Windows-EXE-Paket, keine visuelle Dokumentprüfung.\n', '']
+    # Änderung 2.043: Abgeschlossene lokale Sicherungs- und reguläre Praxisprüfung festhalten.
+    bericht += ['Version 2.043: Alle vier Sicherungs-/Protokollfunktionen, Adapter und frühe',
+                'Initialisierung strukturell gegen Original geprüft. Lokale Beispieldatenkopien:',
+                'fehlende/leere Datenbank, Dateien mit copy2-Metadaten, Unterordner, neun neueste',
+                'Sicherungsordner, abweichende Höchstzahl und fremde Dateien gegen Original geprüft.',
+                'Identische Zeitstempel einschließlich bestehendem FileExistsError bei erneutem',
+                'Unterordner-Kopieren verglichen. Pfadwechsel mit derselben Hilfsinstanz geprüft.',
+                'Erster Testfehler durch unterschiedliche Zeiten künstlicher Testdateien behoben;',
+                'keine dafür erforderliche Änderung des Anwendungscodes. Protokollschreiben über',
+                'echte ausgelagerte Methoden bytegleich, anschließende Anzeige unverändert.',
+                'Regulärer vollständiger Praxislauf am 08.11.2026 bestanden: Buchungsvorlagenregister,',
+                'Berechnung, CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs. Normales Dispatch',
+                'ohne isolierten Word-Ersatz. Originalbestand unverändert. Gegen 2.042: sämtliche',
+                'Word-Paketinhalte, PDF-Seitenzahlen und PDF-Texte identisch. Test-App, Fenster und',
+                'Browser beendet; unabhängige Abfrage: keine ANA- und Word-Prozesse vorhanden.',
+                'Keine neue EXE und keine visuelle Dokumentprüfung.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'

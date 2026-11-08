@@ -20,6 +20,24 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Version 2.043 – 08.11.2026
+
+<!-- Änderung 2.043: Gemeinsame Hilfen und unveränderte Einstiegspunkte dokumentieren. -->
+- `db_sichern` und `max_anzahl_ordner` nach `anwendung/sicherung.py` verschoben.
+- `change_log` und `change_log_info` nach `anwendung/protokollierung.py` verschoben.
+  Beide Hilfen verwenden aktuelle Anwendungswerte; vier Adapter erhalten die Aufrufe.
+  Sicherungsreihenfolge, Aufbewahrung, Dateimetadaten, Fehler und Protokollformat bleiben unverändert.
+- Vollständiger Strukturvergleich aller vier Funktionen einschließlich Adapter und
+  Initialisierung. Neuer lokaler Sicherungsvergleich mit Beispieldatenkopien;
+  bestehender Protokolltest prüft die echten ausgelagerten Schreibmethoden.
+- Alle 18 Freigabeprüfungen und Syntaxprüfung bestanden. Regulärer vollständiger
+  Praxislauf mit 73 neuen Word-Dateien und 73 lesbaren PDFs bestanden; CSV-Referenz
+  identisch und Originalbestand unverändert. Word-Paketinhalte, PDF-Seitenzahlen und
+  PDF-Texte gegen 2.042 identisch. Keine visuelle Dokumentprüfung, keine neue EXE.
+- Der erste Sicherungstest verglich künstliche Dateien mit unterschiedlichen
+  Erstellungszeiten; feste Änderungszeiten im Test erlauben den Metadatenvergleich.
+  Der Anwendungscode musste dafür nicht korrigiert werden.
+
 ## Version 2.033 – 06.11.2026
 
 <!-- Änderung 2.033: Technische Auslagerung getrennt von Anwenderhinweisen festhalten. -->

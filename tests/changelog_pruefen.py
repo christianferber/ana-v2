@@ -10,6 +10,7 @@ import tempfile
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 import anwendung.changelog_ui as modul
+from anwendung.protokollierung import Protokollierung
 from anwendung.einstellungen import ini_datei_lesen
 
 
@@ -42,6 +43,8 @@ def pruefen():
     fs = [copy.deepcopy(n) for n in neubaum.body if isinstance(n, ast.FunctionDef) and n.name in {'change_log', 'change_log_info'}]
     exec(compile(ast.Module(body=fs, type_ignores=[]), 'aktuelle_protokollierung', 'exec'), neu)
     app = SimpleNamespace(changelog='ana-change.log')
+    # Änderung 2.043: Echte ausgelagerte Schreibmethoden über die bisherigen Adapter prüfen.
+    neu['protokollierung_hilfe'] = Protokollierung(app)
     ansicht = modul.ChangelogOberflaeche(app)
     alt['changelog'] = neu['changelog'] = app.changelog
     alt['changelog_markdown'] = Mock()
@@ -49,6 +52,7 @@ def pruefen():
     alt['filter_toggle'] = SimpleNamespace(value='ALLE')
     ansicht.filter_toggle = SimpleNamespace(value='ALLE')
     neu['changelog_markdown_ui_refresh'] = ansicht.changelog_markdown_ui_refresh
+    app.changelog_markdown_ui_refresh = ansicht.changelog_markdown_ui_refresh
     with tempfile.TemporaryDirectory(dir=basis / '.lokal') as tmp:
         a, b = Path(tmp) / 'alt', Path(tmp) / 'neu'
         a.mkdir()
@@ -74,7 +78,9 @@ def pruefen():
         event = dict(data=dict(Ident='1', Name='Test', Vorname='Lokal'), colId='Kommentar', oldValue='alt', newValue='neu')
         for name, args in (('change_log', ('MITGLIEDER', event)), ('change_log_info', ('WARTUNG', 'Lokaler Vergleich'))):
             alt[name](*args)
-            neu[name](*args)
+            # Änderung 2.043: Zeitstempel im neuen Modul identisch festlegen.
+            with patch('anwendung.protokollierung.datetime', FesteZeit):
+                neu[name](*args)
             assert (a / app.changelog).read_bytes() == (b / app.changelog).read_bytes()
             assert alt['changelog_markdown'].method_calls == ansicht.changelog_markdown.method_calls
     assert original == {p: p.read_bytes() for p in original}

@@ -211,6 +211,9 @@ def pruefen():
     alte_funktionen['csv_rueckv'] = korrekturen.visit(copy.deepcopy(alte_funktionen['csv_rueckv']))
     assert korrekturen.anzahl == 2
     neue_funktionen = {k.name: k for k in neu.body + modul.body + feldmodul.body if isinstance(k, ast.FunctionDef)}
+    # Änderung 2.043: Sicherung und Protokollierung samt Adaptern vollständig vergleichen.
+    from tests.gemeinsame_hilfen_struktur import methoden_als_funktionen as gemeinsame_hilfen
+    neue_funktionen.update(gemeinsame_hilfen(basis, alte_funktionen))
     # Änderung 2.02: Auch die ausgelagerten Methoden weiterhin vollständig vergleichen.
     from tests.rueckv_struktur import methoden_als_funktionen
     neue_funktionen.update(methoden_als_funktionen(basis, alte_funktionen))

@@ -6,6 +6,7 @@ Stand: 08.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Sicherung gegen Original: bestanden.
 - Buchungsexport-Bedienung gegen Original: bestanden.
 - Statistik gegen Original: bestanden.
 - Changelog-Anzeige gegen Original: bestanden.
@@ -216,6 +217,22 @@ in diesem Lauf nicht auf. Keine dauerhafte Fehlerbehebung der Word-Umgebung beha
 Version 2.041 bleibt zurückgezogen; damalige isolierte Tests sind kein Ersatz für
 diesen regulären Lauf. Kein neues Windows-EXE-Paket, keine visuelle Dokumentprüfung.
 
+
+Version 2.043: Alle vier Sicherungs-/Protokollfunktionen, Adapter und frühe
+Initialisierung strukturell gegen Original geprüft. Lokale Beispieldatenkopien:
+fehlende/leere Datenbank, Dateien mit copy2-Metadaten, Unterordner, neun neueste
+Sicherungsordner, abweichende Höchstzahl und fremde Dateien gegen Original geprüft.
+Identische Zeitstempel einschließlich bestehendem FileExistsError bei erneutem
+Unterordner-Kopieren verglichen. Pfadwechsel mit derselben Hilfsinstanz geprüft.
+Erster Testfehler durch unterschiedliche Zeiten künstlicher Testdateien behoben;
+keine dafür erforderliche Änderung des Anwendungscodes. Protokollschreiben über
+echte ausgelagerte Methoden bytegleich, anschließende Anzeige unverändert.
+Regulärer vollständiger Praxislauf am 08.11.2026 bestanden: Buchungsvorlagenregister,
+Berechnung, CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs. Normales Dispatch
+ohne isolierten Word-Ersatz. Originalbestand unverändert. Gegen 2.042: sämtliche
+Word-Paketinhalte, PDF-Seitenzahlen und PDF-Texte identisch. Test-App, Fenster und
+Browser beendet; unabhängige Abfrage: keine ANA- und Word-Prozesse vorhanden.
+Keine neue EXE und keine visuelle Dokumentprüfung.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

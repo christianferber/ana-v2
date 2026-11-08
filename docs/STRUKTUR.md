@@ -1,5 +1,12 @@
 # Projektstruktur
 
+<!-- Änderung 2.043: Gemeinsame Sicherungs- und Protokollhilfen dokumentieren. -->
+`anwendung/sicherung.py` enthält Datenbanksicherung und Aufbewahrung der neun
+neuesten Sicherungsordner. `anwendung/protokollierung.py` schreibt Änderungs-
+und Informationseinträge und ruft die bestehende Aktualisierung der Anzeige auf.
+Beide Hilfen lesen aktuelle Pfade über die Anwendung; die bisherigen Einstiegspunkte
+bleiben im Hauptmodul erhalten. Die Changelog-Ansicht bleibt in `changelog_ui.py`.
+
 <!-- Änderung für v2: Zuständigkeiten und Aufrufe nach der Verzeichnisumstellung dokumentieren. -->
 
 `ana.py` bleibt der einfache Einstiegspunkt. Die Oberfläche liegt in

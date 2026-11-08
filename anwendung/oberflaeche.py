@@ -60,6 +60,11 @@ from pypdf import PdfReader, PdfWriter                              # für PDF M
 import os
 # Änderung für v2: Ressourcen sowohl beim Python-Start als auch neben der EXE finden.
 import sys
+# Änderung 2.043: Gemeinsame Hilfen vor dem Aufbau der Ansichten bereitstellen.
+from anwendung.sicherung import Sicherung
+from anwendung.protokollierung import Protokollierung
+sicherung_hilfe = Sicherung(sys.modules[__name__])
+protokollierung_hilfe = Protokollierung(sys.modules[__name__])
 from pathlib import Path
 import shutil
 from datetime import datetime, timedelta, date
@@ -115,7 +120,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.040: Statistikauslagerung kennzeichnen.
 # Änderung 2.041: Buchungsexport-Auslagerung kennzeichnen.
 # Änderung 2.042: Erneute Auslagerung erst nach vollständig erfolgreicher regulärer Prüfung freigeben.
-version = 2.042
+# Änderung 2.043: Gemeinsame Sicherungs- und Protokollhilfen auslagern.
+version = 2.043
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -1008,22 +1014,13 @@ def statistik_ui():
 ### ANFANG CHANGELOG
 ###########################################################################################################################
 
+# Änderung 2.043: Bestehenden Aufruf an die gemeinsame Hilfe weitergeben.
 def change_log(modul, event):
-    current_datetime = datetime.now()
-    current_datetime_str = current_datetime.strftime("%d.%m.%Y %H:%M:%S")
-    content = f"{event["data"]["Ident"]}" + " " + f"{event["data"]["Name"]}" + " " + f"{event["data"]["Vorname"]}" + " ::: " + f"{event["colId"]}" + " ::: " + f"{event["oldValue"]}" + " ===> " + f"{event["newValue"]}"
-    file = open(ordner_logs + "\\" + changelog, "a")
-    file.write(current_datetime_str + " | " + modul + " | " + content + "\n")
-    file.close()
-    changelog_markdown_ui_refresh() 
+    return protokollierung_hilfe.change_log(modul, event)
 
+# Änderung 2.043: Bestehenden Aufruf an die gemeinsame Hilfe weitergeben.
 def change_log_info(modul, info):
-    current_datetime = datetime.now()
-    current_datetime_str = current_datetime.strftime("%d.%m.%Y %H:%M:%S")
-    file = open(ordner_logs + "\\" + changelog, "a")
-    file.write(current_datetime_str + " | " + modul + " | " + info + "\n")
-    file.close()
-    changelog_markdown_ui_refresh() 
+    return protokollierung_hilfe.change_log_info(modul, info)
 
 # Änderung 2.039: Bestehenden Einstiegspunkt der Changelog-Anzeige erhalten.
 def changelog_markdown_ui():
@@ -1047,38 +1044,13 @@ def changelog_ui():
 ### ANFANG SICHERUNG
 ###########################################################################################################################
 
+# Änderung 2.043: Bestehenden Aufruf an die gemeinsame Hilfe weitergeben.
 def max_anzahl_ordner(ordner_pfad, max_anzahl=9):
-    # Liste der Untererzeichnisse auslesen
-    unterverzeichnisse = [subdir for subdir in os.listdir(ordner_pfad) if os.path.isdir(os.path.join(ordner_pfad, subdir))]
+    return sicherung_hilfe.max_anzahl_ordner(ordner_pfad, max_anzahl)
 
-    # Unterverzeichnisse werden nach Uhrzeit der Bearbeitung sortiert (neueste zuerst)
-    unterverzeichnisse.sort(key=lambda x: os.path.getmtime(os.path.join(ordner_pfad, x)), reverse=True)
-
-    # Überprüfung, ob mehr als max_anzahl Unterverzeichnisse vorhanden sind
-    if len(unterverzeichnisse) > max_anzahl:
-        # Löschen von allen Ordnern ausser max_anzahl
-        ordner_loeschen = unterverzeichnisse[max_anzahl:]
-        for ordner in ordner_loeschen:
-            shutil.rmtree(os.path.join(ordner_pfad, ordner))
-
+# Änderung 2.043: Bestehenden Aufruf an die gemeinsame Hilfe weitergeben.
 def db_sichern(aktion):
-    # Datenbanksicherung soll nur erfolgen, wenn Datenbankordner vorhanden ist
-    pfad_ordner = Path(ordner_datenbank)
-    if not pfad_ordner.exists():
-        return
-    current_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    ordner_sic = os.path.join(ordner_sicherungen, f"{current_datetime} {aktion}")
-    pfad_ordner_sic = Path(ordner_sic)
-    if not pfad_ordner_sic.exists():
-        os.mkdir(ordner_sic)
-    max_anzahl_ordner(ordner_sicherungen)
-    quellordner = Path(ordner_datenbank)
-    zielordner = Path(ordner_sic)
-    for item in quellordner.iterdir():
-        if item.is_file():
-            shutil.copy2(item, zielordner / item.name)
-        elif item.is_dir():
-            shutil.copytree(item, zielordner / item.name)
+    return sicherung_hilfe.db_sichern(aktion)
 
 
 
