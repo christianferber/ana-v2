@@ -103,7 +103,8 @@ Einstiegspunkte bleiben im Hauptmodul erhalten.
 Speichern der Kontodaten sowie den Registeraufbau für Buchungsvorlagen.
 Die Ansicht besitzt Tabelle und Speichern-Schaltfläche; Kontodaten und
 Exportauswahl bleiben gemeinsam auf der Anwendung verfügbar. Die bisherigen
-CSV-Exportfunktionen und deren Speicherdialoge bleiben im Hauptmodul.
+CSV-Exportfunktionen bleiben im Hauptmodul; seit 2.042 liegen deren
+Speicherdialoge und Bedienabläufe in `anwendung/buchungsexport_ui.py`.
 
 <!-- Änderung 2.037: Zuständigkeit der Werkzeugeansicht dokumentieren. -->
 `anwendung/werkzeuge_ui.py` enthält die Werkzeugeansicht mit Ordnerauswahl,
@@ -127,3 +128,12 @@ und Schreibfunktionen bleiben auf der Anwendung; Adapter erhalten bestehende Auf
 für den weiterhin deaktivierten Statistikbereich. Anzeigezustand gehört zur
 Ansicht; Daten und Abrechnungspfad bleiben auf der Anwendung. Die bisherigen
 Einstiegspunkte bleiben über Adapter erhalten; das Register wird nicht aktiviert.
+
+<!-- Änderung 2.041: Zuständigkeit der Buchungsexport-Bedienhilfe dokumentieren. -->
+`anwendung/buchungsexport_ui.py` enthält Jahreslisten, Auswahlprüfungen,
+Exportaufrufe und den nativen CSV-Speicherdialog. Die Bedienhilfe greift auf
+aktuelle gemeinsame Auswahlfelder und CSV-Funktionen der Anwendung zu. Die
+Kontodatenansicht baut die Bedienelemente weiterhin auf; Adapter erhalten Aufrufe.
+
+<!-- Änderung 2.042: Erneute Übernahme erst nach regulärer vollständiger Prüfung. -->
+Die Buchungsexport-Bedienhilfe ist seit 2.042 erneut enthalten. Version 2.041 bleibt zurückgezogen.

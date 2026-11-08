@@ -6,6 +6,7 @@ Stand: 08.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Buchungsexport-Bedienung gegen Original: bestanden.
 - Statistik gegen Original: bestanden.
 - Changelog-Anzeige gegen Original: bestanden.
 - Einstellungsansicht gegen Original: bestanden.
@@ -176,6 +177,45 @@ Originalbestand per SHA256 unverändert. Gegenüber 2.039: Word-Paketinhalte,
 PDF-Seitenzahlen und Texte identisch. Test-App, Fenster und Browser beendet.
 Keine interaktive Statistikprüfung und keine visuelle Diagramm-/Dokumentprüfung.
 Keine neue Windows-EXE erstellt.
+
+Zurückgezogene Version 2.041 (historischer Prüfstand): Alle sieben Buchungsexport-Bedienmethoden und Adapter einschließlich
+asynchroner Speicherdialoge strukturell gegen Original geprüft. Alle 17 gebündelten
+Prüfungen und Syntaxprüfung bestanden. Sämtliche lokalen CSV-Referenzfälle über
+echte gebundene Bedienmethoden bytegleich; freigegebene Fehlerkorrekturen bestätigt.
+Jahreslisten, fehlende/vollständige Auswahl, Dateinamensvorgaben, Speichern und
+Abbruch gegen Original verglichen. Native Dateidialoge durch Testantworten ersetzt.
+Echtes Buchungsvorlagenregister, Berechnung und CSV-Referenz bestanden. Vollständiger
+Praxislauf mit isolierter Word-Testinstanz bestanden: 73 neue Word-Dateien und 73
+lesbare PDFs. Originalbestand per SHA256 unverändert. Gegenüber 2.040 sind sämtliche
+Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch. App, Fenster und Browser beendet.
+Prüfgrenze: Die vorhandene, vor Testbeginn gestartete Word-Sitzung wies COM-Aufrufe
+als beschäftigt zurück (RPC_E_CALL_REJECTED); zwei normale Praxisversuche scheiterten
+mit AttributeError: Open.SaveAs und wurden abgebrochen. Die Benutzersitzung wurde
+nicht beendet. Nur im lokalen Praxisstarteinstieg wurde die Word-Beschaffung durch
+DispatchEx ersetzt, um eine eigene Prozess-ID zu erhalten. Der Programmcode und der
+Konvertierungsablauf bleiben unverändert. Ein erster isolierter Versuch scheiterte
+am Hwnd-Zugriff der Testhilfe; nach Prozess-ID-Erfassung ohne Hwnd erfolgreich.
+Die reguläre Word-Anbindung wurde in dieser Sitzung nicht vollständig erfolgreich
+geprüft; der erfolgreiche Dokumentlauf gilt für die isolierte Testinstanz.
+Keine neue Windows-EXE; keine visuelle Dokumentprüfung im Modellkontext.
+
+
+Version 2.042: Erneute Buchungsexport-Auslagerung nach Rücknahme von 2.041.
+Alle sieben Bedienmethoden und Adapter strukturell gegen Original geprüft.
+Alle lokalen CSV-Referenzfälle bytegleich; freigegebene Fehlerkorrekturen bestätigt.
+Jahreslisten, fehlende/vollständige Auswahl, Dateinamensvorgaben, Speichern und
+Abbruch über echte gebundene Methoden mit lokalen Beispieldaten gegen Original verglichen.
+Native Dateidialoge wurden im Methodentest durch lokale Testantworten ersetzt.
+Vollständiger REGULÄRER Praxislauf am 08.11.2026 erfolgreich: Buchungsvorlagenregister,
+Berechnung und CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs. Die normale
+Word-Beschaffung über Dispatch wurde unverändert verwendet, ohne DispatchEx-Ersatz
+oder isolierten Word-Starteinstieg. Originalbestand per SHA256 unverändert.
+Gegenüber 2.040: sämtliche Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.
+Test-App, Fenster und Browser beendet. Die frühere reguläre Word-Blockierung trat
+in diesem Lauf nicht auf. Keine dauerhafte Fehlerbehebung der Word-Umgebung behauptet.
+Version 2.041 bleibt zurückgezogen; damalige isolierte Tests sind kein Ersatz für
+diesen regulären Lauf. Kein neues Windows-EXE-Paket, keine visuelle Dokumentprüfung.
+
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

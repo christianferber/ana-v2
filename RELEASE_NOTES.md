@@ -5,6 +5,18 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.042: Erneute Umsetzung aus Anwendersicht dokumentieren. -->
+Version 2.042 – 08.11.2026
+-------------------------
+
+Interne Wartung der Buchungsexporte; Auswahl, Speicherdialoge und CSV-Ergebnisse bleiben unverändert.
+
+<!-- Änderung 2.041: Wartung aus Anwendersicht dokumentieren. -->
+Version 2.041 – zurückgezogen
+-------------------------
+
+Diese Version wurde zurückgezogen und soll nicht verwendet werden.
+
 <!-- Änderung 2.040: Wartung aus Anwendersicht dokumentieren. -->
 Version 2.040 – 08.11.2026
 -------------------------
