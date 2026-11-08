@@ -17,6 +17,8 @@ from anwendung.abrechnung_ui import AbrechnungOberflaeche
 from anwendung.abnehmer_ui import AbnehmerOberflaeche
 # Änderung 2.036: Kontodatenansicht einbinden.
 from anwendung.kontodaten_ui import KontodatenOberflaeche
+# Änderung 2.037: Werkzeugeansicht einbinden.
+from anwendung.werkzeuge_ui import WerkzeugeOberflaeche
 # Änderung 2.035: Mitgliederansicht mit eigenem Bedienzustand einbinden.
 from anwendung.mitglieder_ui import MitgliederOberflaeche
 from anwendung.abschlag_ui import AbschlagOberflaeche
@@ -96,7 +98,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.034: Abnehmerauslagerung kennzeichnen.
 # Änderung 2.035: Auslagerung der Mitgliederoberfläche kennzeichnen.
 # Änderung 2.036: Kontodatenauslagerung kennzeichnen.
-version = 2.036
+# Änderung 2.037: Werkzeugeauslagerung kennzeichnen.
+version = 2.037
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -968,180 +971,39 @@ def buchung_ui():
 
 
 # Funktion zum Extrahieren der Zahl zwischen zwei '-' im Dateinamen
+# Änderung 2.037: Bestehenden Einstiegspunkt der Werkzeuge erhalten.
 def extract_numbers(filename):
-    """
-    Liefert alle 1–2 stelligen Zahlen zwischen '-' im Dateinamen.
-    Beispiel: a-12-b-34-c.pdf -> ['12', '34']
-    """
-    return re.findall(r"-(\d{1,2})-", filename)
+    return werkzeuge_ansicht.extract_numbers(filename)
 
 
 # Ordner-Auswahlfunktionen
+# Änderung 2.037: Bestehenden Einstiegspunkt der Werkzeuge erhalten.
 async def pdfordner1_auswaehlen():
-    global pdfordner1_pfad
-    ordner_pfad = await app.native.main_window.create_file_dialog(webview.FOLDER_DIALOG)
-    if ordner_pfad:
-        pdfordner1_pfad = str(ordner_pfad[0])
-        label_ordner1.text = pdfordner1_pfad
+    return await werkzeuge_ansicht.pdfordner1_auswaehlen()
 
 
+# Änderung 2.037: Bestehenden Einstiegspunkt der Werkzeuge erhalten.
 async def pdfordner2_auswaehlen():
-    global pdfordner2_pfad
-    ordner_pfad = await app.native.main_window.create_file_dialog(webview.FOLDER_DIALOG)
-    if ordner_pfad:
-        pdfordner2_pfad = str(ordner_pfad[0])
-        label_ordner2.text = pdfordner2_pfad
+    return await werkzeuge_ansicht.pdfordner2_auswaehlen()
 
 
+# Änderung 2.037: Bestehenden Einstiegspunkt der Werkzeuge erhalten.
 async def ausgabeordner_auswaehlern():
-    global ausgabeordner_pfad
-    ordner_pfad = await app.native.main_window.create_file_dialog(webview.FOLDER_DIALOG)
-    if ordner_pfad:
-        ausgabeordner_pfad = str(ordner_pfad[0])
-        label_ausgabe.text = ausgabeordner_pfad
+    return await werkzeuge_ansicht.ausgabeordner_auswaehlern()
 
 
 # PDF Merging Funktion mit Fortschrittsanzeige
+# Änderung 2.037: Bestehenden Einstiegspunkt der Werkzeuge erhalten.
 def pdfjoin(progress):
-    log_feld.value = ''  # Logfeld leeren
-
-    if not pdfordner1_pfad or not pdfordner2_pfad or not ausgabeordner_pfad:
-        ui.notify("Bitte alle Ordner auswählen!", color="red")
-        return
-
-    pdfs1 = [f for f in os.listdir(pdfordner1_pfad) if f.lower().endswith(".pdf")]
-    pdfs2 = [f for f in os.listdir(pdfordner2_pfad) if f.lower().endswith(".pdf")]
-
-    # ID → Liste von PDFs aus Ordner 2
-    id_to_pdfs2 = {}
-    for f in pdfs2:
-        nums = extract_numbers(f)
-        if len(nums) == 1:
-            id_to_pdfs2.setdefault(nums[0], []).append(f)
-
-    count = 0
-    total = len(pdfs1)
-
-    # Fortschrittsanzeige sichtbar machen
-    progress.classes(remove='invisible')
-
-    for idx, f1 in enumerate(pdfs1, start=1):
-        # Fortschritt aktualisieren
-        progress.value = int((idx / total) * 100)
-
-        nums1 = extract_numbers(f1)
-
-        # Mehrfach-ID in Ordner 1 → überspringen + ins Log
-        if len(nums1) > 1:
-            log_feld.value += (
-                f"[WARN] Datei übersprungen (mehrere IDs gefunden): {f1} "
-                f"IDs: {', '.join(nums1)}\n"
-            )
-            continue
-
-        if not nums1:
-            continue  # keine ID → ignorieren
-
-        num = nums1[0]
-
-        if num not in id_to_pdfs2:
-            continue  # kein Pendant → ignorieren
-
-        kandidaten = id_to_pdfs2[num]
-
-        # Mehrere Pendants in Ordner 2 → erste verwenden + Log
-        if len(kandidaten) > 1:
-            log_feld.value += (
-                f"[INFO] Mehrere Pendants für '{f1}': {kandidaten} "
-                f"→ verwende '{kandidaten[0]}'\n"
-            )
-
-        f2 = kandidaten[0]
-
-        writer = PdfWriter()
-
-        # PDF 1 hinzufügen
-        reader1 = PdfReader(os.path.join(pdfordner1_pfad, f1))
-        for page in reader1.pages:
-            writer.add_page(page)
-
-        # PDF 2 hinzufügen
-        reader2 = PdfReader(os.path.join(pdfordner2_pfad, f2))
-        for page in reader2.pages:
-            writer.add_page(page)
-
-        basisname = os.path.splitext(f1)[0]
-        output_path = os.path.join(
-            ausgabeordner_pfad,
-            f"{basisname}-komplett.pdf"
-        )
-
-        with open(output_path, "wb") as out_file:
-            writer.write(out_file)
-
-        count += 1
-
-    # Fortschrittsanzeige wieder unsichtbar
-#    progress.classes(add='invisible')
-    ui.notify(f"{count} PDFs wurden erstellt!", color="green")
+    return werkzeuge_ansicht.pdfjoin(progress)
 
 
 # UI
+# Änderung 2.037: Bestehenden Einstiegspunkt der Werkzeuge erhalten.
 def tools_ui():
-    global label_ordner1, label_ordner2, label_ausgabe, log_feld
-
-    BUTTON_WIDTH = "220px"
-
-    with ui.column().style("width: 100%"):
-        # Große Überschrift
-        ui.label("PDF kombinieren").classes("text-2xl font-bold")
-
-        ui.label(
-            'Mit diesem Tool werden PDF-Dateien kombiniert. '
-            'Ordner 1 → Ordner 2. '
-            'Zuordnung erfolgt über die ID im Dateinamen.'
-        )
-
-        with ui.row():
-            ui.button(
-                "Ordner PDF 1",
-                icon='folder',
-                on_click=pdfordner1_auswaehlen
-            ).props('align=left').style(f"width: {BUTTON_WIDTH}")
-            label_ordner1 = ui.label('— kein Ordner gewählt —')
-
-        with ui.row():
-            ui.button(
-                "Ordner PDF 2",
-                icon='folder',
-                on_click=pdfordner2_auswaehlen
-            ).props('align=left').style(f"width: {BUTTON_WIDTH}")
-            label_ordner2 = ui.label('— kein Ordner gewählt —')
-
-        with ui.row():
-            ui.button(
-                "Ordner Ausgabe",
-                icon='folder',
-                on_click=ausgabeordner_auswaehlern
-            ).props('align=left').style(f"width: {BUTTON_WIDTH}")
-            label_ausgabe = ui.label('— kein Ordner gewählt —')
-
-        # Row mit Button + Fortschrittsanzeige
-        with ui.row().style("align-items: center; gap: 10px;"):
-            pdf_button = ui.button(
-                "PDF erstellen",
-                icon='picture_as_pdf',
-                on_click=lambda: pdfjoin(progress),
-                color='red'
-            ).props('align=left').style(f"width: {BUTTON_WIDTH}")
-
-            progress = ui.circular_progress(min=0, max=100, value=0, color="black")
-
-        log_feld = ui.textarea(
-            label="Hinweise / Mehrfachzuordnungen"
-        ).props('readonly rows=6').style(
-            "width: 80%; font-family: monospace;"
-        )
+    global werkzeuge_ansicht
+    werkzeuge_ansicht = WerkzeugeOberflaeche(sys.modules[__name__])
+    return werkzeuge_ansicht.tools_ui()
 
 
 ###########################################################################################################################

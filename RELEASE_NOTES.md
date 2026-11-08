@@ -5,6 +5,12 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.037: Wartung aus Anwendersicht dokumentieren. -->
+Version 2.037 – 08.11.2026
+-------------------------
+
+Interne Wartung der Werkzeuge; Bedienung, PDF-Zuordnung und Ergebnisse bleiben unverändert.
+
 <!-- Änderung 2.036: Wartung aus Anwendersicht dokumentieren. -->
 Version 2.036 – 08.11.2026
 -------------------------

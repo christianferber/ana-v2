@@ -6,6 +6,7 @@ Stand: 08.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Werkzeuge gegen Original: bestanden.
 - Kontodatenansicht gegen Original: bestanden.
 - Mitgliederansicht gegen Original: bestanden.
 - Abnehmeransicht gegen Original: bestanden.
@@ -111,6 +112,21 @@ Erster Praxisversuch wegen falscher Registerbezeichnung im Test gescheitert;
 korrigierter vollständiger Lauf bestanden. Keine neue Windows-EXE.
 Keine visuelle Dokumentprüfung im Modellkontext. Bearbeitung und Import
 über gebundene Methoden geprüft; im Browser wurde die Tabellenanzeige geprüft.
+
+Version 2.037: Alle sechs Werkzeugmethoden samt drei asynchronen
+Ordnerauswahlen und Adaptern strukturell gegen das Original geprüft.
+Gebundene Methoden mit lokalen PDF-Beispieldateien verglichen: Ordnerwahl
+und Abbruch, fehlende Ordner, leere Eingabeordner, ID-Ermittlung, fehlende
+und mehrfache Zuordnungen, Hinweise und Fortschritt. Zusammengefügte PDFs
+bytegleich zum Original; Seitenzahl, Seitenreihenfolge und Texte bestätigt.
+Native Ordnerdialoge wurden durch lokale Testantworten ersetzt.
+Echtes Tools-Register und vollständige Abrechnung am 08.11.2026 mit isolierter
+Datenkopie bestanden: CSV-Referenz identisch, 73 neue Word-Dateien und 73
+lesbare PDFs. Originalbestand per SHA256 unverändert. Gegenüber 2.036:
+Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch. Test-App, Fenster
+und Browser vollständig beendet. Keine neue Windows-EXE.
+Keine visuelle Dokumentprüfung im Modellkontext. PDF-Zusammenfügen über
+gebundene Methoden geprüft; im Browser die Werkzeugeanzeige geprüft.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

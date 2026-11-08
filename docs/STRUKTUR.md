@@ -104,3 +104,9 @@ Speichern der Kontodaten sowie den Registeraufbau für Buchungsvorlagen.
 Die Ansicht besitzt Tabelle und Speichern-Schaltfläche; Kontodaten und
 Exportauswahl bleiben gemeinsam auf der Anwendung verfügbar. Die bisherigen
 CSV-Exportfunktionen und deren Speicherdialoge bleiben im Hauptmodul.
+
+<!-- Änderung 2.037: Zuständigkeit der Werkzeugeansicht dokumentieren. -->
+`anwendung/werkzeuge_ui.py` enthält die Werkzeugeansicht mit Ordnerauswahl,
+ID-Ermittlung und PDF-Zusammenfügen. Beschriftungen und Hinweisfeld gehören
+zur Ansicht, die bisherigen Ordnerpfade bleiben auf der Anwendung. Die
+Einstiegspunkte im Hauptmodul bleiben über Adapter erhalten.

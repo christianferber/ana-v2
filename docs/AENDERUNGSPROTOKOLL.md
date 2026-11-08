@@ -159,3 +159,17 @@ Version 2.00 – 05.11.2026
   lokalen Beispieldaten für Spalten, Bearbeiten, IBAN, Laden, Speichern und Import
   verglichen. Prüfstand und Grenzen siehe TESTBERICHT.md.
 - Keine neue Windows-EXE erstellt.
+
+<!-- Änderung 2.037: Technischen Umbau versionsbezogen dokumentieren. -->
+## Version 2.037 – 08.11.2026
+
+- Sechs Werkzeugmethoden in `WerkzeugeOberflaeche` in
+  `anwendung/werkzeuge_ui.py` ausgelagert: Registeraufbau, drei asynchrone
+  Ordnerauswahlen, ID-Ermittlung und PDF-Zusammenfügen.
+- Beschriftungen und Hinweisfeld liegen auf der Ansicht; bisherige Ordnerpfade
+  bleiben auf der Anwendung. Sechs Adapter erhalten bestehende Aufrufe.
+- Alle Methoden und Adapter strukturell gegen Original geprüft. Gebundene
+  Methoden mit echten lokalen PDFs für Ordnerwahl/Abbruch, ID-Zuordnung,
+  fehlende und mehrfache Zuordnungen, leere Ordner, Fortschritt und bytegleichen
+  PDF-Inhalt einschließlich Seitenreihenfolge mit dem Original verglichen.
+- Keine neue Windows-EXE; Prüfstand und Grenzen siehe TESTBERICHT.md.

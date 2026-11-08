@@ -217,6 +217,9 @@ def pruefen():
     # Änderung 2.03: Auch die Abrechnungsansicht samt verschachtelten Dialogen prüfen.
     from tests.abrechnung_struktur import methoden_als_funktionen as abrechnungsmethoden
     neue_funktionen.update(abrechnungsmethoden(basis, alte_funktionen))
+    # Änderung 2.037: Werkzeuge einschließlich asynchroner Ordnerdialoge gegen Original prüfen.
+    from tests.werkzeuge_struktur import methoden_als_funktionen as werkzeugemethoden
+    neue_funktionen.update(werkzeugemethoden(basis, alte_funktionen))
     # Änderung 2.035: Mitgliederansicht einschließlich verschachtelter Dialoge und Async-Adapter prüfen.
     from tests.mitglieder_struktur import methoden_als_funktionen as mitgliedermethoden
     neue_funktionen.update(mitgliedermethoden(basis, alte_funktionen))

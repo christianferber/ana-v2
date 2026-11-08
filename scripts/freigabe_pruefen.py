@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.037: Werkzeuge mit ausschließlich lokalen PDF-Beispieldaten vergleichen.
+        ('Werkzeuge gegen Original', ['-m', 'tests.werkzeuge_pruefen']),
         # Änderung 2.036: Gebundene Kontodatenmethoden mit lokalen Beispieldaten vergleichen.
         ('Kontodatenansicht gegen Original', ['-m', 'tests.kontodaten_pruefen']),
         # Änderung 2.035: Mitgliederansicht mit lokalen Beispieldaten vergleichen.
@@ -142,6 +144,21 @@ def main():
                 'korrigierter vollständiger Lauf bestanden. Keine neue Windows-EXE.',
                 'Keine visuelle Dokumentprüfung im Modellkontext. Bearbeitung und Import',
                 'über gebundene Methoden geprüft; im Browser wurde die Tabellenanzeige geprüft.', '']
+    # Änderung 2.037: Abgeschlossenen Werkzeuge-Praxislauf dokumentieren.
+    bericht += ['Version 2.037: Alle sechs Werkzeugmethoden samt drei asynchronen',
+                'Ordnerauswahlen und Adaptern strukturell gegen das Original geprüft.',
+                'Gebundene Methoden mit lokalen PDF-Beispieldateien verglichen: Ordnerwahl',
+                'und Abbruch, fehlende Ordner, leere Eingabeordner, ID-Ermittlung, fehlende',
+                'und mehrfache Zuordnungen, Hinweise und Fortschritt. Zusammengefügte PDFs',
+                'bytegleich zum Original; Seitenzahl, Seitenreihenfolge und Texte bestätigt.',
+                'Native Ordnerdialoge wurden durch lokale Testantworten ersetzt.',
+                'Echtes Tools-Register und vollständige Abrechnung am 08.11.2026 mit isolierter',
+                'Datenkopie bestanden: CSV-Referenz identisch, 73 neue Word-Dateien und 73',
+                'lesbare PDFs. Originalbestand per SHA256 unverändert. Gegenüber 2.036:',
+                'Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch. Test-App, Fenster',
+                'und Browser vollständig beendet. Keine neue Windows-EXE.',
+                'Keine visuelle Dokumentprüfung im Modellkontext. PDF-Zusammenfügen über',
+                'gebundene Methoden geprüft; im Browser die Werkzeugeanzeige geprüft.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'
