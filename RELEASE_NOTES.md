@@ -5,6 +5,12 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.040: Wartung aus Anwendersicht dokumentieren. -->
+Version 2.040 – 08.11.2026
+-------------------------
+
+Interne Wartung des deaktivierten Statistikbereichs; Bedienung und Ergebnisse bleiben unverändert. Das Statistikregister bleibt deaktiviert.
+
 <!-- Änderung 2.039: Wartung aus Anwendersicht dokumentieren. -->
 Version 2.039 – 08.11.2026
 -------------------------

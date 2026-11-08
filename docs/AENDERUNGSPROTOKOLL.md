@@ -201,3 +201,18 @@ Version 2.00 – 05.11.2026
   verglichen; Protokolldateien bytegleich. Mangels Beispielprotokoll werden
   Prüfeinträge ausschließlich lokal aus Mitgliederdaten der Beispiele abgeleitet.
 - Keine neue Windows-EXE; Prüfstand und Grenzen siehe TESTBERICHT.md.
+
+<!-- Änderung 2.040: Technischen Umbau versionsbezogen dokumentieren. -->
+## Version 2.040 – 08.11.2026
+
+- Fünf Statistikmethoden nach `anwendung/statistik_ui.py` in die Klasse
+  `StatistikOberflaeche` ausgelagert: Abnehmerauswahl, Vergleichswerte,
+  CSV-Laden, Diagrammaufruf und Aufbau der Statistikoberfläche.
+- Auswahlfelder und Plot gehören zur Ansicht; Abnehmerdaten und Abrechnungspfad
+  bleiben auf der Anwendung. Fünf Adapter erhalten bestehende Aufrufe.
+- Statistikregister bleibt deaktiviert. Bestehende Typbehandlung und das bisherige
+  Diagrammverhalten bleiben unverändert; keine fachlichen Korrekturen vorgenommen.
+- Methoden und Adapter strukturell gegen Original geprüft. Gebundene Methoden mit
+  lokalen Beispieldaten sowie ein gefundener-Werte-Zweig mit expliziten Text-Identen
+  und Plotly-Figuren gegen Original verglichen. Prüfgrenzen siehe TESTBERICHT.md.
+- Keine neue Windows-EXE erstellt.

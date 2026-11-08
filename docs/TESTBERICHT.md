@@ -6,6 +6,7 @@ Stand: 08.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Statistik gegen Original: bestanden.
 - Changelog-Anzeige gegen Original: bestanden.
 - Einstellungsansicht gegen Original: bestanden.
 - Werkzeuge gegen Original: bestanden.
@@ -159,6 +160,22 @@ Gegenüber 2.038: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.
 Test-App, Fenster und Browser vollständig beendet. Filterinhalte über gebundene
 Methoden geprüft; im Browser die Register- und Filteranzeige geprüft.
 Keine neue Windows-EXE; keine visuelle Dokumentprüfung im Modellkontext.
+
+Version 2.040: Alle fünf Statistikmethoden und Adapter strukturell gegen
+Original geprüft. Gebundene Methoden mit lokalen Beispielabrechnungen für
+Abnehmerauswahl, Vergleichswerte, fehlende Auswahl/Spalten und CSV-Laden
+verglichen. Zusätzlich gefundene Werte mit expliziten Text-Identen aus denselben
+lokalen Daten geprüft; dies ändert nicht die bisherige Pandas-Typbehandlung.
+Erzeugte Plotly-Figuren und Update-Aufrufe gegen Original verglichen.
+Bestehende Einschränkung unverändert: Die neu erzeugte Figur wird vom bisherigen
+Code nicht dem Plot zugewiesen; numerisch gelesene Identen können am Textvergleich
+vorbeigehen. Keine Korrektur oder Aktivierung des Statistikregisters.
+Normaler vollständiger Praxislauf am 08.11.2026 ohne Statistikaktivierung
+bestanden: CSV-Referenz identisch, 73 neue Word-Dateien und 73 lesbare PDFs.
+Originalbestand per SHA256 unverändert. Gegenüber 2.039: Word-Paketinhalte,
+PDF-Seitenzahlen und Texte identisch. Test-App, Fenster und Browser beendet.
+Keine interaktive Statistikprüfung und keine visuelle Diagramm-/Dokumentprüfung.
+Keine neue Windows-EXE erstellt.
 
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

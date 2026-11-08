@@ -121,3 +121,9 @@ Die bisherigen Einstiegspunkte bleiben über Adapter erhalten.
 `anwendung/changelog_ui.py` enthält Registeraufbau und gefilterte Markdown-Anzeige
 für das Changelog. Anzeige- und Filterzustand liegt auf der Ansicht. Protokollpfad
 und Schreibfunktionen bleiben auf der Anwendung; Adapter erhalten bestehende Aufrufe.
+
+<!-- Änderung 2.040: Zuständigkeit des deaktivierten Statistikbereichs dokumentieren. -->
+`anwendung/statistik_ui.py` enthält Auswahlfelder, CSV-Laden und Diagrammaufrufe
+für den weiterhin deaktivierten Statistikbereich. Anzeigezustand gehört zur
+Ansicht; Daten und Abrechnungspfad bleiben auf der Anwendung. Die bisherigen
+Einstiegspunkte bleiben über Adapter erhalten; das Register wird nicht aktiviert.

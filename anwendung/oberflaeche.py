@@ -23,6 +23,8 @@ from anwendung.werkzeuge_ui import WerkzeugeOberflaeche
 from anwendung.einstellungen_ui import EinstellungenOberflaeche
 # Änderung 2.039: Changelog-Ansicht einbinden.
 from anwendung.changelog_ui import ChangelogOberflaeche
+# Änderung 2.040: Statistikansicht einbinden; Register bleibt deaktiviert.
+from anwendung.statistik_ui import StatistikOberflaeche
 # Änderung 2.035: Mitgliederansicht mit eigenem Bedienzustand einbinden.
 from anwendung.mitglieder_ui import MitgliederOberflaeche
 from anwendung.abschlag_ui import AbschlagOberflaeche
@@ -105,7 +107,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.037: Werkzeugeauslagerung kennzeichnen.
 # Änderung 2.038: Einstellungsauslagerung kennzeichnen.
 # Änderung 2.039: Changelog-Auslagerung kennzeichnen.
-version = 2.039
+# Änderung 2.040: Statistikauslagerung kennzeichnen.
+version = 2.040
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -1005,86 +1008,35 @@ def tools_ui():
 # Hilfsfunktionen
 # -----------------------------------------------------------
 
+# Änderung 2.040: Bestehenden Statistikeinstieg ohne Aktivierung erhalten.
 def abnehmer_auslesen():
-    abnehmer_liste = []
-    for row in abnehmer_db:
-        abnehmer_kurz_row = row["Ident"] + " | " + row["Name"] + " " + row["Vorname"]
-        abnehmer_liste.append(abnehmer_kurz_row)
-    return abnehmer_liste
+    return statistik_ansicht.abnehmer_auslesen()
 
 
+# Änderung 2.040: Bestehenden Statistikeinstieg ohne Aktivierung erhalten.
 def dropdown_vergleichswerte_update():
-    vergleichswerte_mapping = {
-        "Abrechnung": ["Mindestvertragssume", "Mindestvertragsleistung", "verbrauchte kWh"],
-    }
-    dropdown_vergleichswerte.set_options(vergleichswerte_mapping.get(dropdown_bereich.value, []))
-    lade_diagramm()
+    return statistik_ansicht.dropdown_vergleichswerte_update()
 
 
+# Änderung 2.040: Bestehenden Statistikeinstieg ohne Aktivierung erhalten.
 def lade_diagramm():
-    if not dropdown_abnehmer.value or not dropdown_vergleichswerte.value:
-        return
-
-    ident = dropdown_abnehmer.value.split(" | ")[0]  # Nur die Ident extrahieren
-    spalten_name = dropdown_vergleichswerte.value
-
-    jahre = []
-    werte = []
-
-    for eintrag in os.listdir(ordner_abrechnungen):
-        if eintrag.startswith("Abrechnung-"):
-            jahr = eintrag.split("-")[1]
-            csv_datei = os.path.join(ordner_abrechnungen, eintrag, f"Abrechnung-{jahr}.csv")
-
-            if os.path.isfile(csv_datei):
-                df = pd.read_csv(csv_datei, sep=';', encoding='cp1252')
-
-                row = df[df["Ident"] == ident]
-                if not row.empty and spalten_name in df.columns:
-                    jahre.append(int(jahr))
-                    werte.append(row[spalten_name].iloc[0])
-
-    zeichne_diagramm(jahre, werte)
+    return statistik_ansicht.lade_diagramm()
 
 
+# Änderung 2.040: Bestehenden Statistikeinstieg ohne Aktivierung erhalten.
 def zeichne_diagramm(jahre, werte):
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=jahre, y=werte, mode='lines+markers', name='Wertentwicklung'))
-    fig.update_layout(xaxis_title="Jahre", yaxis_title="Wert", title="Abrechnungsstatistik")
-    plot.update()
+    return statistik_ansicht.zeichne_diagramm(jahre, werte)
 
 
 # -----------------------------------------------------------
 # UI Aufbau
 # -----------------------------------------------------------
 
+# Änderung 2.040: Bestehenden Statistikeinstieg ohne Aktivierung erhalten.
 def statistik_ui():
-    global dropdown_abnehmer, dropdown_bereich, dropdown_vergleichswerte, plot
-
-    with ui.row():
-        dropdown_abnehmer = ui.select(
-            abnehmer_auslesen(),
-            label='Anschlussnehmer',
-            on_change=lambda _: lade_diagramm()
-        ).classes('w-64')
-
-    with ui.row():
-        dropdown_bereich = ui.select(
-            ['Abrechnung'],
-            label='Bereich',
-            on_change=dropdown_vergleichswerte_update
-        ).classes('w-48')
-
-    with ui.row():
-        dropdown_vergleichswerte = ui.select(
-            [],
-            label='Vergleichswert',
-            on_change=lambda _: lade_diagramm()
-        ).classes('w-64')
-        dropdown_vergleichswerte_update()  # initiale Befüllung
-
-    with ui.row():
-        plot = ui.plotly(go.Figure())
+    global statistik_ansicht
+    statistik_ansicht = StatistikOberflaeche(sys.modules[__name__])
+    return statistik_ansicht.statistik_ui()
 
 
 

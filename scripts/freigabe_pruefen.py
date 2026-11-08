@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.040: Deaktivierte Statistik mit lokalen Beispieldaten vergleichen.
+        ('Statistik gegen Original', ['-m', 'tests.statistik_pruefen']),
         # Änderung 2.039: Changelog-Filter und Anzeige ausschließlich lokal vergleichen.
         ('Changelog-Anzeige gegen Original', ['-m', 'tests.changelog_pruefen']),
         # Änderung 2.038: Einstellungsdialog und INI-Speicherung lokal vergleichen.
@@ -193,6 +195,22 @@ def main():
                 'Test-App, Fenster und Browser vollständig beendet. Filterinhalte über gebundene',
                 'Methoden geprüft; im Browser die Register- und Filteranzeige geprüft.',
                 'Keine neue Windows-EXE; keine visuelle Dokumentprüfung im Modellkontext.', '']
+    # Änderung 2.040: Abgeschlossene Prüfung des deaktivierten Statistikbereichs festhalten.
+    bericht += ['Version 2.040: Alle fünf Statistikmethoden und Adapter strukturell gegen',
+                'Original geprüft. Gebundene Methoden mit lokalen Beispielabrechnungen für',
+                'Abnehmerauswahl, Vergleichswerte, fehlende Auswahl/Spalten und CSV-Laden',
+                'verglichen. Zusätzlich gefundene Werte mit expliziten Text-Identen aus denselben',
+                'lokalen Daten geprüft; dies ändert nicht die bisherige Pandas-Typbehandlung.',
+                'Erzeugte Plotly-Figuren und Update-Aufrufe gegen Original verglichen.',
+                'Bestehende Einschränkung unverändert: Die neu erzeugte Figur wird vom bisherigen',
+                'Code nicht dem Plot zugewiesen; numerisch gelesene Identen können am Textvergleich',
+                'vorbeigehen. Keine Korrektur oder Aktivierung des Statistikregisters.',
+                'Normaler vollständiger Praxislauf am 08.11.2026 ohne Statistikaktivierung',
+                'bestanden: CSV-Referenz identisch, 73 neue Word-Dateien und 73 lesbare PDFs.',
+                'Originalbestand per SHA256 unverändert. Gegenüber 2.039: Word-Paketinhalte,',
+                'PDF-Seitenzahlen und Texte identisch. Test-App, Fenster und Browser beendet.',
+                'Keine interaktive Statistikprüfung und keine visuelle Diagramm-/Dokumentprüfung.',
+                'Keine neue Windows-EXE erstellt.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'
