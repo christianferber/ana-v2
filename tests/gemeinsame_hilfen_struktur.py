@@ -16,6 +16,8 @@ def methoden_als_funktionen(basis, originalfunktionen):
     adapter = {k.name: k for k in haupt.body if isinstance(k, ast.FunctionDef)}
     ergebnis = {}
     for modul, klasse, namen in (
+            # Änderung 2.045: Datenbankzugriffe samt Adaptern und Initialisierung prüfen.
+            ('datenhaltung', 'DatenbankZugriff', {'db_datei_oeffnen', 'db_datei_speichern'}),
             ('sicherung', 'Sicherung', {'db_sichern', 'max_anzahl_ordner'}),
             ('protokollierung', 'Protokollierung', {'change_log', 'change_log_info'})):
         baum = ast.parse((basis / ('anwendung/' + modul + '.py')).read_text(encoding='utf-8'))

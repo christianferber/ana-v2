@@ -60,3 +60,37 @@ def import_csv_inhalt(csvinput):
     for row in csv_reader_object:
             dictionary_temp_list.append(row)
     return dictionary_temp_list
+
+
+class DatenbankZugriff:
+    # Änderung 2.045: Pfade und Dateihilfen dynamisch von der Anwendung lesen.
+    def __init__(self, anwendung):
+        self.anwendung = anwendung
+
+    # Änderung 2.045: Bisherigen Zugriff mit aktuellen Anwendungspfaden erhalten.
+    def db_datei_oeffnen(self, dbfile):
+        dbfilepath = Path(self.anwendung.ordner_datenbank + "\\" + dbfile)
+        dictionary_temp_list = []
+        if dbfilepath.is_file():
+            with open(self.anwendung.ordner_datenbank + "\\" + dbfile) as csvdatei:
+                csv_reader_object = csv.DictReader(csvdatei, delimiter=';')
+                for row in csv_reader_object:
+                    dictionary_temp_list.append(row)
+        else:
+            dictionary_temp_list.append("file not found")
+        return dictionary_temp_list
+
+    # Änderung 2.045: Bisherigen Zugriff mit aktuellen Anwendungspfaden erhalten.
+    def db_datei_speichern(self, dbfile, csvdict):
+        # Überprüfen, ob die Unterordner vorhanden sind und anlegen, wenn nicht
+        self.anwendung.check_ordner_exists(self.anwendung.ordner_abrechnungen)
+        self.anwendung.check_ordner_exists(self.anwendung.ordner_rueckv)
+        self.anwendung.check_ordner_exists(self.anwendung.ordner_logs)
+        self.anwendung.check_ordner_exists(self.anwendung.ordner_datenbank)
+        self.anwendung.check_ordner_exists(self.anwendung.ordner_sicherungen)
+        self.anwendung.check_ordner_exists(self.anwendung.ordner_downloads)
+        csvstring = self.anwendung.dictlist_to_csv(csvdict)
+        dbfile = self.anwendung.ordner_datenbank + "\\" + dbfile
+        dbfileobject = open(dbfile, "w")
+        dbfileobject.write(csvstring)
+        dbfileobject.close()

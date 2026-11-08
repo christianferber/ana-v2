@@ -70,6 +70,9 @@ def umgebung_laden(original, daten):
                 umgebung[name] = wert
 
         umgebung['kontodaten_ansicht'] = KontodatenOberflaeche(TestAnwendung())
+        # Änderung 2.045: Exportreferenz verwendet den echten ausgelagerten Datenbankleser.
+        from anwendung.datenhaltung import DatenbankZugriff
+        umgebung['datenhaltung_hilfe'] = DatenbankZugriff(TestAnwendung())
         # Änderung 2.041: Exportreferenzen über echte gebundene Bedienmethoden ausführen.
         from anwendung.buchungsexport_ui import BuchungsexportOberflaeche
         umgebung['buchungsexport_ansicht'] = BuchungsexportOberflaeche(TestAnwendung())

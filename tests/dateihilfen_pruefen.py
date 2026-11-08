@@ -388,7 +388,8 @@ def pruefen():
     # Änderung für v2: Den Import der ausgelagerten Funktionen zusätzlich kontrollieren.
     namen = {k.name for k in modul.body if isinstance(k, ast.FunctionDef)}
     importe = [k for k in neu.body if isinstance(k, ast.ImportFrom) and k.module == 'anwendung.datenhaltung']
-    assert len(importe) == 1 and {k.name for k in importe[0].names} == namen
+    # Änderung 2.045: Zusätzlich zur bisherigen Funktionsliste die neue Zugriffsklasse importieren.
+    assert len(importe) == 1 and {k.name for k in importe[0].names} == namen | {'DatenbankZugriff'}
     # Änderung für v2: Alle fünf Vorlagen müssen über den tatsächlichen Modulimport verfügbar sein.
     buchungsimporte = [k for k in neu.body if isinstance(k, ast.ImportFrom) and k.module == 'anwendung.buchungsvorlagen']
     assert len(buchungsimporte) == 1

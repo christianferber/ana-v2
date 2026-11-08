@@ -20,6 +20,24 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Version 2.045 – 08.11.2026
+
+<!-- Änderung 2.045: Datenbankauslagerung und Vergleichsprüfungen dokumentieren. -->
+- `db_datei_oeffnen` und `db_datei_speichern` nach `DatenbankZugriff` im vorhandenen
+  Modul `anwendung/datenhaltung.py` verschoben. Zwei Adapter erhalten die bisherigen
+  Aufrufe. Aktuelle Pfade und Dateihilfen werden über die Anwendung gelesen.
+- Strukturvergleich der Funktionskörper, Adapter, Initialisierung und Importe
+  erweitert. Buchungsreferenz verwendet den echten ausgelagerten Datenbankleser.
+- Neuer lokaler Vergleich prüft Lesen, bytegleiches Schreiben, Eingabemutationen,
+  Reihenfolge der sechs Ordneranlagen, Pfadwechsel mit derselben Instanz, fehlende
+  und leere Dateien sowie bisherige Fehler bei leerer Tabelle und falschem Zieltyp.
+- Alle 20 Freigabeprüfungen und Syntaxprüfung bestanden. Vollständiger regulärer
+  Praxislauf mit normaler Word-Anbindung bestanden: 73 neue Word-Dateien und 73
+  lesbare PDFs, CSV-Referenz identisch und Original-Beispieldaten unverändert.
+  Gegen 2.044: Word-Paketinhalte, PDF-Seitenzahlen und Texte identisch.
+  Keine verbliebenen ANA-, Word- oder Testbrowserprozesse. Keine neue EXE und
+  keine visuelle Dokumentprüfung.
+
 ## Version 2.044 – 08.11.2026
 
 <!-- Änderung 2.044: Auslagerung der Datenaufbereitung getrennt dokumentieren. -->

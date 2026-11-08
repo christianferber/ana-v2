@@ -1,5 +1,11 @@
 # Projektstruktur
 
+<!-- Änderung 2.045: Gemeinsame Datenbankzugriffe dokumentieren. -->
+`anwendung/datenhaltung.py` enthält zusätzlich die Klasse `DatenbankZugriff` für
+`db_datei_oeffnen` und `db_datei_speichern`. Die Hilfe verwendet aktuelle Pfade und
+Dateihilfen der Anwendung; kleine Adapter erhalten die bisherigen Aufrufe.
+Ordneranlage, CSV-Format und Behandlung fehlender Dateien bleiben unverändert.
+
 <!-- Änderung 2.044: Gemeinsame Datenaufbereitung dokumentieren. -->
 `anwendung/datenaufbereitung.py` enthält Schlüsselsuche, CSV-Listenaufbereitung,
 Jahresentnahme und die beiden Tabellenumwandlungen in Zahlen. Die fünf Funktionen

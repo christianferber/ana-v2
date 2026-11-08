@@ -6,6 +6,7 @@ Stand: 08.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Datenbankzugriffe gegen Original: bestanden.
 - Datenaufbereitung gegen Original: bestanden.
 - Sicherung gegen Original: bestanden.
 - Buchungsexport-Bedienung gegen Original: bestanden.
@@ -235,9 +236,6 @@ Word-Paketinhalte, PDF-Seitenzahlen und PDF-Texte identisch. Test-App, Fenster u
 Browser beendet; unabhängige Abfrage: keine ANA- und Word-Prozesse vorhanden.
 Keine neue EXE und keine visuelle Dokumentprüfung.
 
-Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
-Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
-
 Version 2.044: Fünf unveränderte Funktionen zur Datenaufbereitung ausgelagert.
 Funktionskörper und vollständige direkte Importliste strukturell gegen Original
 geprüft. Referenz- und Buchungsläufe verwenden echte importierte Funktionen.
@@ -251,3 +249,21 @@ PDF-Seitenzahlen und PDF-Texte identisch. Test-App, Fenster und Browser beendet.
 Unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.
 Keine neue EXE, keine visuelle Dokumentprüfung. Versionsanzeige mit zwei
 Nachkommastellen bleibt unverändert; dies ist keine Korrektur dieses Anzeigefehlers.
+
+Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
+Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
+
+Version 2.045: Zwei Datenbankzugriffe unverändert in DatenbankZugriff
+im bestehenden Datenhaltungsmodul ausgelagert. Körper, Adapter, Initialisierung
+und Importe strukturell gegen Original geprüft. Buchungsreferenz verwendet
+den echten ausgelagerten Datenbankleser. Lokale Beispielkopien für Lesen,
+bytegleiches Schreiben, Eingabemutationen, Reihenfolge der sechs Ordneranlagen,
+Pfadwechsel mit derselben Instanz, fehlende/leere Dateien und bestehende Fehler
+bei leerer Tabelle und falschem Zieltyp gegen Original geprüft.
+Alle 20 Freigabeprüfungen und Syntaxprüfung bestanden. Regulärer vollständiger
+Praxislauf am 08.11.2026: Buchungsvorlagenregister, Berechnung, CSV-Referenz,
+73 neue Word-Dateien und 73 lesbare PDFs. Normale Word-Anbindung ohne isolierten
+Ersatz. Originalbestand unverändert. Gegen 2.044: Word-Paketinhalte, PDF-Seitenzahlen
+und PDF-Texte identisch. App, Fenster und Browser beendet. Unabhängige Abfrage:
+null ANA-, Word- und Testbrowserprozesse. Keine neue EXE, keine visuelle
+Dokumentprüfung. Versionsanzeige mit zwei Nachkommastellen bleibt unverändert.

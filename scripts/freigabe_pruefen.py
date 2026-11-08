@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.045: Datenbankzugriffe mit lokalen Beispieldatenkopien vergleichen.
+        ('Datenbankzugriffe gegen Original', ['-m', 'tests.datenbank_pruefen']),
         # Änderung 2.044: Tatsächliche Aufbereitung mit lokalen Daten und Sonderfällen vergleichen.
         ('Datenaufbereitung gegen Original', ['-m', 'tests.datenaufbereitung_pruefen']),
         # Änderung 2.043: Sicherungen mit lokalen Beispieldaten gegen Original prüfen.
@@ -251,6 +253,21 @@ def main():
                 'Unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.',
                 'Keine neue EXE, keine visuelle Dokumentprüfung. Versionsanzeige mit zwei',
                 'Nachkommastellen bleibt unverändert; dies ist keine Korrektur dieses Anzeigefehlers.', '']
+    # Änderung 2.045: Abgeschlossene Datenbank- und reguläre Praxisprüfung dokumentieren.
+    bericht += ['Version 2.045: Zwei Datenbankzugriffe unverändert in DatenbankZugriff',
+                'im bestehenden Datenhaltungsmodul ausgelagert. Körper, Adapter, Initialisierung',
+                'und Importe strukturell gegen Original geprüft. Buchungsreferenz verwendet',
+                'den echten ausgelagerten Datenbankleser. Lokale Beispielkopien für Lesen,',
+                'bytegleiches Schreiben, Eingabemutationen, Reihenfolge der sechs Ordneranlagen,',
+                'Pfadwechsel mit derselben Instanz, fehlende/leere Dateien und bestehende Fehler',
+                'bei leerer Tabelle und falschem Zieltyp gegen Original geprüft.',
+                'Alle 20 Freigabeprüfungen und Syntaxprüfung bestanden. Regulärer vollständiger',
+                'Praxislauf am 08.11.2026: Buchungsvorlagenregister, Berechnung, CSV-Referenz,',
+                '73 neue Word-Dateien und 73 lesbare PDFs. Normale Word-Anbindung ohne isolierten',
+                'Ersatz. Originalbestand unverändert. Gegen 2.044: Word-Paketinhalte, PDF-Seitenzahlen',
+                'und PDF-Texte identisch. App, Fenster und Browser beendet. Unabhängige Abfrage:',
+                'null ANA-, Word- und Testbrowserprozesse. Keine neue EXE, keine visuelle',
+                'Dokumentprüfung. Versionsanzeige mit zwei Nachkommastellen bleibt unverändert.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'

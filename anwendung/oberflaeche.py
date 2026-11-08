@@ -9,7 +9,7 @@ from anwendung.datenaufbereitung import (string_in_dict, listcsv_to_dict, jahr_i
 # Weitere Felder für Anreden bei Serienbrief implementieren
 
 # Änderung für v2: Dateihilfen zentral aus datenhaltung laden; Aufrufe bleiben gleich.
-from anwendung.datenhaltung import (check_ordner_exists, datei_oeffnen, datei_speichern,
+from anwendung.datenhaltung import (DatenbankZugriff, check_ordner_exists, datei_oeffnen, datei_speichern,
                          dictlist_to_csv, import_file, import_csv_inhalt)
 # Änderung für v2: Arbeitsordnerpfade unabhängig von der Oberfläche erzeugen.
 from anwendung.einstellungen import pfade_erstellen, ini_datei_lesen, ini_datei_schreiben
@@ -63,6 +63,8 @@ from pypdf import PdfReader, PdfWriter                              # für PDF M
 import os
 # Änderung für v2: Ressourcen sowohl beim Python-Start als auch neben der EXE finden.
 import sys
+# Änderung 2.045: Datenbankzugriffe vor dem Ansichtsaufbau bereitstellen.
+datenhaltung_hilfe = DatenbankZugriff(sys.modules[__name__])
 # Änderung 2.043: Gemeinsame Hilfen vor dem Aufbau der Ansichten bereitstellen.
 from anwendung.sicherung import Sicherung
 from anwendung.protokollierung import Protokollierung
@@ -125,7 +127,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.042: Erneute Auslagerung erst nach vollständig erfolgreicher regulärer Prüfung freigeben.
 # Änderung 2.043: Gemeinsame Sicherungs- und Protokollhilfen auslagern.
 # Änderung 2.044: Gemeinsame Datenaufbereitung auslagern.
-version = 2.044
+# Änderung 2.045: Datenbankzugriffe auslagern.
+version = 2.045
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -280,33 +283,15 @@ def ini_speichern():
 
 # Änderung für v2: check_ordner_exists ist unverändert in datenhaltung.py ausgelagert.
 
+# Änderung 2.045: Bestehenden Datenbankaufruf weitergeben.
 def db_datei_oeffnen(dbfile):
-    dbfilepath = Path(ordner_datenbank + "\\" + dbfile)
-    dictionary_temp_list = []
-    if dbfilepath.is_file():
-        with open(ordner_datenbank + "\\" + dbfile) as csvdatei:
-            csv_reader_object = csv.DictReader(csvdatei, delimiter=';')
-            for row in csv_reader_object:
-                dictionary_temp_list.append(row)
-    else:
-        dictionary_temp_list.append("file not found")
-    return dictionary_temp_list
+    return datenhaltung_hilfe.db_datei_oeffnen(dbfile)
 
 # Änderung für v2: datei_oeffnen ist unverändert in datenhaltung.py ausgelagert.
 
+# Änderung 2.045: Bestehenden Datenbankaufruf weitergeben.
 def db_datei_speichern(dbfile, csvdict):
-    # Überprüfen, ob die Unterordner vorhanden sind und anlegen, wenn nicht
-    check_ordner_exists(ordner_abrechnungen)
-    check_ordner_exists(ordner_rueckv)
-    check_ordner_exists(ordner_logs)
-    check_ordner_exists(ordner_datenbank)
-    check_ordner_exists(ordner_sicherungen)
-    check_ordner_exists(ordner_downloads)
-    csvstring = dictlist_to_csv(csvdict)
-    dbfile = ordner_datenbank + "\\" + dbfile
-    dbfileobject = open(dbfile, "w")
-    dbfileobject.write(csvstring)
-    dbfileobject.close()
+    return datenhaltung_hilfe.db_datei_speichern(dbfile, csvdict)
 
 
 # Änderung für v2: datei_speichern ist unverändert in datenhaltung.py ausgelagert.
