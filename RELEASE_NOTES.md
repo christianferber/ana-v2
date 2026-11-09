@@ -5,6 +5,12 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung: Bereinigung bei ausdrücklich unveränderter Version dokumentieren. -->
+Wartungsstand nach Version 2.047
+------------------------------
+
+Interne Bereinigung; Bedienung, Dateiformate und Abrechnungsergebnisse bleiben unverändert.
+
 <!-- Änderung 2.047: Interne Wartung aus Anwendersicht dokumentieren. -->
 Version 2.047 – 09.11.2026
 -------------------------

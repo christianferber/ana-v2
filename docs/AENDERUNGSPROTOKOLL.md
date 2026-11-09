@@ -20,6 +20,18 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Bereinigung nach Version 2.047 – 09.11.2026
+
+<!-- Änderung: Entfernung ungenutzter Altbestände bei unveränderter Version dokumentieren. -->
+
+- Die nicht mehr verwendeten Funktionen `textarea_to_string`, `string_to_textarea`,
+  `datum_mit_strich` und `tablefield_to_int` aus dem Hauptmodul entfernt.
+- Der Strukturvergleich nimmt genau diese vier Originaldefinitionen aus und prüft
+  ihre Entfernung. Alle übrigen Funktionen werden weiterhin verglichen.
+- Aktive Text-, Datums- und Tabellenumwandlungen unverändert; insbesondere bleibt
+  `tablefields_to_int` erhalten. Version und Versionsanzeige bleiben auf Benutzerwunsch
+  unverändert. Keine neue EXE und kein neuer Versionsrelease.
+
 ## Version 2.047 – 09.11.2026
 
 <!-- Änderung 2.047: Gemeinsame Mitgliederaktualisierung und Vergleichsprüfungen dokumentieren. -->

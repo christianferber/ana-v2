@@ -304,13 +304,7 @@ def db_datei_speichern(dbfile, csvdict):
 
 # Änderung für v2: dictlist_to_csv ist unverändert in datenhaltung.py ausgelagert.
 
-def textarea_to_string(textarea):
-    string = str(textarea).replace("\n", " | ")
-    return string
-
-def string_to_textarea(string):
-    textarea = string.replace(" | ", "\n")
-    return textarea
+# Änderung: Ungenutzte Textumwandlungshilfen entfernt; aktive Textverarbeitung bleibt unverändert.
 
 def dateien_in_ordner_loeschen(ordner):
     dateien = os.listdir(ordner)
@@ -334,16 +328,7 @@ def dateien_in_ordner_loeschen(ordner):
 
 ### Wandelt Format dd.mm.yyyy um in yyyymmdd
 
-def datum_mit_strich(datum):
-    if "." in datum:
-        datum_split = datum.split(".")
-        datum_string = datum_split[2] + "-" + datum_split[1] + "-" + datum_split[0]
-    elif "-" in datum:
-        datum_string = datum_in_string
-    else:
-        print("Datum ist nicht im Format DD.MM.YYYY oder YYYY-MM-DD.")
-        return
-    return datum_string
+# Änderung: Ungenutzte Datumshilfe entfernt; importierte Datumsfunktionen bleiben erhalten.
 
 # Änderung für v2: datum_in_string unverändert aus berechnungen importiert.
 
@@ -370,13 +355,7 @@ def dbs_mitglieder_aktualisieren():
 
 
 
-def tablefield_to_int(table, field):
-    for row in table:
-        for key,value in row.items():
-            if key == field:
-                if value.isnumeric() and value != None:
-                    row[key] = int(value)
-    return table
+# Änderung: Ungenutzte Einzelfeldhilfe entfernt; tablefields_to_int bleibt unverändert.
 
 # Änderung für v2: Die sechs unveränderten Formatierungsfunktionen liegen in dokumentfelder.py.
 

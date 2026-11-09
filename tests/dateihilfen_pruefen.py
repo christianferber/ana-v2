@@ -322,6 +322,13 @@ def pruefen():
     for name, funktion in rechenfunktionen.items():
         if name in alte_funktionen and name != 'letzte_mindestabnahme':
             neue_funktionen[name] = funktion
+    # Änderung: Nur die vier nachweislich ungenutzten Altbestände vom Originalvergleich ausnehmen.
+    entfernte_hilfen = {'textarea_to_string', 'string_to_textarea',
+                       'datum_mit_strich', 'tablefield_to_int'}
+    assert entfernte_hilfen <= alte_funktionen.keys()
+    assert not entfernte_hilfen.intersection(neue_funktionen)
+    for name in entfernte_hilfen:
+        del alte_funktionen[name]
     assert alte_funktionen.keys() == neue_funktionen.keys()
     for name in alte_funktionen:
         # Änderung: Die freigegebene Stapelkonvertierung hat einen neuen Ablauf.

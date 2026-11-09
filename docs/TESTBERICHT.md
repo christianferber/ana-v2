@@ -282,9 +282,6 @@ unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.
 Keine neue Windows-EXE und keine visuelle Dokumentprüfung. Der bekannte
 Versionsanzeigefehler mit zwei Nachkommastellen bleibt unverändert.
 
-Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
-Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
-
 Version 2.047: Gemeinsame Mitgliederaktualisierung in DatenbankZugriff
 ausgelagert. Strukturvergleich prüft vollständige Methode und Adapter;
 nur globale Deklarationen entfallen bei den Anwendungszugriffen.
@@ -303,3 +300,23 @@ und PDF-Texte identisch. App, Fenster und Browser vollständig beendet;
 unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.
 Keine neue EXE, keine visuelle Dokumentprüfung. Bekannter Versionsanzeigefehler
 mit zwei Nachkommastellen bleibt unverändert.
+
+Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
+Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
+
+## Bereinigung nach Version 2.047 – 09.11.2026
+
+<!-- Änderung: Tatsächliche Prüfungen der Entfernung ungenutzter Hilfen festhalten. -->
+
+Vier ungenutzte Umwandlungshilfen entfernt; alle übrigen Funktionen werden weiterhin
+gegen das Original verglichen. Alle 22 Freigabeprüfungen und Syntaxprüfung bestanden.
+Der erste Prüflauf scheiterte ausschließlich bei der Prozessprüfung, weil der
+Praxislauf versehentlich zeitgleich gestartet wurde. Die vollständige Prüfserie
+wurde danach ohne parallelen Praxislauf wiederholt und vollständig bestanden.
+Regulärer Praxislauf mit normaler Word-Anbindung bestanden: Mitgliederregister,
+Berechnung, CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs.
+Gegen den letzten Lauf von 2.047 sind Word-Paketinhalte, PDF-Seitenzahlen und
+extrahierte Texte identisch. Original-Beispieldaten unverändert. Test-App, Fenster
+und Testbrowser beendet; unabhängige Prozessabfrage ohne verbliebene ANA-, Word-
+oder Testbrowserprozesse. Keine visuelle Dokumentprüfung, keine neue EXE.
+Version und Versionsanzeige bleiben auf Benutzerwunsch unverändert.
