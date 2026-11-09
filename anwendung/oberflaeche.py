@@ -132,7 +132,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.044: Gemeinsame Datenaufbereitung auslagern.
 # Änderung 2.045: Datenbankzugriffe auslagern.
 # Änderung 2.046: Gemeinsame CSV-Speicherhilfe auslagern.
-version = 2.046
+# Änderung 2.047: Mitgliederaktualisierung auslagern.
+version = 2.047
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -359,51 +360,9 @@ def datum_mit_strich(datum):
 # Änderung für v2: datum_tage_vorher unverändert aus berechnungen importiert.
 
 
+# Änderung 2.047: Bisherigen Einstiegspunkt der Mitgliederaktualisierung erhalten.
 def dbs_mitglieder_aktualisieren():
-    global abnehmer_db
-    global zaehler_db
-    global abschlag_db
-    global konto_db
-    global db_abnehmer
-    global db_zaehler
-    global db_abschlag
-    global db_konto
-    if abnehmer_db != []:
-        for row in abnehmer_db:
-            for mitglied in mitglieder_db:
-                if row["Ident"] == mitglied["Ident"]:
-                    row["Name"] = mitglied["Name"]
-                    row["Vorname"] = mitglied["Vorname"]
-    if (db_abnehmer_found == 1):
-        db_datei_speichern(db_abnehmer, abnehmer_db)
-        abnehmer_aus_db()
-    if zaehler_db != []:
-        for row in zaehler_db:
-            for mitglied in mitglieder_db:
-                if row["Ident"] == mitglied["Ident"]:
-                    row["Name"] = mitglied["Name"]
-                    row["Vorname"] = mitglied["Vorname"]
-    if (db_zaehler_found == 1):
-        db_datei_speichern(db_zaehler, zaehler_db)
-        zaehler_aus_db()
-    if abschlag_db != []:
-        for row in abschlag_db:
-            for mitglied in mitglieder_db:
-                if row["Ident"] == mitglied["Ident"]:
-                    row["Name"] = mitglied["Name"]
-                    row["Vorname"] = mitglied["Vorname"]
-    if (db_abschlag_found == 1):
-        db_datei_speichern(db_abschlag, abschlag_db)
-        abschlag_aus_db()
-    if konto_db != []:
-        for row in konto_db:
-            for mitglied in mitglieder_db:
-                if row["Ident"] == mitglied["Ident"]:
-                    row["Name"] = mitglied["Name"]
-                    row["Vorname"] = mitglied["Vorname"]
-    if (db_konto_found == 1):
-        db_datei_speichern(db_konto, konto_db)
-        konto_aus_db()
+    return datenhaltung_hilfe.dbs_mitglieder_aktualisieren()
 
 
 # Tabellenfelder werden als floats markiert, wenn Zahlen enthalten sind. Ansonsten kann man Tabellenzellen im Grid nicht mit numerischen Werten anpassen

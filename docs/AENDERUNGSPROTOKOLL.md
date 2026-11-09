@@ -20,6 +20,22 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Version 2.047 – 09.11.2026
+
+<!-- Änderung 2.047: Gemeinsame Mitgliederaktualisierung und Vergleichsprüfungen dokumentieren. -->
+
+- `dbs_mitglieder_aktualisieren` in die bestehende Klasse `DatenbankZugriff`
+  verschoben. Aktuelle Anwendungswerte ersetzen globale Zugriffe; der bisherige
+  Einstiegspunkt und der Aufruf aus der Mitgliederansicht bleiben erhalten.
+- Reihenfolge, verschachtelte ID-Suche, Änderungen an den bestehenden Zeilen,
+  Speicherbedingungen sowie einzelne Speicher- und Ladeaufrufe unverändert.
+  Unnötig gewordene `global`-Deklarationen entfallen beim Instanzzugriff.
+- Strukturvergleich von Methode und Adapter ergänzt. Lokale Vergleichsfälle
+  prüfen alle 16 Kombinationen der Dateistatuswerte, CSV-Dateien, Listenidentität,
+  doppelte und unterschiedlich typisierte IDs, fehlende Treffer, leere Daten,
+  Neuladen und Abbrüche bei Speicher-/Ladefehlern.
+- Keine fachlichen Korrekturen und keine neue Windows-EXE.
+
 ## Version 2.046 – 09.11.2026
 
 <!-- Änderung 2.046: Gemeinsame Exporthilfe und Vergleichsprüfung dokumentieren. -->

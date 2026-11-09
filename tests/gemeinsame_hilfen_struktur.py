@@ -17,7 +17,8 @@ def methoden_als_funktionen(basis, originalfunktionen):
     ergebnis = {}
     for modul, klasse, namen in (
             # Änderung 2.045: Datenbankzugriffe samt Adaptern und Initialisierung prüfen.
-            ('datenhaltung', 'DatenbankZugriff', {'db_datei_oeffnen', 'db_datei_speichern'}),
+            # Änderung 2.047: Auch die gemeinsame Mitgliederaktualisierung vollständig prüfen.
+            ('datenhaltung', 'DatenbankZugriff', {'db_datei_oeffnen', 'db_datei_speichern', 'dbs_mitglieder_aktualisieren'}),
             ('sicherung', 'Sicherung', {'db_sichern', 'max_anzahl_ordner'}),
             ('protokollierung', 'Protokollierung', {'change_log', 'change_log_info'})):
         baum = ast.parse((basis / ('anwendung/' + modul + '.py')).read_text(encoding='utf-8'))
@@ -27,7 +28,19 @@ def methoden_als_funktionen(basis, originalfunktionen):
         for methode in methoden:
             funktion = Anwendungszugriffe().visit(copy.deepcopy(methode))
             assert funktion.args.args.pop(0).arg == 'self'
-            assert ast.dump(funktion) == ast.dump(originalfunktionen[funktion.name])
+            original = copy.deepcopy(originalfunktionen[funktion.name])
+            if funktion.name == 'dbs_mitglieder_aktualisieren':
+                # Änderung 2.047: Nur die durch Instanzzugriffe ersetzten global-Deklarationen ausnehmen.
+                globale = [k for k in original.body if isinstance(k, ast.Global)]
+                assert [k.names for k in globale] == [[n] for n in (
+                    'abnehmer_db', 'zaehler_db', 'abschlag_db', 'konto_db',
+                    'db_abnehmer', 'db_zaehler', 'db_abschlag', 'db_konto')]
+                original.body = [k for k in original.body if not isinstance(k, ast.Global)]
+                assert ast.dump(funktion) == ast.dump(original)
+                # Änderung: Für den anschließenden Gesamtvergleich die geprüften Deklarationen ergänzen.
+                funktion.body = globale + funktion.body
+            else:
+                assert ast.dump(funktion) == ast.dump(original)
             erwartet = copy.deepcopy(originalfunktionen[funktion.name])
             args = ', '.join(a.arg for a in erwartet.args.args)
             erwartet.body = ast.parse('return ' + modul + '_hilfe.' + funktion.name + '(' + args + ')').body

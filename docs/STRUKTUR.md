@@ -1,5 +1,11 @@
 # Projektstruktur
 
+<!-- Änderung 2.047: Gemeinsame Mitgliederaktualisierung dokumentieren. -->
+`DatenbankZugriff` in `anwendung/datenhaltung.py` übernimmt auch
+`dbs_mitglieder_aktualisieren`: Namen und Vornamen werden wie bisher nacheinander
+in Abnehmer-, Zähler-, Abschlags- und Kontodaten übernommen. Der Einstiegspunkt
+bleibt in der Oberfläche; Speichern und Neuladen verwenden aktuelle Anwendungswerte.
+
 <!-- Änderung 2.046: Gemeinsame CSV-Speicherhilfe dokumentieren. -->
 `anwendung/exporthilfe.py` enthält `ExportHilfe` für die asynchrone Speicherung
 von Dezimalkomma-CSV aus Abrechnung und Rückvergütung. Der bisherige Einstiegspunkt

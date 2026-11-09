@@ -5,6 +5,12 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.047: Interne Wartung aus Anwendersicht dokumentieren. -->
+Version 2.047 – 09.11.2026
+-------------------------
+
+Interne Wartung der Mitgliederaktualisierung; die Übernahme von Namen und Vornamen in Abnehmer-, Zähler-, Abschlags- und Kontodaten bleibt unverändert.
+
 <!-- Änderung 2.046: Interne Wartung aus Anwendersicht dokumentieren. -->
 Version 2.046 – 09.11.2026
 -------------------------

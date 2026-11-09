@@ -94,3 +94,42 @@ class DatenbankZugriff:
         dbfileobject = open(dbfile, "w")
         dbfileobject.write(csvstring)
         dbfileobject.close()
+
+    # Änderung 2.047: Namenaktualisierung mit bisheriger Speicher-/Ladereihenfolge übernehmen.
+    def dbs_mitglieder_aktualisieren(self):
+        if self.anwendung.abnehmer_db != []:
+            for row in self.anwendung.abnehmer_db:
+                for mitglied in self.anwendung.mitglieder_db:
+                    if row["Ident"] == mitglied["Ident"]:
+                        row["Name"] = mitglied["Name"]
+                        row["Vorname"] = mitglied["Vorname"]
+        if (self.anwendung.db_abnehmer_found == 1):
+            self.anwendung.db_datei_speichern(self.anwendung.db_abnehmer, self.anwendung.abnehmer_db)
+            self.anwendung.abnehmer_aus_db()
+        if self.anwendung.zaehler_db != []:
+            for row in self.anwendung.zaehler_db:
+                for mitglied in self.anwendung.mitglieder_db:
+                    if row["Ident"] == mitglied["Ident"]:
+                        row["Name"] = mitglied["Name"]
+                        row["Vorname"] = mitglied["Vorname"]
+        if (self.anwendung.db_zaehler_found == 1):
+            self.anwendung.db_datei_speichern(self.anwendung.db_zaehler, self.anwendung.zaehler_db)
+            self.anwendung.zaehler_aus_db()
+        if self.anwendung.abschlag_db != []:
+            for row in self.anwendung.abschlag_db:
+                for mitglied in self.anwendung.mitglieder_db:
+                    if row["Ident"] == mitglied["Ident"]:
+                        row["Name"] = mitglied["Name"]
+                        row["Vorname"] = mitglied["Vorname"]
+        if (self.anwendung.db_abschlag_found == 1):
+            self.anwendung.db_datei_speichern(self.anwendung.db_abschlag, self.anwendung.abschlag_db)
+            self.anwendung.abschlag_aus_db()
+        if self.anwendung.konto_db != []:
+            for row in self.anwendung.konto_db:
+                for mitglied in self.anwendung.mitglieder_db:
+                    if row["Ident"] == mitglied["Ident"]:
+                        row["Name"] = mitglied["Name"]
+                        row["Vorname"] = mitglied["Vorname"]
+        if (self.anwendung.db_konto_found == 1):
+            self.anwendung.db_datei_speichern(self.anwendung.db_konto, self.anwendung.konto_db)
+            self.anwendung.konto_aus_db()

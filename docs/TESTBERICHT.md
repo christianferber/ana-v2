@@ -6,6 +6,7 @@ Stand: 09.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Mitgliederaktualisierung gegen Original: bestanden.
 - CSV-Speicherhilfe gegen Original: bestanden.
 - Datenbankzugriffe gegen Original: bestanden.
 - Datenaufbereitung gegen Original: bestanden.
@@ -266,9 +267,6 @@ und PDF-Texte identisch. App, Fenster und Browser beendet. Unabhängige Abfrage:
 null ANA-, Word- und Testbrowserprozesse. Keine neue EXE, keine visuelle
 Dokumentprüfung. Versionsanzeige mit zwei Nachkommastellen bleibt unverändert.
 
-Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
-Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
-
 Version 2.046: Gemeinsame asynchrone CSV-Speicherung unverändert in ExportHilfe
 ausgelagert. Vollständiger Strukturvergleich von Methode, Adapter, Import und
 Initialisierung bestanden. Lokale Beispieldaten und Sonderfälle: bytegleiche
@@ -283,3 +281,25 @@ und PDF-Texte identisch. Test-App, Fenster und Browser vollständig beendet;
 unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.
 Keine neue Windows-EXE und keine visuelle Dokumentprüfung. Der bekannte
 Versionsanzeigefehler mit zwei Nachkommastellen bleibt unverändert.
+
+Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
+Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
+
+Version 2.047: Gemeinsame Mitgliederaktualisierung in DatenbankZugriff
+ausgelagert. Strukturvergleich prüft vollständige Methode und Adapter;
+nur globale Deklarationen entfallen bei den Anwendungszugriffen.
+Lokale Beispieldaten und Sonderfälle für alle 16 Dateistatuskombinationen,
+bytegleiche CSV-Dateien, Zeilenänderungen, Listenidentität, doppelte und
+unterschiedlich typisierte IDs, fehlende Treffer und leere Daten bestanden.
+Speicher-/Ladereihenfolge, erneutes Lesen aktueller Mitgliederwerte und
+Abbruchverhalten bei Speicher-/Ladefehlern sowie fehlender Ident geprüft.
+Alle 22 Freigabeprüfungen und Syntaxprüfung bestanden. Regulärer vollständiger
+Praxislauf am 09.11.2026 mit normaler Word-Anbindung bestanden: Mitgliederregister
+mit echter Tabellenanzeige, Berechnung, CSV-Referenz, 73 neue Word-Dateien
+und 73 lesbare PDFs. Die Aktualisierung selbst wurde über den echten Adapter
+und gebundene Methode mit lokalen Daten geprüft; im Browser die Mitgliederanzeige.
+Original-Beispieldaten unverändert. Gegen 2.046: Word-Paketinhalte, PDF-Seitenzahlen
+und PDF-Texte identisch. App, Fenster und Browser vollständig beendet;
+unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.
+Keine neue EXE, keine visuelle Dokumentprüfung. Bekannter Versionsanzeigefehler
+mit zwei Nachkommastellen bleibt unverändert.

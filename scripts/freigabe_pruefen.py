@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.047: Vier abhängige Datenbestände und Speicher-/Ladereihenfolge lokal prüfen.
+        ('Mitgliederaktualisierung gegen Original', ['-m', 'tests.mitgliederaktualisierung_pruefen']),
         # Änderung 2.046: Gemeinsame CSV-Speicherung mit lokalen Beispieldaten vergleichen.
         ('CSV-Speicherhilfe gegen Original', ['-m', 'tests.exporthilfe_pruefen']),
         # Änderung 2.045: Datenbankzugriffe mit lokalen Beispieldatenkopien vergleichen.
@@ -285,6 +287,25 @@ def main():
                 'unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.',
                 'Keine neue Windows-EXE und keine visuelle Dokumentprüfung. Der bekannte',
                 'Versionsanzeigefehler mit zwei Nachkommastellen bleibt unverändert.', '']
+    # Änderung 2.047: Erfolgreichen Mitgliedervergleich und regulären Praxislauf festhalten.
+    bericht += ['Version 2.047: Gemeinsame Mitgliederaktualisierung in DatenbankZugriff',
+                'ausgelagert. Strukturvergleich prüft vollständige Methode und Adapter;',
+                'nur globale Deklarationen entfallen bei den Anwendungszugriffen.',
+                'Lokale Beispieldaten und Sonderfälle für alle 16 Dateistatuskombinationen,',
+                'bytegleiche CSV-Dateien, Zeilenänderungen, Listenidentität, doppelte und',
+                'unterschiedlich typisierte IDs, fehlende Treffer und leere Daten bestanden.',
+                'Speicher-/Ladereihenfolge, erneutes Lesen aktueller Mitgliederwerte und',
+                'Abbruchverhalten bei Speicher-/Ladefehlern sowie fehlender Ident geprüft.',
+                'Alle 22 Freigabeprüfungen und Syntaxprüfung bestanden. Regulärer vollständiger',
+                'Praxislauf am 09.11.2026 mit normaler Word-Anbindung bestanden: Mitgliederregister',
+                'mit echter Tabellenanzeige, Berechnung, CSV-Referenz, 73 neue Word-Dateien',
+                'und 73 lesbare PDFs. Die Aktualisierung selbst wurde über den echten Adapter',
+                'und gebundene Methode mit lokalen Daten geprüft; im Browser die Mitgliederanzeige.',
+                'Original-Beispieldaten unverändert. Gegen 2.046: Word-Paketinhalte, PDF-Seitenzahlen',
+                'und PDF-Texte identisch. App, Fenster und Browser vollständig beendet;',
+                'unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.',
+                'Keine neue EXE, keine visuelle Dokumentprüfung. Bekannter Versionsanzeigefehler',
+                'mit zwei Nachkommastellen bleibt unverändert.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'
