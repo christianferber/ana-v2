@@ -63,6 +63,9 @@ from pypdf import PdfReader, PdfWriter                              # für PDF M
 import os
 # Änderung für v2: Ressourcen sowohl beim Python-Start als auch neben der EXE finden.
 import sys
+# Änderung 2.046: Gemeinsame Exporthilfe vor dem Ansichtsaufbau bereitstellen.
+from anwendung.exporthilfe import ExportHilfe
+exporthilfe = ExportHilfe(sys.modules[__name__])
 # Änderung 2.045: Datenbankzugriffe vor dem Ansichtsaufbau bereitstellen.
 datenhaltung_hilfe = DatenbankZugriff(sys.modules[__name__])
 # Änderung 2.043: Gemeinsame Hilfen vor dem Aufbau der Ansichten bereitstellen.
@@ -128,7 +131,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.043: Gemeinsame Sicherungs- und Protokollhilfen auslagern.
 # Änderung 2.044: Gemeinsame Datenaufbereitung auslagern.
 # Änderung 2.045: Datenbankzugriffe auslagern.
-version = 2.045
+# Änderung 2.046: Gemeinsame CSV-Speicherhilfe auslagern.
+version = 2.046
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -418,25 +422,9 @@ def tablefield_to_int(table, field):
 # Änderung für v2: Die sechs unveränderten Formatierungsfunktionen liegen in dokumentfelder.py.
 
 
+# Änderung 2.046: Bestehenden asynchronen Einstiegspunkt erhalten.
 async def komma_datei_speichern(dictlist, dateiname):
-    kommacsv = []
-    kommacsvrow = {}
-    for row in dictlist:
-        for key,value in row.items():
-            if str(value).count('.') == 1:
-                kommacsvrow[key] = str(value).replace(".",",")
-            else:
-                kommacsvrow[key] = value
-        kommacsv.append(kommacsvrow)
-        kommacsvrow = {}
-    content = dictlist_to_csv(kommacsv)
-    datei = await app.native.main_window.create_file_dialog(webview.SAVE_DIALOG, directory="%USERPROFILE\\Downloads", allow_multiple=False, save_filename=dateiname)
-    if datei != None:
-        with open(datei,'w') as f: 
-            f.write(content)
-            ui.notify(datei + " wurde gespeichert.", type="positive")
-    else:
-        return
+    return await exporthilfe.komma_datei_speichern(dictlist, dateiname)
     
 # Änderung für v2: mwst_berechnen unverändert aus berechnungen importiert.
     

@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung 2.046: Gemeinsame CSV-Speicherung mit lokalen Beispieldaten vergleichen.
+        ('CSV-Speicherhilfe gegen Original', ['-m', 'tests.exporthilfe_pruefen']),
         # Änderung 2.045: Datenbankzugriffe mit lokalen Beispieldatenkopien vergleichen.
         ('Datenbankzugriffe gegen Original', ['-m', 'tests.datenbank_pruefen']),
         # Änderung 2.044: Tatsächliche Aufbereitung mit lokalen Daten und Sonderfällen vergleichen.
@@ -268,6 +270,21 @@ def main():
                 'und PDF-Texte identisch. App, Fenster und Browser beendet. Unabhängige Abfrage:',
                 'null ANA-, Word- und Testbrowserprozesse. Keine neue EXE, keine visuelle',
                 'Dokumentprüfung. Versionsanzeige mit zwei Nachkommastellen bleibt unverändert.', '']
+    # Änderung 2.046: Erfolgreichen CSV-Vergleich und regulären Praxislauf dokumentieren.
+    bericht += ['Version 2.046: Gemeinsame asynchrone CSV-Speicherung unverändert in ExportHilfe',
+                'ausgelagert. Vollständiger Strukturvergleich von Methode, Adapter, Import und',
+                'Initialisierung bestanden. Lokale Beispieldaten und Sonderfälle: bytegleiche',
+                'CSV-Dateien, unveränderte Eingaben, gleiche Dialogargumente und Benachrichtigungen,',
+                'Abbruch sowie bisherige Fehler bei leerer Tabelle, falschem Zieltyp und Dialogfehler.',
+                'Native Dateidialoge im Vergleich durch lokale Testantworten ersetzt.',
+                'Alle 21 Freigabeprüfungen und Syntaxprüfung bestanden. Regulärer vollständiger',
+                'Praxislauf am 09.11.2026 mit normaler Word-Anbindung bestanden: Buchungsvorlagenregister,',
+                'Berechnung, CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs.',
+                'Original-Beispieldaten unverändert. Gegen 2.045: Word-Paketinhalte, PDF-Seitenzahlen',
+                'und PDF-Texte identisch. Test-App, Fenster und Browser vollständig beendet;',
+                'unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.',
+                'Keine neue Windows-EXE und keine visuelle Dokumentprüfung. Der bekannte',
+                'Versionsanzeigefehler mit zwei Nachkommastellen bleibt unverändert.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'

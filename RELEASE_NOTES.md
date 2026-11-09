@@ -5,6 +5,12 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.046: Interne Wartung aus Anwendersicht dokumentieren. -->
+Version 2.046 – 09.11.2026
+-------------------------
+
+Interne Wartung der CSV-Speicherung für Abrechnung und Rückvergütung; Bedienung, Dateiformate und Ergebnisse bleiben unverändert.
+
 <!-- Änderung 2.045: Interne Wartung aus Anwendersicht dokumentieren. -->
 Version 2.045 – 08.11.2026
 -------------------------

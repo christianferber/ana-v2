@@ -2,10 +2,11 @@
 
 <!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
 
-Stand: 08.11.2026
+Stand: 09.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- CSV-Speicherhilfe gegen Original: bestanden.
 - Datenbankzugriffe gegen Original: bestanden.
 - Datenaufbereitung gegen Original: bestanden.
 - Sicherung gegen Original: bestanden.
@@ -250,9 +251,6 @@ Unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.
 Keine neue EXE, keine visuelle Dokumentprüfung. Versionsanzeige mit zwei
 Nachkommastellen bleibt unverändert; dies ist keine Korrektur dieses Anzeigefehlers.
 
-Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
-Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
-
 Version 2.045: Zwei Datenbankzugriffe unverändert in DatenbankZugriff
 im bestehenden Datenhaltungsmodul ausgelagert. Körper, Adapter, Initialisierung
 und Importe strukturell gegen Original geprüft. Buchungsreferenz verwendet
@@ -267,3 +265,21 @@ Ersatz. Originalbestand unverändert. Gegen 2.044: Word-Paketinhalte, PDF-Seiten
 und PDF-Texte identisch. App, Fenster und Browser beendet. Unabhängige Abfrage:
 null ANA-, Word- und Testbrowserprozesse. Keine neue EXE, keine visuelle
 Dokumentprüfung. Versionsanzeige mit zwei Nachkommastellen bleibt unverändert.
+
+Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
+Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
+
+Version 2.046: Gemeinsame asynchrone CSV-Speicherung unverändert in ExportHilfe
+ausgelagert. Vollständiger Strukturvergleich von Methode, Adapter, Import und
+Initialisierung bestanden. Lokale Beispieldaten und Sonderfälle: bytegleiche
+CSV-Dateien, unveränderte Eingaben, gleiche Dialogargumente und Benachrichtigungen,
+Abbruch sowie bisherige Fehler bei leerer Tabelle, falschem Zieltyp und Dialogfehler.
+Native Dateidialoge im Vergleich durch lokale Testantworten ersetzt.
+Alle 21 Freigabeprüfungen und Syntaxprüfung bestanden. Regulärer vollständiger
+Praxislauf am 09.11.2026 mit normaler Word-Anbindung bestanden: Buchungsvorlagenregister,
+Berechnung, CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs.
+Original-Beispieldaten unverändert. Gegen 2.045: Word-Paketinhalte, PDF-Seitenzahlen
+und PDF-Texte identisch. Test-App, Fenster und Browser vollständig beendet;
+unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.
+Keine neue Windows-EXE und keine visuelle Dokumentprüfung. Der bekannte
+Versionsanzeigefehler mit zwei Nachkommastellen bleibt unverändert.

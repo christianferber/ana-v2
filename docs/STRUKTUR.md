@@ -1,5 +1,11 @@
 # Projektstruktur
 
+<!-- Änderung 2.046: Gemeinsame CSV-Speicherhilfe dokumentieren. -->
+`anwendung/exporthilfe.py` enthält `ExportHilfe` für die asynchrone Speicherung
+von Dezimalkomma-CSV aus Abrechnung und Rückvergütung. Der bisherige Einstiegspunkt
+bleibt in der Oberfläche; CSV-Aufbereitung und nativer Speicherdialog laufen
+in derselben Reihenfolge mit den aktuellen Anwendungshilfen.
+
 <!-- Änderung 2.045: Gemeinsame Datenbankzugriffe dokumentieren. -->
 `anwendung/datenhaltung.py` enthält zusätzlich die Klasse `DatenbankZugriff` für
 `db_datei_oeffnen` und `db_datei_speichern`. Die Hilfe verwendet aktuelle Pfade und

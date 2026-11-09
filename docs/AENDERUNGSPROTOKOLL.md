@@ -20,6 +20,19 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Version 2.046 – 09.11.2026
+
+<!-- Änderung 2.046: Gemeinsame Exporthilfe und Vergleichsprüfung dokumentieren. -->
+
+- `komma_datei_speichern` unverändert als asynchrone Methode von `ExportHilfe`
+  nach `anwendung/exporthilfe.py` verschoben. CSV- und Dialoghilfen werden
+  dynamisch von der Anwendung gelesen; der bisherige asynchrone Einstiegspunkt
+  und die Aufrufe aus Abrechnung und Rückvergütung bleiben erhalten.
+- Vollständiger Strukturvergleich von Methode, Adapter, Import und Initialisierung.
+  Lokaler Beispieldatenvergleich prüft bytegleiche CSV-Dateien, unveränderte
+  Eingaben, Dialogargumente, Benachrichtigungen, Abbruch und bisherige Fehler.
+- Keine fachlichen Korrekturen und keine neue Windows-EXE.
+
 ## Version 2.045 – 08.11.2026
 
 <!-- Änderung 2.045: Datenbankauslagerung und Vergleichsprüfungen dokumentieren. -->
