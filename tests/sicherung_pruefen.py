@@ -72,9 +72,15 @@ def pruefen():
                         fehler.append(None)
                     except Exception as exc:
                         fehler.append(type(exc))
-                assert fehler[0] == fehler[1]
-                assert fehler[0] is (FileExistsError if fall == 'kollision' and versuch == 1 else None)
-                assert bestand(links) == bestand(rechts)
+                # Änderung: Wiederholung erhält jetzt beide vollständigen Sicherungen.
+                if fall == 'kollision' and versuch == 1:
+                    assert fehler == [FileExistsError, None]
+                    sicherungen = list((rechts / 'Sicherungen').iterdir())
+                    assert len(sicherungen) == 2
+                    assert all(bestand(p) == bestand(rechts / 'Datenbank') for p in sicherungen)
+                else:
+                    assert fehler == [None, None]
+                    assert bestand(links) == bestand(rechts)
             if fall == 'voll':
                 assert len(list((rechts / 'Sicherungen').iterdir())) == 9
                 assert all(not (rechts / 'Sicherungen' / str(n)).exists() for n in range(4))

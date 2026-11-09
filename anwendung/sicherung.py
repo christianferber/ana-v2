@@ -1,6 +1,7 @@
 """Änderung 2.043: Gemeinsame Sicherung mit unverändertem Verhalten."""
 import os
 import shutil
+import tempfile
 from pathlib import Path
 from datetime import datetime
 
@@ -34,14 +35,23 @@ class Sicherung:
             return
         current_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         ordner_sic = os.path.join(self.anwendung.ordner_sicherungen, f"{current_datetime} {aktion}")
-        pfad_ordner_sic = Path(ordner_sic)
-        if not pfad_ordner_sic.exists():
-            os.mkdir(ordner_sic)
-        self.anwendung.max_anzahl_ordner(self.anwendung.ordner_sicherungen)
-        quellordner = Path(self.anwendung.ordner_datenbank)
+        # Änderung: Gleiche Sekunde und Aktion dürfen keine vorhandene Sicherung überschreiben.
         zielordner = Path(ordner_sic)
-        for item in quellordner.iterdir():
-            if item.is_file():
-                shutil.copy2(item, zielordner / item.name)
-            elif item.is_dir():
-                shutil.copytree(item, zielordner / item.name)
+        nummer = 1
+        while zielordner.exists():
+            zielordner = Path(ordner_sic + ' (' + str(nummer) + ')')
+            nummer += 1
+        # Änderung: Unvollständige Kopien erst nach Erfolg als fertige Sicherung bereitstellen.
+        temp = Path(tempfile.mkdtemp(prefix='.ana-', dir=self.anwendung.ordner_sicherungen))
+        try:
+            for item in pfad_ordner.iterdir():
+                if item.is_file():
+                    shutil.copy2(item, temp / item.name)
+                elif item.is_dir():
+                    shutil.copytree(item, temp / item.name)
+            temp.rename(zielordner)
+        finally:
+            if temp.exists():
+                shutil.rmtree(temp)
+        # Änderung: Alte vollständige Sicherungen erst nach erfolgreicher neuer Kopie löschen.
+        self.anwendung.max_anzahl_ordner(self.anwendung.ordner_sicherungen)

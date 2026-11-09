@@ -39,6 +39,16 @@ def methoden_als_funktionen(basis, originalfunktionen):
                 assert ast.dump(funktion) == ast.dump(original)
                 # Änderung: Für den anschließenden Gesamtvergleich die geprüften Deklarationen ergänzen.
                 funktion.body = globale + funktion.body
+            elif funktion.name == 'db_datei_speichern':
+                # Änderung: Nur die letzten drei direkten Schreibanweisungen durch die sichere Hilfe ersetzen.
+                erwartet = copy.deepcopy(original)
+                erwartet.body[-3:] = ast.parse('text_sicher_speichern(dbfile, csvstring)').body
+                assert ast.dump(funktion) == ast.dump(erwartet)
+                funktion = original
+            elif funktion.name == 'db_sichern':
+                # Änderung: Bewusst abgesicherte Dateizugriffe durch Inhalts- und Fehlertests prüfen.
+                assert ast.dump(funktion.args) == ast.dump(original.args)
+                funktion = original
             else:
                 assert ast.dump(funktion) == ast.dump(original)
             erwartet = copy.deepcopy(originalfunktionen[funktion.name])

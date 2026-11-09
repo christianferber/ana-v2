@@ -22,6 +22,22 @@ in den [Release Notes](../RELEASE_NOTES.md).
 
 ## Bereinigung nach Version 2.047 – 09.11.2026
 
+<!-- Änderung: Autorisierte Absicherung der Dateizugriffe bei unveränderter Fachlogik dokumentieren. -->
+
+- CSV-Datei- und Datenbankspeicherung schreiben eine temporäre Datei im Zielordner,
+  leeren den Schreibpuffer, führen `fsync` aus und ersetzen das Ziel mit `os.replace`.
+  Aufbereitung, Standardkodierung und Zeilenenden bleiben erhalten. Temporäre Dateien
+  werden bei Fehlern entfernt; die Ausnahme wird weitergegeben.
+- Sicherungen werden zunächst in einem temporären Ordner vollständig kopiert und
+  anschließend umbenannt. Erst danach werden alte Sicherungen bereinigt. Kollisionen
+  bei gleicher Sekunde/Aktion erhalten einen nummerierten eigenen Ordner.
+- Neue Regressionstests prüfen Teil-Schreibfehler, Synchronisations-/Austauschfehler,
+  fehlende Zieldateien sowie Kopier- und Umbenennungsfehler. Referenzvergleiche bleiben
+  für CSV-Inhalte erhalten; Strukturprüfungen berücksichtigen die autorisierten Änderungen.
+- Dies schützt einzelne Dateizugriffe; mehrere zusammengehörige CSV-Dateien bilden
+  weiterhin keine gemeinsame Transaktion. Separate Dialogexporte und INI-Schreiben
+  sind nicht Teil dieser Änderung. Kein Nachweis gegen physische Datenträgerdefekte.
+
 <!-- Änderung: Entfernung ungenutzter Altbestände bei unveränderter Version dokumentieren. -->
 
 - Die nicht mehr verwendeten Funktionen `textarea_to_string`, `string_to_textarea`,

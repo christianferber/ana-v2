@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung: Bei Schreib-/Kopierfehlern müssen bisherige Daten vollständig erhalten bleiben.
+        ('Ausfallsicherheit von CSV und Sicherungen', ['-m', 'tests.ausfallsicherheit_pruefen']),
         # Änderung 2.047: Vier abhängige Datenbestände und Speicher-/Ladereihenfolge lokal prüfen.
         ('Mitgliederaktualisierung gegen Original', ['-m', 'tests.mitgliederaktualisierung_pruefen']),
         # Änderung 2.046: Gemeinsame CSV-Speicherung mit lokalen Beispieldaten vergleichen.

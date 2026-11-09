@@ -6,6 +6,7 @@ Stand: 09.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Ausfallsicherheit von CSV und Sicherungen: bestanden.
 - Mitgliederaktualisierung gegen Original: bestanden.
 - CSV-Speicherhilfe gegen Original: bestanden.
 - Datenbankzugriffe gegen Original: bestanden.
@@ -320,3 +321,26 @@ extrahierte Texte identisch. Original-Beispieldaten unverändert. Test-App, Fens
 und Testbrowser beendet; unabhängige Prozessabfrage ohne verbliebene ANA-, Word-
 oder Testbrowserprozesse. Keine visuelle Dokumentprüfung, keine neue EXE.
 Version und Versionsanzeige bleiben auf Benutzerwunsch unverändert.
+
+## Sichere Speicherung und Sicherungen nach Version 2.047 – 09.11.2026
+
+<!-- Änderung: Nachweise und Grenzen der autorisierten Fehlerabsicherung dokumentieren. -->
+
+Alle 23 gebündelten Freigabeprüfungen und Syntaxprüfung bestanden. Nach Ergänzung
+der Teil-Schreibfehlersimulation wurden Ausfallsicherheit und Strukturvergleich
+nochmals erfolgreich geprüft; abschließende Syntaxprüfung ebenfalls bestanden.
+Fehlertests mit künstlichen Dateien prüfen Teil-Schreiben, fsync, Ersetzen bei
+vorhandenen/fehlenden Zielen, Kopieren von Dateien/Unterordnern und Abschluss durch
+Umbenennen. Bei Fehlern bleiben die bisherigen CSV-Dateien und neun alten Sicherungen
+erhalten; temporäre Bestände werden entfernt. Erfolgreiche Sicherung bereinigt erst
+danach auf neun Ordner. Gleiche Sekunde/Aktion erhält getrennte vollständige Kopien.
+Lokale Beispieldatenvergleiche bestätigen bytegleiche CSV-Ausgaben und unveränderte
+Aufbereitung. Regulärer vollständiger Praxislauf mit normaler Word-Anbindung bestanden:
+Mitgliederregister, Berechnung, CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs.
+Gegen vorherigen Lauf sind alle Word-Paketinhalte, PDF-Seitenzahlen und PDF-Texte
+identisch. Original-Beispieldaten unverändert. Test-App, Fenster und Testbrowser
+beendet; unabhängige Prozessabfrage ohne ANA-, Word- oder Testbrowserprozesse.
+Keine visuelle Dokumentprüfung, keine physische Stromausfall-/Datenträgerprüfung.
+Mehrdateiabläufe bleiben ohne gemeinsame Transaktion; separate Dialogexporte und
+INI-Dateien wurden nicht umgestellt. Version und Versionsanzeige unverändert,
+keine neue EXE und kein neuer Versionsrelease.

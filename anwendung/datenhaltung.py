@@ -2,6 +2,8 @@
 """Änderung für v2: CSV- und Dateihilfen unverändert aus ana.py ausgelagert."""
 
 import csv
+import os
+import tempfile
 from pathlib import Path
 
 
@@ -25,11 +27,28 @@ def datei_oeffnen(file):
     return dictionary_temp_list
 
 
+def text_sicher_speichern(file, inhalt):
+    # Änderung: Erst im Zielordner vollständig schreiben, dann die Zieldatei atomar ersetzen.
+    ziel = Path(file)
+    temp = None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', dir=ziel.parent,
+                                         prefix='.ana-', suffix='.tmp', delete=False) as datei:
+            temp = Path(datei.name)
+            datei.write(inhalt)
+            datei.flush()
+            os.fsync(datei.fileno())
+        os.replace(temp, ziel)
+    finally:
+        # Änderung: Bei Schreib- oder Austauschfehlern bleibt die alte Datei erhalten.
+        if temp is not None and temp.exists():
+            temp.unlink()
+
+
 def datei_speichern(file, csvdict):
     csvstring = dictlist_to_csv(csvdict)
-    fileobject = open(file, "w")
-    fileobject.write(csvstring)
-    fileobject.close()
+    # Änderung: CSV-Aufbereitung und Format beibehalten, nur den Schreibzugriff absichern.
+    text_sicher_speichern(file, csvstring)
 
 
 def dictlist_to_csv(dictlistinput):
@@ -91,9 +110,8 @@ class DatenbankZugriff:
         self.anwendung.check_ordner_exists(self.anwendung.ordner_downloads)
         csvstring = self.anwendung.dictlist_to_csv(csvdict)
         dbfile = self.anwendung.ordner_datenbank + "\\" + dbfile
-        dbfileobject = open(dbfile, "w")
-        dbfileobject.write(csvstring)
-        dbfileobject.close()
+        # Änderung: Bestehende Datenbank erst nach vollständigem Schreiben ersetzen.
+        text_sicher_speichern(dbfile, csvstring)
 
     # Änderung 2.047: Namenaktualisierung mit bisheriger Speicher-/Ladereihenfolge übernehmen.
     def dbs_mitglieder_aktualisieren(self):

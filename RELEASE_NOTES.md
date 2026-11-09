@@ -9,6 +9,9 @@ Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL
 Wartungsstand nach Version 2.047
 ------------------------------
 
+<!-- Änderung: Schutz vor Datenverlust bei Speicher- und Sicherungsfehlern beschreiben. -->
+Bugfix: CSV-Dateien werden erst nach vollständigem Schreiben ersetzt. Bei einer fehlgeschlagenen neuen Datensicherung bleiben die bisherigen Sicherungen erhalten. Wiederholte Sicherungen in derselben Sekunde werden getrennt gespeichert.
+
 Interne Bereinigung; Bedienung, Dateiformate und Abrechnungsergebnisse bleiben unverändert.
 
 <!-- Änderung 2.047: Interne Wartung aus Anwendersicht dokumentieren. -->

@@ -329,6 +329,8 @@ def pruefen():
     assert not entfernte_hilfen.intersection(neue_funktionen)
     for name in entfernte_hilfen:
         del alte_funktionen[name]
+    # Änderung: Neue interne Schreibhilfe separat durch Ausfallsicherheitstests prüfen.
+    del neue_funktionen['text_sicher_speichern']
     assert alte_funktionen.keys() == neue_funktionen.keys()
     for name in alte_funktionen:
         # Änderung: Die freigegebene Stapelkonvertierung hat einen neuen Ablauf.
@@ -343,6 +345,13 @@ def pruefen():
             continue
         # Änderung für v2: Den umgebauten Pfadadapter unten durch Ausführen vergleichen.
         if name == 'pfade_setzen':
+            continue
+        if name == 'datei_speichern':
+            # Änderung: Sicheres Schreiben ersetzt direkten Zugriff; CSV-Inhalte unten vergleichen.
+            erwartet = ast.parse('def datei_speichern(file, csvdict):\n'
+                '    csvstring = dictlist_to_csv(csvdict)\n'
+                '    text_sicher_speichern(file, csvstring)').body[0]
+            assert ast.dump(neue_funktionen[name]) == ast.dump(erwartet)
             continue
         if name == 'letzte_mindestabnahme':
             # Änderung für v2: Nur explizite Datenübergabe ergänzen; Suchalgorithmus bleibt gleich.
@@ -394,6 +403,8 @@ def pruefen():
 
     # Änderung für v2: Den Import der ausgelagerten Funktionen zusätzlich kontrollieren.
     namen = {k.name for k in modul.body if isinstance(k, ast.FunctionDef)}
+    # Änderung: Interne sichere Schreibhilfe gehört nicht zum bisherigen Oberflächenimport.
+    namen.remove('text_sicher_speichern')
     importe = [k for k in neu.body if isinstance(k, ast.ImportFrom) and k.module == 'anwendung.datenhaltung']
     # Änderung 2.045: Zusätzlich zur bisherigen Funktionsliste die neue Zugriffsklasse importieren.
     assert len(importe) == 1 and {k.name for k in importe[0].names} == namen | {'DatenbankZugriff'}
