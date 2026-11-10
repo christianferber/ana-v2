@@ -14,6 +14,8 @@ from anwendung.datenhaltung import datei_oeffnen, datei_speichern
 from anwendung.einstellungen import ini_datei_lesen
 
 
+# Änderung: Fachvergleich isoliert Zusatzprotokoll; echte Protokolle separat prüfen.
+@patch('anwendung.aenderungsprotokoll.protokolliere', lambda *args: None)
 def pruefen():
     basis = Path(__file__).resolve().parents[1]
     daten = Path(ini_datei_lesen(basis / 'ana.ini')['Anwendung']['Arbeitsordner']).resolve()

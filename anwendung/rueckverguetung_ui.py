@@ -3,6 +3,8 @@
 Berechnungen und Abläufe bleiben erhalten. Gemeinsame Pfade, Einstellungen
 und Hilfsfunktionen werden über die übergebene Anwendung gelesen.
 """
+# Änderung: Änderungsprotokoll ergänzen; vorhandene Fachlogik unverändert ausführen.
+from anwendung.aenderungsprotokoll import aenderungen_protokollieren
 import os
 from pathlib import Path
 import threading
@@ -103,12 +105,17 @@ class RueckverguetungOberflaeche:
             self.rueckv_mwst2 if "MwSt bis ZA" in table[0].keys() else None)
 
     def rueckv_tabelle_on_change(self, event):
-        # Änderung 2.02: Bereichszustand liegt auf self.
-        if event["newValue"] == None:
-            return
-        self.anwendung.change_log("RÜCKVERGÜTUNG " + str(self.rueckv_jahre_dropdown.value), event)
-        self.rueckv_table[int(event["rowId"])][event["colId"]] = event["newValue"]
-        self.rueckv_table = self.rueckv_tabelle_berechnen(self.rueckv_table)
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'RÜCKVERGÜTUNG', 'Rückvergütung bearbeiten',
+            daten=lambda: {'Rückvergütung': self.rueckv_table},
+        ):
+            # Änderung 2.02: Bereichszustand liegt auf self.
+            if event["newValue"] == None:
+                return
+            self.anwendung.change_log("RÜCKVERGÜTUNG " + str(self.rueckv_jahre_dropdown.value), event)
+            self.rueckv_table[int(event["rowId"])][event["colId"]] = event["newValue"]
+            self.rueckv_table = self.rueckv_tabelle_berechnen(self.rueckv_table)
 
     def rueckv_erstellen(self):
         # Änderung 2.02: Bereichszustand liegt auf self.
@@ -135,18 +142,24 @@ class RueckverguetungOberflaeche:
         self.dialog_rueckv_bestaetigung.open()
 
     def rueckv_speichern_ja(self):
-        # Änderung 2.02: Bereichszustand liegt auf self.
-        if self.rueckv_checkbox_ueberschreiben.visible == True:
-            if self.rueckv_checkbox_ueberschreiben.value == True:
-                ui.notify("Bestehende Rückvergütungsdatei überschrieben.", type="info")
-                datei_speichern(self.datei_rueckv_aktuell, self.rueckv_table)
-                self.rueckv_von_db()
-                self.dialog_rueckv_bestaetigung.close()
-        else:
-                ui.notify("Rückvergütungsdatei gespeichert.", type="positive")
-                datei_speichern(self.datei_rueckv_aktuell, self.rueckv_table)
-                self.rueckv_von_db()
-                self.dialog_rueckv_bestaetigung.close()
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'RÜCKVERGÜTUNG', 'Rückvergütung speichern',
+            daten=lambda: {},
+            dateien=lambda: (self.datei_rueckv_aktuell,),
+        ):
+            # Änderung 2.02: Bereichszustand liegt auf self.
+            if self.rueckv_checkbox_ueberschreiben.visible == True:
+                if self.rueckv_checkbox_ueberschreiben.value == True:
+                    ui.notify("Bestehende Rückvergütungsdatei überschrieben.", type="info")
+                    datei_speichern(self.datei_rueckv_aktuell, self.rueckv_table)
+                    self.rueckv_von_db()
+                    self.dialog_rueckv_bestaetigung.close()
+            else:
+                    ui.notify("Rückvergütungsdatei gespeichert.", type="positive")
+                    datei_speichern(self.datei_rueckv_aktuell, self.rueckv_table)
+                    self.rueckv_von_db()
+                    self.dialog_rueckv_bestaetigung.close()
 
 
     def rueckv_von_db(self):

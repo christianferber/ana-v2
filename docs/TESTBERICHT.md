@@ -6,6 +6,7 @@ Stand: 10.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Änderungsprotokoll für Daten und Einstellungen: bestanden.
 - Exportoberfläche bei Fehlern: bestanden.
 - Word-Fehlerbereinigung: bestanden.
 - Ausfallsicherheit von CSV und Sicherungen: bestanden.
@@ -351,3 +352,34 @@ Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumenti
   sind nicht gegenseitig gesperrt. Ein tatsächlich hängender Hintergrundprozess
   bleibt gesperrt; kein automatischer Abbruch oder Wiederanlauf.
 - Version/Anzeige 2.047 unverändert, keine neue EXE und kein neuer Versionsrelease.
+
+<!-- Änderung: Vollständigerer Änderungsnachweis für Daten und Einstellungen. -->
+## Änderungsprotokoll – 10.11.2026
+
+- Alle 26 Freigabeprüfungen und Syntaxprüfung bestanden. Nach Ergänzung der drei
+  Filter und Fehlerbehandlung gezielt Protokollierung, Changelog und gesamten
+  Strukturvergleich nochmals erfolgreich geprüft; abschließende Syntax bestanden.
+- 22 Protokollrahmen werden mit exakten Aufrufen geprüft; danach vollständiger
+  Vergleich der bisherigen Fachkörper. Fachreferenztests isolieren ausschließlich
+  die neue zusätzliche Protokollausgabe. Vorhandene Detailprotokolle unverändert.
+- Eigene Protokolltests mit tatsächlichen lokalen Logdateien: Datenänderung,
+  identische Bestände, neue/geänderte/identische Datenbankdatei, sofortige
+  Mitgliederanlage, beide Einstellungsdateien, teilweise fehlgeschlagener
+  Kontoimport, unlesbarer Ausgangsstand und Protokollfehler. Ursprüngliche
+  Ausnahmen bleiben erhalten. Lokale Beispieldatenkopie verwendet, Quelle unverändert.
+- Regulärer vollständiger Abrechnungs-Praxislauf mit normaler Word-Anbindung
+  erfolgreich. 73 neue Word-/PDF-Paare, CSV-Referenz und Originalbestand unverändert.
+  Gegen vorherigen Stand Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch.
+- Praxisprotokolle: tatsächliche Mindestabnahme-/Datenbankänderungen erfasst;
+  unveränderte Jahresabrechnungsdatei ohne zusätzlichen Dateieintrag.
+  Rückvergütungs-Speichereintrag im echten Praxisprotokoll bestätigt.
+- Rückvergütung mit regulärer Word-Anbindung über die Oberfläche erfolgreich,
+  ein Datensatz wie im vorhandenen Smoke-Test; CSV und Originalbestand geprüft.
+- App, Fenster und Browser beendet; unabhängige Abfrage ohne ANA-, Word- und
+  Testbrowserprozesse. Keine visuelle Dokumentprüfung.
+- Grenze: Bei fehlenden Schreibrechten, Protokolldatenträgerfehlern oder unlesbarem
+  Ausgangsstand ist keine lückenlose Protokollierung garantiert; feste RuntimeWarning,
+  Fachablauf bleibt erhalten. Zusammenfassungen nennen Aktion/Bestände/Dateien;
+  vorhandene detaillierte Feldprotokolle bleiben ergänzend bestehen.
+- Exporte und Sicherungen gemäß Benutzerentscheidung nicht zusätzlich erfasst;
+  keine Änderung der Importlogik. Version/Anzeige 2.047 unverändert, keine neue EXE.

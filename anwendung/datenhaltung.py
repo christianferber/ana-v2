@@ -1,5 +1,7 @@
 # Änderung für v2: In anwendung/ eingeordnet; Modul- und Dateipfade angepasst.
 """Änderung für v2: CSV- und Dateihilfen unverändert aus ana.py ausgelagert."""
+# Änderung: Änderungsprotokoll ergänzen; vorhandene Fachlogik unverändert ausführen.
+from anwendung.aenderungsprotokoll import aenderungen_protokollieren
 
 import csv
 import os
@@ -101,53 +103,64 @@ class DatenbankZugriff:
 
     # Änderung 2.045: Bisherigen Zugriff mit aktuellen Anwendungspfaden erhalten.
     def db_datei_speichern(self, dbfile, csvdict):
-        # Überprüfen, ob die Unterordner vorhanden sind und anlegen, wenn nicht
-        self.anwendung.check_ordner_exists(self.anwendung.ordner_abrechnungen)
-        self.anwendung.check_ordner_exists(self.anwendung.ordner_rueckv)
-        self.anwendung.check_ordner_exists(self.anwendung.ordner_logs)
-        self.anwendung.check_ordner_exists(self.anwendung.ordner_datenbank)
-        self.anwendung.check_ordner_exists(self.anwendung.ordner_sicherungen)
-        self.anwendung.check_ordner_exists(self.anwendung.ordner_downloads)
-        csvstring = self.anwendung.dictlist_to_csv(csvdict)
-        dbfile = self.anwendung.ordner_datenbank + "\\" + dbfile
-        # Änderung: Bestehende Datenbank erst nach vollständigem Schreiben ersetzen.
-        text_sicher_speichern(dbfile, csvstring)
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'DATENBANK', 'Datenbank speichern',
+            daten=lambda: {},
+            dateien=lambda: (Path(self.anwendung.ordner_datenbank) / dbfile,),
+        ):
+            # Überprüfen, ob die Unterordner vorhanden sind und anlegen, wenn nicht
+            self.anwendung.check_ordner_exists(self.anwendung.ordner_abrechnungen)
+            self.anwendung.check_ordner_exists(self.anwendung.ordner_rueckv)
+            self.anwendung.check_ordner_exists(self.anwendung.ordner_logs)
+            self.anwendung.check_ordner_exists(self.anwendung.ordner_datenbank)
+            self.anwendung.check_ordner_exists(self.anwendung.ordner_sicherungen)
+            self.anwendung.check_ordner_exists(self.anwendung.ordner_downloads)
+            csvstring = self.anwendung.dictlist_to_csv(csvdict)
+            dbfile = self.anwendung.ordner_datenbank + "\\" + dbfile
+            # Änderung: Bestehende Datenbank erst nach vollständigem Schreiben ersetzen.
+            text_sicher_speichern(dbfile, csvstring)
 
     # Änderung 2.047: Namenaktualisierung mit bisheriger Speicher-/Ladereihenfolge übernehmen.
     def dbs_mitglieder_aktualisieren(self):
-        if self.anwendung.abnehmer_db != []:
-            for row in self.anwendung.abnehmer_db:
-                for mitglied in self.anwendung.mitglieder_db:
-                    if row["Ident"] == mitglied["Ident"]:
-                        row["Name"] = mitglied["Name"]
-                        row["Vorname"] = mitglied["Vorname"]
-        if (self.anwendung.db_abnehmer_found == 1):
-            self.anwendung.db_datei_speichern(self.anwendung.db_abnehmer, self.anwendung.abnehmer_db)
-            self.anwendung.abnehmer_aus_db()
-        if self.anwendung.zaehler_db != []:
-            for row in self.anwendung.zaehler_db:
-                for mitglied in self.anwendung.mitglieder_db:
-                    if row["Ident"] == mitglied["Ident"]:
-                        row["Name"] = mitglied["Name"]
-                        row["Vorname"] = mitglied["Vorname"]
-        if (self.anwendung.db_zaehler_found == 1):
-            self.anwendung.db_datei_speichern(self.anwendung.db_zaehler, self.anwendung.zaehler_db)
-            self.anwendung.zaehler_aus_db()
-        if self.anwendung.abschlag_db != []:
-            for row in self.anwendung.abschlag_db:
-                for mitglied in self.anwendung.mitglieder_db:
-                    if row["Ident"] == mitglied["Ident"]:
-                        row["Name"] = mitglied["Name"]
-                        row["Vorname"] = mitglied["Vorname"]
-        if (self.anwendung.db_abschlag_found == 1):
-            self.anwendung.db_datei_speichern(self.anwendung.db_abschlag, self.anwendung.abschlag_db)
-            self.anwendung.abschlag_aus_db()
-        if self.anwendung.konto_db != []:
-            for row in self.anwendung.konto_db:
-                for mitglied in self.anwendung.mitglieder_db:
-                    if row["Ident"] == mitglied["Ident"]:
-                        row["Name"] = mitglied["Name"]
-                        row["Vorname"] = mitglied["Vorname"]
-        if (self.anwendung.db_konto_found == 1):
-            self.anwendung.db_datei_speichern(self.anwendung.db_konto, self.anwendung.konto_db)
-            self.anwendung.konto_aus_db()
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'MITGLIEDERABGLEICH', 'Mitgliedernamen in abhängigen Datenbeständen aktualisieren',
+            daten=lambda: {'Abnehmer': self.anwendung.abnehmer_db, 'Zähler': self.anwendung.zaehler_db, 'Abschläge': self.anwendung.abschlag_db, 'Kontodaten': self.anwendung.konto_db},
+        ):
+            if self.anwendung.abnehmer_db != []:
+                for row in self.anwendung.abnehmer_db:
+                    for mitglied in self.anwendung.mitglieder_db:
+                        if row["Ident"] == mitglied["Ident"]:
+                            row["Name"] = mitglied["Name"]
+                            row["Vorname"] = mitglied["Vorname"]
+            if (self.anwendung.db_abnehmer_found == 1):
+                self.anwendung.db_datei_speichern(self.anwendung.db_abnehmer, self.anwendung.abnehmer_db)
+                self.anwendung.abnehmer_aus_db()
+            if self.anwendung.zaehler_db != []:
+                for row in self.anwendung.zaehler_db:
+                    for mitglied in self.anwendung.mitglieder_db:
+                        if row["Ident"] == mitglied["Ident"]:
+                            row["Name"] = mitglied["Name"]
+                            row["Vorname"] = mitglied["Vorname"]
+            if (self.anwendung.db_zaehler_found == 1):
+                self.anwendung.db_datei_speichern(self.anwendung.db_zaehler, self.anwendung.zaehler_db)
+                self.anwendung.zaehler_aus_db()
+            if self.anwendung.abschlag_db != []:
+                for row in self.anwendung.abschlag_db:
+                    for mitglied in self.anwendung.mitglieder_db:
+                        if row["Ident"] == mitglied["Ident"]:
+                            row["Name"] = mitglied["Name"]
+                            row["Vorname"] = mitglied["Vorname"]
+            if (self.anwendung.db_abschlag_found == 1):
+                self.anwendung.db_datei_speichern(self.anwendung.db_abschlag, self.anwendung.abschlag_db)
+                self.anwendung.abschlag_aus_db()
+            if self.anwendung.konto_db != []:
+                for row in self.anwendung.konto_db:
+                    for mitglied in self.anwendung.mitglieder_db:
+                        if row["Ident"] == mitglied["Ident"]:
+                            row["Name"] = mitglied["Name"]
+                            row["Vorname"] = mitglied["Vorname"]
+            if (self.anwendung.db_konto_found == 1):
+                self.anwendung.db_datei_speichern(self.anwendung.db_konto, self.anwendung.konto_db)
+                self.anwendung.konto_aus_db()

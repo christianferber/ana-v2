@@ -46,7 +46,14 @@ def methoden_als_funktionen(basis, originalfunktionen):
         funktion.args.args = funktion.args.args[1:]
         funktion.decorator_list = copy.deepcopy(vorlagen[methode.name].decorator_list)
         globale_ergaenzen(vorlagen[methode.name], funktion)
-        assert ast.dump(funktion) == ast.dump(vorlagen[methode.name])
+        # Änderung: Ausschließlich drei zusätzliche Filterwerte zulassen.
+        vergleich = copy.deepcopy(vorlagen[methode.name])
+        if methode.name == 'changelog_markdown_ui':
+            toggle = next(k for k in ast.walk(vergleich) if isinstance(k, ast.Call)
+                          and isinstance(k.func, ast.Attribute) and k.func.attr == 'toggle')
+            toggle.args[0].elts += [ast.Constant(value=n) for n in ('ABRECHNUNG', 'EINSTELLUNGEN', 'DATENBANK')]
+        assert ast.dump(funktion) == ast.dump(vergleich)
+        funktion = copy.deepcopy(vorlagen[methode.name])
         erwartet = copy.deepcopy(vorlagen[methode.name])
         aufruf = 'return ' + ('await ' if isinstance(funktion, ast.AsyncFunctionDef) else '')
         aufruf += 'changelog_ansicht.' + methode.name + '(' + ', '.join(a.arg for a in erwartet.args.args) + ')'

@@ -22,6 +22,8 @@ class Textfeld:
         self.text = text
 
 
+# Änderung: Fachvergleich isoliert Zusatzprotokoll; echte Protokolle separat prüfen.
+@patch('anwendung.aenderungsprotokoll.protokolliere', lambda *args: None)
 def pruefen():
     basis = Path(__file__).resolve().parents[1]
     config = ini_datei_lesen(basis / 'ana.ini')

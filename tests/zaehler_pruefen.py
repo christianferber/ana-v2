@@ -15,6 +15,8 @@ from anwendung.einstellungen import ini_datei_lesen
 from anwendung.berechnungen import datum_in_string, datum_in_punkt, datum_tage_vorher
 
 
+# Änderung: Fachvergleich isoliert Zusatzprotokoll; echte Protokolle separat prüfen.
+@patch('anwendung.aenderungsprotokoll.protokolliere', lambda *args: None)
 def pruefen():
     # Änderung: Beispieldaten nur lokal lesen und ausschließlich Testkopien bearbeiten.
     basis = Path(__file__).resolve().parents[1]

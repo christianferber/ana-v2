@@ -6,6 +6,9 @@ import copy
 def methoden_als_funktionen(basis, originalfunktionen):
     # Änderung: Nur Zugriffe über self und self.anwendung zurückführen.
     baum = ast.parse((basis / 'anwendung' / 'abnehmer_ui.py').read_text(encoding='utf-8'))
+    # Änderung: Exakte Protokollrahmen prüfen; ursprüngliche Fachkörper zurückführen.
+    from tests.protokoll_struktur import protokoll_rahmen_pruefen
+    protokoll_rahmen_pruefen(baum, 'abnehmer_ui')
     original = ast.parse((basis.parent / '_Vorlagen' / 'ana' / 'ana.py').read_text(encoding='utf-8-sig'))
     vorlagen = {k.name: k for k in original.body if isinstance(k, (ast.FunctionDef, ast.AsyncFunctionDef))}
     klasse = next(k for k in baum.body if isinstance(k, ast.ClassDef))

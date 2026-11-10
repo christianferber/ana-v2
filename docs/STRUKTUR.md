@@ -1,5 +1,11 @@
 # Projektstruktur
 
+<!-- Änderung: Ergänzende Beobachtung von Daten- und Einstellungsänderungen dokumentieren. -->
+`anwendung/aenderungsprotokoll.py` vergleicht Datenkopien und Dateiprüfsummen vor
+und nach einer Änderungsaktion und ergänzt das bestehende lokale Changelog.
+Fachliche Abläufe bleiben in ihren bisherigen Funktionen. Exporte und Sicherungen
+werden nicht als eigene Änderungsaktionen protokolliert.
+
 <!-- Änderung: Gemeinsame Start- und Fehlerbehandlung für Dokumentexporte dokumentieren. -->
 `anwendung/exportsteuerung.py` sichert die Exportstarts für Abrechnung,
 Rückvergütung und Mitgliederlisten ab. Hintergrundfehler werden über einen

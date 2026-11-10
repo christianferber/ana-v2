@@ -8,6 +8,7 @@ import io
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from anwendung.datenhaltung import DatenbankZugriff, check_ordner_exists, dictlist_to_csv
 from anwendung.einstellungen import ini_datei_lesen
@@ -19,6 +20,8 @@ def bestand(ordner):
             for p in ordner.rglob('*')}
 
 
+# Änderung: Fachvergleich isoliert Zusatzprotokoll; echte Protokolle separat prüfen.
+@patch('anwendung.aenderungsprotokoll.protokolliere', lambda *args: None)
 def pruefen():
     basis = Path(__file__).resolve().parents[1]
     daten = Path(ini_datei_lesen(basis / 'ana.ini')['Anwendung']['Arbeitsordner']).resolve()

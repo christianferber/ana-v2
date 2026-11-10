@@ -1,6 +1,8 @@
 """Änderung 2.033: Zähleroberfläche mit eigenem Tabellen- und Dialogzustand.
 Gemeinsame Daten und Dateihilfen bleiben auf der übergebenen Anwendung.
 """
+# Änderung: Änderungsprotokoll ergänzen; vorhandene Fachlogik unverändert ausführen.
+from anwendung.aenderungsprotokoll import aenderungen_protokollieren
 from collections import Counter
 from io import StringIO
 from pathlib import Path
@@ -35,7 +37,7 @@ class ZaehlerOberflaeche:
         # Wenn eine Datenbank gefunden wird, wird diese als Basis genommen, wenn nicht, dann die Abnehmer DB
         if self.anwendung.db_zaehler_found == 1:
             print("DB Zähler vorhanden")
-            basis_liste = self.anwendung.zaehler_db 
+            basis_liste = self.anwendung.zaehler_db
         else:
             print("DB Zähler nicht gefunden")
             basis_liste = self.anwendung.abnehmer_db
@@ -134,7 +136,7 @@ class ZaehlerOberflaeche:
                 #     abnehmer_dict[datum_tage_vorher(zaehler_von,1).replace("-","") + "-zaehler"] = row["Zaehlerstand VON(kWh)"].replace(".",",")
                 # else:
                 #     abnehmer_dict[datum_tage_vorher(zaehler_von,1).replace("-","") + "-zaehler"] = "-1"
-                if datum_tage_vorher(row["TAG BIS"],1) == zaehler_bis or row["TAG BIS"] == zaehler_bis:  
+                if datum_tage_vorher(row["TAG BIS"],1) == zaehler_bis or row["TAG BIS"] == zaehler_bis:
                     abnehmer_dict[datum_in_string(zaehler_bis) + "-zaehler"] = row["Zaehlerstand BIS(kWh)"].replace(".",",")
                 else:
                     abnehmer_dict[datum_in_string(zaehler_bis) + "-zaehler"] = "-1"
@@ -148,43 +150,48 @@ class ZaehlerOberflaeche:
         self.anwendung.zaehler_db = self.anwendung.db_datei_oeffnen(self.anwendung.db_zaehler)
         self.anwendung.zaehler_db = self.anwendung.tablefields_to_int(self.anwendung.zaehler_db)
         self.zaehler_sortieren()
-        self.anwendung.zaehler_label_ui.refresh('Zähler-Datenbank gefunden!')  
+        self.anwendung.zaehler_label_ui.refresh('Zähler-Datenbank gefunden!')
         self.anwendung.zaehler_grid_ui.refresh()
         self.zaehler_button_check.enable()
         self.anwendung.db_zaehler_found = 1
 
     def zaehler_liste_upload(self, e: events.UploadEventArguments):
-        # Änderung 2.033: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
-        jahre_in_zaehler = []
-        if self.anwendung.db_zaehler_found == 1:
-            for key,value in self.anwendung.zaehler_db[0].items():
-                if "-zaehler" in key:
-                    jahre_in_zaehler.append(int(key[:4]))
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'ZÄHLER', 'Zählerdaten importieren',
+            daten=lambda: {'Zähler': self.anwendung.zaehler_db, 'Abnehmer': self.anwendung.abnehmer_db},
+        ):
+            # Änderung 2.033: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
+            jahre_in_zaehler = []
+            if self.anwendung.db_zaehler_found == 1:
+                for key,value in self.anwendung.zaehler_db[0].items():
+                    if "-zaehler" in key:
+                        jahre_in_zaehler.append(int(key[:4]))
 
-            # Abrechnung des letzten erfassten Jahres muss erstellt sein - außer die Jahresenddaten sind nicht vorhanden
+                # Abrechnung des letzten erfassten Jahres muss erstellt sein - außer die Jahresenddaten sind nicht vorhanden
 
-            datei_abrechnung = self.anwendung.ordner_abrechnungen + "\\" + "Abrechnung-" + str(max(jahre_in_zaehler)) + "\\" + "Abrechnung-" + str(max(jahre_in_zaehler)) + ".csv"
-            if Path(datei_abrechnung).is_file() or (str(max(jahre_in_zaehler)) + "1231-zaehler") not in self.anwendung.zaehler_db[0].keys():
-                print("Abrechnung für letzten Zählerstand gefunden oder Jahresendstand des letzten, erfassten Zählerjahres nicht gefunden.") 
+                datei_abrechnung = self.anwendung.ordner_abrechnungen + "\\" + "Abrechnung-" + str(max(jahre_in_zaehler)) + "\\" + "Abrechnung-" + str(max(jahre_in_zaehler)) + ".csv"
+                if Path(datei_abrechnung).is_file() or (str(max(jahre_in_zaehler)) + "1231-zaehler") not in self.anwendung.zaehler_db[0].keys():
+                    print("Abrechnung für letzten Zählerstand gefunden oder Jahresendstand des letzten, erfassten Zählerjahres nicht gefunden.")
+                else:
+                    ui.notify("Bitte erstellen Sie die Abrechnung des letzten Jahres zuerst.", type="info")
+                    return
+            csv_import = StringIO(e.content.read().decode('iso-8859-1', errors='ignore'))
+            csv_import_list = csv_import.getvalue().split("\n")
+            if "Verbrauch Gesamt" in csv_import_list[0]:
+                print("Zählerdatei korrekt")
             else:
-                ui.notify("Bitte erstellen Sie die Abrechnung des letzten Jahres zuerst.", type="info")
-                return          
-        csv_import = StringIO(e.content.read().decode('iso-8859-1', errors='ignore'))
-        csv_import_list = csv_import.getvalue().split("\n")
-        if "Verbrauch Gesamt" in csv_import_list[0]:
-            print("Zählerdatei korrekt")
-        else:
-            ui.notify('Importdaten entsprechen nicht dem erforderlichen Format. Bitte Zählerexport aus Visualisierung importieren.', type="warning")
-            return
-        self.anwendung.zaehler_db = self.import_zaehler_liste(self.import_zaehlerdaten_visu(csv_import.getvalue()))
-        print("Zählerliste importiert")
-        for row in self.anwendung.zaehler_db:
-            for key,value in row.items():
-                if "Ident" in key or ("-zaehler" in key and "datum" not in key):
-                    row[key] = int(value)
-        self.zaehler_sortieren()
-        self.anwendung.db_sichern("Upload Zählerdaten")
-        self.anwendung.zaehler_grid_ui.refresh()
+                ui.notify('Importdaten entsprechen nicht dem erforderlichen Format. Bitte Zählerexport aus Visualisierung importieren.', type="warning")
+                return
+            self.anwendung.zaehler_db = self.import_zaehler_liste(self.import_zaehlerdaten_visu(csv_import.getvalue()))
+            print("Zählerliste importiert")
+            for row in self.anwendung.zaehler_db:
+                for key,value in row.items():
+                    if "Ident" in key or ("-zaehler" in key and "datum" not in key):
+                        row[key] = int(value)
+            self.zaehler_sortieren()
+            self.anwendung.db_sichern("Upload Zählerdaten")
+            self.anwendung.zaehler_grid_ui.refresh()
 
     def zaehler_sortieren(self):
         # Änderung 2.033: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
@@ -219,7 +226,7 @@ class ZaehlerOberflaeche:
                 for element in jahre_kleiner_4:
                     zaehlerkeys_sortiert.append(element)
                 jahre_kleiner_4 = []
-            elif keyscounter[jahr] == 4:                   
+            elif keyscounter[jahr] == 4:
                 zaehlerkeys_sortiert.append(str(jahr) + '-zaehlerwechsel-alt')
                 zaehlerkeys_sortiert.append(str(jahr) + '-zaehlerwechsel-neu')
                 zaehlerkeys_sortiert.append(str(jahr) + '-datum-zaehlerwechsel')
@@ -237,7 +244,7 @@ class ZaehlerOberflaeche:
             for element in zaehlerkeys_sortiert:
                 if element not in row.keys():
                     temprow[element] = "-1"
-                else: 
+                else:
                     temprow[element] = row[element]
             zaehler_db_temp.append(temprow)
         self.anwendung.zaehler_db = zaehler_db_temp
@@ -290,26 +297,36 @@ class ZaehlerOberflaeche:
         self.zaehler_button_speichern.disable()
 
     def dialog_zaehlerstand_uebernehmen(self):
-        # Änderung 2.033: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
-        log_daten = str(self.anwendung.zaehler_db[self.zaehler_input_values["listid"]]["Ident"]) + " " + str(self.anwendung.zaehler_db[self.zaehler_input_values["listid"]]["Name"]) + " " + str(self.anwendung.zaehler_db[self.zaehler_input_values["listid"]]["Vorname"]) + " ::: " + str(self.zaehler_input_values["Key"]) + " ::: " + str(self.anwendung.zaehler_db[self.zaehler_input_values["listid"]][self.zaehler_input_values["Key"]]) + " ===> " + str(self.zaehler_dialog_check_input01.value)
-        self.anwendung.change_log_info("ZÄHLER", log_daten)
-        if self.zaehler_input_values["Type"] == "NUMBER":
-            self.anwendung.zaehler_db[self.zaehler_input_values["listid"]][self.zaehler_input_values["Key"]] = int(self.zaehler_dialog_check_input01.value)
-        else:
-            self.anwendung.zaehler_db[self.zaehler_input_values["listid"]][self.zaehler_input_values["Key"]] = str(self.zaehler_dialog_check_input01.value)
-        self.anwendung.zaehler_grid_ui.refresh()
-        self.zaehler_button_speichern.enable()
-        ui.notify("Zählerstand aktualisiert", type="positive")
-        self.dialog_zaehler_check.close()
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'ZÄHLER', 'Zählerstand übernehmen',
+            daten=lambda: {'Zähler': self.anwendung.zaehler_db},
+        ):
+            # Änderung 2.033: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
+            log_daten = str(self.anwendung.zaehler_db[self.zaehler_input_values["listid"]]["Ident"]) + " " + str(self.anwendung.zaehler_db[self.zaehler_input_values["listid"]]["Name"]) + " " + str(self.anwendung.zaehler_db[self.zaehler_input_values["listid"]]["Vorname"]) + " ::: " + str(self.zaehler_input_values["Key"]) + " ::: " + str(self.anwendung.zaehler_db[self.zaehler_input_values["listid"]][self.zaehler_input_values["Key"]]) + " ===> " + str(self.zaehler_dialog_check_input01.value)
+            self.anwendung.change_log_info("ZÄHLER", log_daten)
+            if self.zaehler_input_values["Type"] == "NUMBER":
+                self.anwendung.zaehler_db[self.zaehler_input_values["listid"]][self.zaehler_input_values["Key"]] = int(self.zaehler_dialog_check_input01.value)
+            else:
+                self.anwendung.zaehler_db[self.zaehler_input_values["listid"]][self.zaehler_input_values["Key"]] = str(self.zaehler_dialog_check_input01.value)
+            self.anwendung.zaehler_grid_ui.refresh()
+            self.zaehler_button_speichern.enable()
+            ui.notify("Zählerstand aktualisiert", type="positive")
+            self.dialog_zaehler_check.close()
 
     def zaehler_tabelle_on_change(self, event):
-        # Änderung 2.033: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
-        if event["newValue"] == None or event["newValue"] == -1:
-             return
-        self.anwendung.zaehler_db[int(event["rowId"])][event["colId"]] = event["newValue"]
-        self.zaehler_button_speichern.enable()
-        self.anwendung.change_log("ZÄHLER", event)
-        ui.notify("Daten aktualisiert", type="positive")
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'ZÄHLER', 'Zählerdaten bearbeiten',
+            daten=lambda: {'Zähler': self.anwendung.zaehler_db},
+        ):
+            # Änderung 2.033: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
+            if event["newValue"] == None or event["newValue"] == -1:
+                 return
+            self.anwendung.zaehler_db[int(event["rowId"])][event["colId"]] = event["newValue"]
+            self.zaehler_button_speichern.enable()
+            self.anwendung.change_log("ZÄHLER", event)
+            ui.notify("Daten aktualisiert", type="positive")
 
     def zaehler_columns_erstellen(self, table):
         # Änderung 2.033: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
@@ -347,7 +364,7 @@ class ZaehlerOberflaeche:
                     column_element["cellEditorParams"]= {"min": -1,"step": 1}
                 columns.append(column_element)
 
-        return columns   
+        return columns
 
     def zaehler_grid_ui(self):
         # Änderung 2.033: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
@@ -384,10 +401,10 @@ class ZaehlerOberflaeche:
             self.zaehler_button_check = ui.button("Daten überprüfen", icon='task_alt', on_click=lambda: (self.check_zaehlerdaten()))
             self.zaehler_button_check.disable()
             self.zaehler_button_speichern = ui.button('Speichern', icon='save', on_click=lambda: (self.zaehler_speichern())).props('color=' + self.anwendung.speichernbutton)
-            self.zaehler_button_speichern.disable()    
+            self.zaehler_button_speichern.disable()
         self.anwendung.zaehler_grid_ui()
         if self.anwendung.db_datei_oeffnen(self.anwendung.db_zaehler)[0] == "file not found":
             self.anwendung.zaehler_label_ui.refresh('Keine Zählerdaten in Datenbank. Upload CSV-Datei mit Zählerdaten.')
         else:
             self.anwendung.db_zaehler_found = 1
-            self.zaehler_aus_db()    
+            self.zaehler_aus_db()

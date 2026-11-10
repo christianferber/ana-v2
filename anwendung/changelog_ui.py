@@ -12,7 +12,8 @@ class ChangelogOberflaeche:
         # Änderung 2.039: Bisherigen Anzeigeablauf über Ansicht und Anwendung ausführen.
         with ui.row():
             ui.button('Changelog aktualisieren', icon='refresh', on_click=self.anwendung.changelog_markdown_ui_refresh).props('color=secondary')
-            self.filter_toggle = ui.toggle(['ALLE', 'MITGLIEDER','WARTUNG','ABNEHMER','ZÄHLER','ABSCHLAG','RÜCKVERGÜTUNG','KONTODATEN'], value='ALLE', on_change=self.anwendung.changelog_markdown_ui_refresh)
+            # Änderung: Neue Protokollbereiche gezielt filtern können.
+            self.filter_toggle = ui.toggle(['ALLE', 'MITGLIEDER','WARTUNG','ABNEHMER','ZÄHLER','ABSCHLAG','RÜCKVERGÜTUNG','KONTODATEN','ABRECHNUNG','EINSTELLUNGEN','DATENBANK'], value='ALLE', on_change=self.anwendung.changelog_markdown_ui_refresh)
         self.changelog_markdown = ui.markdown('')
         self.anwendung.changelog_markdown_ui_refresh()
 

@@ -1,4 +1,6 @@
 """Änderung 2.036: Kontodatenoberfläche mit eigenem Tabellen- und Bedienzustand."""
+# Änderung: Änderungsprotokoll ergänzen; vorhandene Fachlogik unverändert ausführen.
+from anwendung.aenderungsprotokoll import aenderungen_protokollieren
 from io import StringIO
 from nicegui import events, ui
 from schwifty import IBAN
@@ -15,32 +17,37 @@ class KontodatenOberflaeche:
         ui.label(label).style('font-size:100%')
 
     def konto_upload(self, e: events.UploadEventArguments):
-        # Änderung 2.036: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
-        with StringIO(e.content.read().decode('iso-8859-1', errors='ignore')) as f:
-            self.anwendung.konto_db = import_csv_inhalt(f)
-        templist = []
-        for row in self.anwendung.konto_db:
-            temprow = {}
-            for key,value in row.items():
-                if key == "Ident":
-                    temprow[key] = int(value)
-                elif key == "Name" or key == "Vorname" or key == "Zahlungspflichtiger":
-                    temprow[key] = str(value)
-                elif key == "IBAN des Zahlungspflichtigen":
-                    temprow["IBAN"] = IBAN(str(value)).formatted
-                elif key == "BIC":
-                    temprow["BIC"] = str(value)
-                elif key == "Bei Kreditinstitut":
-                    temprow["Bank"] = str(value)
-                elif key == "Unterschrieben am":
-                    temprow["Datum SEPA-Auftrag"] = str(value)
-            iban = IBAN(temprow["IBAN"])
-            temprow["BIC"] = iban.bic
-            temprow["Bank"] = iban.bank_name
-            templist.append(temprow)
-        self.anwendung.konto_db = templist
-        self.anwendung.konto_db = sorted(self.anwendung.konto_db, key=lambda k: k['Ident'])
-        self.anwendung.konto_grid_ui.refresh()
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'KONTODATEN', 'Kontodaten importieren',
+            daten=lambda: {'Kontodaten': self.anwendung.konto_db},
+        ):
+            # Änderung 2.036: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
+            with StringIO(e.content.read().decode('iso-8859-1', errors='ignore')) as f:
+                self.anwendung.konto_db = import_csv_inhalt(f)
+            templist = []
+            for row in self.anwendung.konto_db:
+                temprow = {}
+                for key,value in row.items():
+                    if key == "Ident":
+                        temprow[key] = int(value)
+                    elif key == "Name" or key == "Vorname" or key == "Zahlungspflichtiger":
+                        temprow[key] = str(value)
+                    elif key == "IBAN des Zahlungspflichtigen":
+                        temprow["IBAN"] = IBAN(str(value)).formatted
+                    elif key == "BIC":
+                        temprow["BIC"] = str(value)
+                    elif key == "Bei Kreditinstitut":
+                        temprow["Bank"] = str(value)
+                    elif key == "Unterschrieben am":
+                        temprow["Datum SEPA-Auftrag"] = str(value)
+                iban = IBAN(temprow["IBAN"])
+                temprow["BIC"] = iban.bic
+                temprow["Bank"] = iban.bank_name
+                templist.append(temprow)
+            self.anwendung.konto_db = templist
+            self.anwendung.konto_db = sorted(self.anwendung.konto_db, key=lambda k: k['Ident'])
+            self.anwendung.konto_grid_ui.refresh()
 
     def db_konto_speichern(self):
         # Änderung 2.036: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
@@ -110,30 +117,35 @@ class KontodatenOberflaeche:
         ).style('height: 100%')
 
     def buchung_tabelle_on_change(self, event):
-        # Änderung 2.036: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
-        if event["newValue"] == None:
-            return
-        # IBAN wird geprüft und nur bei ok eingesetzt. Dazu wird sie mit Leerzeichen formatiert
-        if event["colId"] == "IBAN":
-            if IBAN(str(event["newValue"]).replace(" ",""), allow_invalid=True).is_valid:
-                iban = IBAN(event["newValue"])
-                self.anwendung.konto_db[int(event["rowId"])][event["colId"]] = iban.formatted
-                self.anwendung.konto_db[int(event["rowId"])]["BIC"] = iban.bic 
-                self.anwendung.konto_db[int(event["rowId"])]["Bank"] = iban.bank_name
-                self.anwendung.konto_grid_ui.refresh()
-            else:
-                ui.notify('IBAN ist nicht korrekt. Änderung nicht gespeichert.', type="negative")
-                self.anwendung.konto_grid_ui.refresh()
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'KONTODATEN', 'Kontodaten bearbeiten',
+            daten=lambda: {'Kontodaten': self.anwendung.konto_db},
+        ):
+            # Änderung 2.036: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
+            if event["newValue"] == None:
                 return
-        else:
-            self.anwendung.konto_db[int(event["rowId"])][event["colId"]] = event["newValue"]
-        self.button_konto_speichern.enable()
-        self.anwendung.change_log("KONTODATEN", event)
+            # IBAN wird geprüft und nur bei ok eingesetzt. Dazu wird sie mit Leerzeichen formatiert
+            if event["colId"] == "IBAN":
+                if IBAN(str(event["newValue"]).replace(" ",""), allow_invalid=True).is_valid:
+                    iban = IBAN(event["newValue"])
+                    self.anwendung.konto_db[int(event["rowId"])][event["colId"]] = iban.formatted
+                    self.anwendung.konto_db[int(event["rowId"])]["BIC"] = iban.bic
+                    self.anwendung.konto_db[int(event["rowId"])]["Bank"] = iban.bank_name
+                    self.anwendung.konto_grid_ui.refresh()
+                else:
+                    ui.notify('IBAN ist nicht korrekt. Änderung nicht gespeichert.', type="negative")
+                    self.anwendung.konto_grid_ui.refresh()
+                    return
+            else:
+                self.anwendung.konto_db[int(event["rowId"])][event["colId"]] = event["newValue"]
+            self.button_konto_speichern.enable()
+            self.anwendung.change_log("KONTODATEN", event)
 
     def buchung_ui(self):
         # Änderung 2.036: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
         self.anwendung.konto_label_ui('')
-        with ui.row():      
+        with ui.row():
             ui.upload(label='Upload Lastschriftvorlage',on_upload=self.anwendung.konto_upload, auto_upload=True, max_files=1).props("accept=.csv").classes('max-w-full')
             self.button_konto_speichern = ui.button('Speichern', icon='save', on_click=lambda: (self.anwendung.db_konto_speichern())).props('color=' + self.anwendung.speichernbutton)
             self.button_konto_speichern.disable()
@@ -168,4 +180,4 @@ class KontodatenOberflaeche:
         else:
             self.anwendung.db_konto_found = 1
             self.anwendung.konto_label_ui.refresh('Kontodaten wurden aus DB geladen. Daten aus Datenbank können über einen neuen Upload überschrieben werden.')
-            self.anwendung.konto_aus_db()  
+            self.anwendung.konto_aus_db()

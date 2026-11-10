@@ -1,6 +1,8 @@
 """Änderung: Abschlagsoberfläche mit eigenem Tabellen- und Bedienzustand.
 Gemeinsame Abschlagsdaten bleiben auf der übergebenen Anwendung.
 """
+# Änderung: Änderungsprotokoll ergänzen; vorhandene Fachlogik unverändert ausführen.
+from anwendung.aenderungsprotokoll import aenderungen_protokollieren
 from io import StringIO
 from nicegui import events, ui
 from anwendung.datenhaltung import import_csv_inhalt
@@ -25,17 +27,22 @@ class AbschlagOberflaeche:
         self.anwendung.db_abschlag_found = 1
 
     def abschlag_upload(self, e: events.UploadEventArguments):
-        # Änderung: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.
-        with StringIO(e.content.read().decode('iso-8859-1', errors='ignore')) as f:
-            abschlag_import = import_csv_inhalt(f)
-        if self.anwendung.string_in_dict(abschlag_import[0], 'Ident') == True and self.anwendung.string_in_dict(abschlag_import[0], 'Name') == True and self.anwendung.string_in_dict(abschlag_import[0], 'Vorname') == True and self.anwendung.string_in_dict(abschlag_import[0], 'Abschlag') == True:
-            self.anwendung.abschlag_db = abschlag_import
-        else:
-            ui.notify('Importdaten entsprechen nicht dem erforderlichen Format. Es müssen Tabellenspalten für Ident, Name, Vorname und Abschlag-<Jahr> enthalten sein.', type="warning")
-            return
-        self.anwendung.db_sichern("Upload Abschlagsdaten")
-        self.anwendung.abschlag_grid_ui.refresh()
-        self.abschlag_button_speichern.enable()
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'ABSCHLAG', 'Abschläge importieren',
+            daten=lambda: {'Abschläge': self.anwendung.abschlag_db},
+        ):
+            # Änderung: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.
+            with StringIO(e.content.read().decode('iso-8859-1', errors='ignore')) as f:
+                abschlag_import = import_csv_inhalt(f)
+            if self.anwendung.string_in_dict(abschlag_import[0], 'Ident') == True and self.anwendung.string_in_dict(abschlag_import[0], 'Name') == True and self.anwendung.string_in_dict(abschlag_import[0], 'Vorname') == True and self.anwendung.string_in_dict(abschlag_import[0], 'Abschlag') == True:
+                self.anwendung.abschlag_db = abschlag_import
+            else:
+                ui.notify('Importdaten entsprechen nicht dem erforderlichen Format. Es müssen Tabellenspalten für Ident, Name, Vorname und Abschlag-<Jahr> enthalten sein.', type="warning")
+                return
+            self.anwendung.db_sichern("Upload Abschlagsdaten")
+            self.anwendung.abschlag_grid_ui.refresh()
+            self.abschlag_button_speichern.enable()
 
     def abschlag_speichern(self):
         # Änderung: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.
@@ -44,12 +51,17 @@ class AbschlagOberflaeche:
         self.abschlag_button_speichern.disable()
 
     def abschlag_tabelle_on_change(self, event):
-        # Änderung: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.
-        if event["newValue"] == None:
-            return
-        self.anwendung.abschlag_db[int(event["rowId"])][event["colId"]] = event["newValue"]
-        self.anwendung.change_log("ABSCHLAG", event)
-        self.abschlag_button_speichern.enable()
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'ABSCHLAG', 'Abschläge bearbeiten',
+            daten=lambda: {'Abschläge': self.anwendung.abschlag_db},
+        ):
+            # Änderung: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.
+            if event["newValue"] == None:
+                return
+            self.anwendung.abschlag_db[int(event["rowId"])][event["colId"]] = event["newValue"]
+            self.anwendung.change_log("ABSCHLAG", event)
+            self.abschlag_button_speichern.enable()
 
     def abschlag_columns_erstellen(self, table):
         # Änderung: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.

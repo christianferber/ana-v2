@@ -9,6 +9,9 @@ Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL
 Wartungsstand nach Version 2.047
 ------------------------------
 
+<!-- Änderung: Vollständigere Änderungsprotokollierung aus Anwendersicht beschreiben. -->
+Verbesserung: Daten- und Einstellungsänderungen werden umfassender im Changelog erfasst. Mitgliederänderungen erscheinen bereits bei der Übernahme; Änderungen im Arbeitsspeicher und gespeicherte Dateien werden unterschieden. Bereits erfolgte Teiländerungen nach einem Abbruch sind gekennzeichnet. Für Abrechnungen, Einstellungen und Datenbankspeicherungen stehen zusätzliche Filter bereit.
+
 <!-- Änderung: Verständliche Exportfehler und erneute Startmöglichkeit beschreiben. -->
 Bugfix: Fehler beim Erzeugen von Abrechnungen, Rückvergütungen und Mitgliederlisten werden angezeigt. Während eines laufenden Exports ist ein weiterer Start desselben Exports gesperrt. Nach einem Fehler wird der Exportknopf wieder freigegeben.
 

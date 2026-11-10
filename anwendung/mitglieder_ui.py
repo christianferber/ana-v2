@@ -1,4 +1,6 @@
 """Änderung 2.035: Mitgliederoberfläche mit eigenem Tabellen- und Dialogzustand."""
+# Änderung: Änderungsprotokoll ergänzen; vorhandene Fachlogik unverändert ausführen.
+from anwendung.aenderungsprotokoll import aenderungen_protokollieren
 from anwendung.datenhaltung import import_csv_inhalt, check_ordner_exists, datei_speichern
 from nicegui import events, ui
 # Änderung: Listenexporte sperren und Fehler über den UI-Kontext zurückmelden.
@@ -294,58 +296,63 @@ class MitgliederOberflaeche:
             return
 
         def aenderung_speichern():
-            neuer_anschluss_lnr = (
-                neuer_anschlussnehmer.value.split('|')[0].strip()
-            )
+            # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+            with aenderungen_protokollieren(
+                self.anwendung, 'MITGLIEDER', 'Anschlussnehmer wechseln',
+                daten=lambda: {'Mitglieder': self.anwendung.mitglieder_db},
+            ):
+                neuer_anschluss_lnr = (
+                    neuer_anschlussnehmer.value.split('|')[0].strip()
+                )
 
-            keylist = [
-                "MAC-Adresse LAN Modul Dezimal",
-                "MAC-Adresse LAN Modul Hex",
-                "Zählernummer",
-                "MAC Adresse ONU",
-                "F-Nr.",
-                "Berechnete Leistung (KW)",
-                "Leistung Übergabestation (KW)"
-            ]
+                keylist = [
+                    "MAC-Adresse LAN Modul Dezimal",
+                    "MAC-Adresse LAN Modul Hex",
+                    "Zählernummer",
+                    "MAC Adresse ONU",
+                    "F-Nr.",
+                    "Berechnete Leistung (KW)",
+                    "Leistung Übergabestation (KW)"
+                ]
 
-            anschluss_valide = False
-            neuer_name = ""
-            neuer_vorname = ""
+                anschluss_valide = False
+                neuer_name = ""
+                neuer_vorname = ""
 
-            # Neuer Anschlussnehmer
-            for row in self.anwendung.mitglieder_db:
-                if str(row["Laufende Nummer"]) == str(neuer_anschluss_lnr):
-                    if row["Ident"] == "":
-                        row["Ident"] = row_auswahl["Ident"]
-                        for key in keylist:
-                            row[key] = row_auswahl[key]
-                        neuer_name = row["Name"]
-                        neuer_vorname = row["Vorname"]
-                        anschluss_valide = True
-                    break
-
-            # Alter Anschlussnehmer
-            if anschluss_valide:
+                # Neuer Anschlussnehmer
                 for row in self.anwendung.mitglieder_db:
-                    if str(row["Laufende Nummer"]) == str(row_auswahl["Laufende Nummer"]):
-                        row["Ident"] = ""
-                        for key in keylist:
-                            row[key] = ""
+                    if str(row["Laufende Nummer"]) == str(neuer_anschluss_lnr):
+                        if row["Ident"] == "":
+                            row["Ident"] = row_auswahl["Ident"]
+                            for key in keylist:
+                                row[key] = row_auswahl[key]
+                            neuer_name = row["Name"]
+                            neuer_vorname = row["Vorname"]
+                            anschluss_valide = True
                         break
 
-                loginfo = (
-                    f"Lfd-Nr. {row_auswahl['Laufende Nummer']} ::: "
-                    f"Anschlussnehmer {row_auswahl['Name']} "
-                    f"{row_auswahl['Vorname']} ===> "
-                    f"Anschlussnehmer {neuer_anschluss_lnr} "
-                    f"{neuer_name} {neuer_vorname}"
-                )
-                self.mitglieder_changes.append(loginfo)
+                # Alter Anschlussnehmer
+                if anschluss_valide:
+                    for row in self.anwendung.mitglieder_db:
+                        if str(row["Laufende Nummer"]) == str(row_auswahl["Laufende Nummer"]):
+                            row["Ident"] = ""
+                            for key in keylist:
+                                row[key] = ""
+                            break
 
-                self.anwendung.mitglieder_grid_update()
-                dialog.close()
-            else:
-                ui.notify("Ausgewählter Anschlussnehmer ist nicht valide.", type="warning")
+                    loginfo = (
+                        f"Lfd-Nr. {row_auswahl['Laufende Nummer']} ::: "
+                        f"Anschlussnehmer {row_auswahl['Name']} "
+                        f"{row_auswahl['Vorname']} ===> "
+                        f"Anschlussnehmer {neuer_anschluss_lnr} "
+                        f"{neuer_name} {neuer_vorname}"
+                    )
+                    self.mitglieder_changes.append(loginfo)
+
+                    self.anwendung.mitglieder_grid_update()
+                    dialog.close()
+                else:
+                    ui.notify("Ausgewählter Anschlussnehmer ist nicht valide.", type="warning")
 
         with ui.dialog() as dialog:
             with ui.card().style("width: 600px; height: 400px;"):
@@ -391,20 +398,25 @@ class MitgliederOberflaeche:
     def mitglieder_neu(self):
         # Änderung 2.035: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
         def aenderung_speichern():
-            neuer_eintrag = {}
-            neuer_eintrag["Laufende Nummer"] = neue_lnr
-            neuer_eintrag["Ident"] = ""
-            neuer_eintrag["Name"] = input_name.value
-            neuer_eintrag["Vorname"] = input_vorname.value
-            for key in self.anwendung.mitglieder_db[0]:
-                if key not in ["Laufende Nummer","Ident","Name","Vorname"]:
-                    neuer_eintrag[key] = ""
-            self.anwendung.mitglieder_db.append(neuer_eintrag)
-            ui.notify('Eintrag ' + input_name.value + " " + input_vorname.value + " wurde mit der Nummer " + str(neue_lnr) + " angelegt.", type="positive")
-            loginfo = 'Lfd-Nr. ' + str(neue_lnr) + ' ::: Neuanlage ' + neuer_eintrag["Name"] + ' ' + neuer_eintrag["Vorname"]
-            self.mitglieder_changes.append(loginfo)
-            self.anwendung.mitglieder_grid_update()
-            dialog.close()
+            # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+            with aenderungen_protokollieren(
+                self.anwendung, 'MITGLIEDER', 'Mitglied anlegen',
+                daten=lambda: {'Mitglieder': self.anwendung.mitglieder_db},
+            ):
+                neuer_eintrag = {}
+                neuer_eintrag["Laufende Nummer"] = neue_lnr
+                neuer_eintrag["Ident"] = ""
+                neuer_eintrag["Name"] = input_name.value
+                neuer_eintrag["Vorname"] = input_vorname.value
+                for key in self.anwendung.mitglieder_db[0]:
+                    if key not in ["Laufende Nummer","Ident","Name","Vorname"]:
+                        neuer_eintrag[key] = ""
+                self.anwendung.mitglieder_db.append(neuer_eintrag)
+                ui.notify('Eintrag ' + input_name.value + " " + input_vorname.value + " wurde mit der Nummer " + str(neue_lnr) + " angelegt.", type="positive")
+                loginfo = 'Lfd-Nr. ' + str(neue_lnr) + ' ::: Neuanlage ' + neuer_eintrag["Name"] + ' ' + neuer_eintrag["Vorname"]
+                self.mitglieder_changes.append(loginfo)
+                self.anwendung.mitglieder_grid_update()
+                dialog.close()
 
         with ui.dialog() as dialog:
             with ui.card().style("width: 600px; height: 400px;"):
@@ -447,27 +459,32 @@ class MitgliederOberflaeche:
                             .style("min-width: 400px")
 
                 def save_changes():
-                    # Das gesamte `rowData`-Array holen
-                    row_data_list = self.mitglieder_grid.options['rowData']
+                    # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+                    with aenderungen_protokollieren(
+                        self.anwendung, 'MITGLIEDER', 'Mitglied bearbeiten',
+                        daten=lambda: {'Mitglieder': self.anwendung.mitglieder_db},
+                    ):
+                        # Das gesamte `rowData`-Array holen
+                        row_data_list = self.mitglieder_grid.options['rowData']
                 
-                    # Aktuelle Zeile anhand der Referenz suchen und aktualisieren
-                    for row in row_data_list:
-                        if row['Laufende Nummer'] == row_data['Laufende Nummer']:  # Eindeutiges Feld zum Identifizieren
-                            for col_name, input_field in fields.items():
-                                row[col_name] = input_field.value  # Checkbox-Wert
-                            row_neu = row
-                            break
-                    # Grid-Daten explizit neu setzen und aktualisieren
-                    self.mitglieder_grid.options['rowData'] = row_data_list
-                    self.anwendung.mitglieder_db = row_data_list
-                    self.anwendung.mitglieder_grid_update()
-                    loginfo = 'Lfd-Nr. ' + str(row_data["Laufende Nummer"]) + ' ::: Anschlussdaten geändert für  ' + row_data["Name"] + ' ' + row_data["Vorname"]
-                    self.mitglieder_changes.append(loginfo)
-                    loginfo = 'Lfd-Nr. ' + str(row_data["Laufende Nummer"]) + ' ::: ALT: ' + str(row_data)
-                    self.mitglieder_changes.append(loginfo)
-                    loginfo = 'Lfd-Nr. ' + str(row_data["Laufende Nummer"]) + ' ::: NEU: ' + str(row_neu)
-                    self.mitglieder_changes.append(loginfo)
-                    dialog.close()
+                        # Aktuelle Zeile anhand der Referenz suchen und aktualisieren
+                        for row in row_data_list:
+                            if row['Laufende Nummer'] == row_data['Laufende Nummer']:  # Eindeutiges Feld zum Identifizieren
+                                for col_name, input_field in fields.items():
+                                    row[col_name] = input_field.value  # Checkbox-Wert
+                                row_neu = row
+                                break
+                        # Grid-Daten explizit neu setzen und aktualisieren
+                        self.mitglieder_grid.options['rowData'] = row_data_list
+                        self.anwendung.mitglieder_db = row_data_list
+                        self.anwendung.mitglieder_grid_update()
+                        loginfo = 'Lfd-Nr. ' + str(row_data["Laufende Nummer"]) + ' ::: Anschlussdaten geändert für  ' + row_data["Name"] + ' ' + row_data["Vorname"]
+                        self.mitglieder_changes.append(loginfo)
+                        loginfo = 'Lfd-Nr. ' + str(row_data["Laufende Nummer"]) + ' ::: ALT: ' + str(row_data)
+                        self.mitglieder_changes.append(loginfo)
+                        loginfo = 'Lfd-Nr. ' + str(row_data["Laufende Nummer"]) + ' ::: NEU: ' + str(row_neu)
+                        self.mitglieder_changes.append(loginfo)
+                        dialog.close()
 
                 with ui.row():
                     ui.button('Übernehmen', icon='save', on_click=save_changes)
@@ -485,24 +502,29 @@ class MitgliederOberflaeche:
             return
 
         def loeschen_ja():
-            for row in self.anwendung.mitglieder_db[:]:
-                if row["Laufende Nummer"] == row_auswahl["Laufende Nummer"]:
-                    self.anwendung.mitglieder_db.remove(row)
+            # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+            with aenderungen_protokollieren(
+                self.anwendung, 'MITGLIEDER', 'Mitglied löschen',
+                daten=lambda: {'Mitglieder': self.anwendung.mitglieder_db},
+            ):
+                for row in self.anwendung.mitglieder_db[:]:
+                    if row["Laufende Nummer"] == row_auswahl["Laufende Nummer"]:
+                        self.anwendung.mitglieder_db.remove(row)
 
-                    self.button_edit.disable()
-                    self.button_loeschen.disable()
+                        self.button_edit.disable()
+                        self.button_loeschen.disable()
 
-                    loginfo = (
-                        f"Lfd-Nr. {row_auswahl['Laufende Nummer']} ::: "
-                        f"Anschlussnehmer {row_auswahl['Name']} "
-                        f"{row_auswahl['Vorname']} gelöscht."
-                    )
-                    self.mitglieder_changes.append(loginfo)
+                        loginfo = (
+                            f"Lfd-Nr. {row_auswahl['Laufende Nummer']} ::: "
+                            f"Anschlussnehmer {row_auswahl['Name']} "
+                            f"{row_auswahl['Vorname']} gelöscht."
+                        )
+                        self.mitglieder_changes.append(loginfo)
 
-                    self.anwendung.mitglieder_grid_update()
-                    break
+                        self.anwendung.mitglieder_grid_update()
+                        break
 
-            dialog.close()
+                dialog.close()
 
         with ui.dialog() as dialog:
             with ui.card():
@@ -720,7 +742,12 @@ class MitgliederOberflaeche:
             dialog.open()
 
         def nicht_speichern():
-            self.anwendung.mitglieder_aus_db()
+            # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+            with aenderungen_protokollieren(
+                self.anwendung, 'MITGLIEDER', 'Mitgliederänderungen verwerfen',
+                daten=lambda: {'Mitglieder': self.anwendung.mitglieder_db},
+            ):
+                self.anwendung.mitglieder_aus_db()
 
         def apply_switch_off_state():
             # Status setzen, wenn der Switch ausgeschaltet wird
@@ -774,18 +801,23 @@ class MitgliederOberflaeche:
             self.button_loeschen.disable()
 
     def mitglieder_upload(self, e: events.UploadEventArguments):
-        # Änderung 2.035: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
-        with StringIO(e.content.read().decode('iso-8859-1', errors='ignore')) as f:
-            mitglieder_import = import_csv_inhalt(f)
-        if self.anwendung.string_in_dict(mitglieder_import[0], 'Ident') == True and self.anwendung.string_in_dict(mitglieder_import[0], 'Name') == True and self.anwendung.string_in_dict(mitglieder_import[0], 'Vorname') == True:
-            self.anwendung.mitglieder_db = mitglieder_import
-        else:
-            ui.notify('Importdaten entsprechen nicht dem erforderlichen Format. Es müssen mindestens Tabellenspalten für Ident, Name, Vorname enthalten sein.', type="warning")
-            return
-        self.anwendung.db_sichern("Upload Mitgliederdaten")
-        self.button_mitglieder_pruefen.enable()
-        self.button_mitglieder_speichern.enable()
-        self.anwendung.mitglieder_grid_update()
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'MITGLIEDER', 'Mitglieder importieren',
+            daten=lambda: {'Mitglieder': self.anwendung.mitglieder_db},
+        ):
+            # Änderung 2.035: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
+            with StringIO(e.content.read().decode('iso-8859-1', errors='ignore')) as f:
+                mitglieder_import = import_csv_inhalt(f)
+            if self.anwendung.string_in_dict(mitglieder_import[0], 'Ident') == True and self.anwendung.string_in_dict(mitglieder_import[0], 'Name') == True and self.anwendung.string_in_dict(mitglieder_import[0], 'Vorname') == True:
+                self.anwendung.mitglieder_db = mitglieder_import
+            else:
+                ui.notify('Importdaten entsprechen nicht dem erforderlichen Format. Es müssen mindestens Tabellenspalten für Ident, Name, Vorname enthalten sein.', type="warning")
+                return
+            self.anwendung.db_sichern("Upload Mitgliederdaten")
+            self.button_mitglieder_pruefen.enable()
+            self.button_mitglieder_speichern.enable()
+            self.anwendung.mitglieder_grid_update()
 
     def mitglieder_aus_db(self):
         # Änderung 2.035: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.

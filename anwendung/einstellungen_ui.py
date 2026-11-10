@@ -1,4 +1,6 @@
 """Änderung 2.038: Einstellungsoberfläche mit eigenem Eingabe- und Dialogzustand."""
+# Änderung: Änderungsprotokoll ergänzen; vorhandene Fachlogik unverändert ausführen.
+from anwendung.aenderungsprotokoll import aenderungen_protokollieren
 import configparser
 from pathlib import Path
 from nicegui import app, ui
@@ -54,28 +56,34 @@ class EinstellungenOberflaeche:
         self.ini_arbeitsordner.set_text(ordner_pfad)
 
     def ini_speichern(self):
-        # Änderung 2.038: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
-        config = configparser.ConfigParser()
-        config['Anwendung'] = { 'FarbeSpezial' : self.ini_farbe_spezial.value,
-                                'FarbeTabelleEdit' : self.ini_farbe_tabelle_edit.value,
-                                'TabellenZeilenProSeite' : self.ini_tabelle_pagination.value,
-                                'Arbeitsordner' : self.ini_arbeitsordner.text}
-        # Änderung für v2: Nur der Dateizugriff ist ausgelagert; Dialogablauf bleibt bestehen.
-        ini_datei_schreiben(self.anwendung.ini, config)
-        if self.anwendung.arbeitsordner != self.ini_arbeitsordner.text:
-            self.dialog_neustart.open()
-        self.dialog_einstellungen.close()
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'EINSTELLUNGEN', 'Einstellungen speichern',
+            daten=lambda: {},
+            dateien=lambda: (self.anwendung.ini, Path(self.anwendung.arbeitsordner) / self.anwendung.ini_betreiber),
+        ):
+            # Änderung 2.038: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
+            config = configparser.ConfigParser()
+            config['Anwendung'] = { 'FarbeSpezial' : self.ini_farbe_spezial.value,
+                                    'FarbeTabelleEdit' : self.ini_farbe_tabelle_edit.value,
+                                    'TabellenZeilenProSeite' : self.ini_tabelle_pagination.value,
+                                    'Arbeitsordner' : self.ini_arbeitsordner.text}
+            # Änderung für v2: Nur der Dateizugriff ist ausgelagert; Dialogablauf bleibt bestehen.
+            ini_datei_schreiben(self.anwendung.ini, config)
+            if self.anwendung.arbeitsordner != self.ini_arbeitsordner.text:
+                self.dialog_neustart.open()
+            self.dialog_einstellungen.close()
 
-        config_betreiber = configparser.ConfigParser()
-        inibetreiberfile = Path(str(self.anwendung.arbeitsordner) + "\\" + self.anwendung.ini_betreiber)
+            config_betreiber = configparser.ConfigParser()
+            inibetreiberfile = Path(str(self.anwendung.arbeitsordner) + "\\" + self.anwendung.ini_betreiber)
 
-        config_betreiber['Betreiber'] = { 'BetreiberName' : self.ini_betreiber_name.value,
-                                'GlaeubigerID' : self.ini_glaeubiger_id.value,
-                                'BetreiberIBAN' : self.ini_betreiber_iban.value,
-                                'Waermepreis' : self.ini_arbeitspreis.value,
-                                'Grundgebuehr' : self.ini_grundgebuehr.value}
+            config_betreiber['Betreiber'] = { 'BetreiberName' : self.ini_betreiber_name.value,
+                                    'GlaeubigerID' : self.ini_glaeubiger_id.value,
+                                    'BetreiberIBAN' : self.ini_betreiber_iban.value,
+                                    'Waermepreis' : self.ini_arbeitspreis.value,
+                                    'Grundgebuehr' : self.ini_grundgebuehr.value}
 
-        # Änderung für v2: Betreiberdaten wie bisher nach dem Dialogabschluss speichern.
-        ini_datei_schreiben(inibetreiberfile, config_betreiber)
+            # Änderung für v2: Betreiberdaten wie bisher nach dem Dialogabschluss speichern.
+            ini_datei_schreiben(inibetreiberfile, config_betreiber)
 
-        self.anwendung.ini_einlesen()
+            self.anwendung.ini_einlesen()

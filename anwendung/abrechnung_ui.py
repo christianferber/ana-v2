@@ -3,6 +3,8 @@
 Dialoge und Abläufe bleiben erhalten. Gemeinsame Datenbanken und Einstellungen
 werden weiterhin aus der übergebenen Anwendung gelesen und dort aktualisiert.
 """
+# Änderung: Änderungsprotokoll ergänzen; vorhandene Fachlogik unverändert ausführen.
+from anwendung.aenderungsprotokoll import aenderungen_protokollieren
 import os
 from pathlib import Path
 import threading
@@ -92,33 +94,38 @@ class AbrechnungOberflaeche:
         # Überprüft, ob die Mindestabnahme für das neue Jahr erneut ausgesetzt werden soll. Sonst wird die Mindestabnahme des letzen Jahres, wo sie gesetzt war übernommen
 
         async def mindestabnahme_pruefen(jahr):
-            def mv_aussetzen():
-                dialog_mv.close()
-                row["Mindest-Vertragsleistung-" + str(int(jahr) + 1)] = 0
+            # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+            with aenderungen_protokollieren(
+                self.anwendung, 'ABNEHMER', 'Mindestabnahme für das Folgejahr festlegen',
+                daten=lambda: {'Abnehmer': self.anwendung.abnehmer_db},
+            ):
+                def mv_aussetzen():
+                    dialog_mv.close()
+                    row["Mindest-Vertragsleistung-" + str(int(jahr) + 1)] = 0
 
-            def mv_nicht_aussetzen():
-                dialog_mv.close()
-                row["Mindest-Vertragsleistung-" + str(int(jahr) + 1)] = self.letzte_mindestabnahme(row["Ident"])
-
-            with ui.dialog().style("width: 800px, max-width: none") as dialog_mv:
-                with ui.card().style("width: 800px"):
-                    with ui.row():
-                        label_mv = ui.label("hallo")
-                    with ui.row():
-                        ui.label("Möchten Sie die Mindestabnahme auch im folgenden Jahr aussetzen?")
-                    with ui.row():
-                        button_ja = ui.button("Ja", on_click=mv_aussetzen)
-                        button_nein = ui.button("Nein", on_click=mv_nicht_aussetzen)
-
-            # Es werden alle Abnehmer durchgegangen. Wenn die Mindestvertragsleistung im Vorjahr 0 war, wird gefragt, ob dies wieder übernommen werden soll oder nicht.
-
-            for row in self.anwendung.abnehmer_db:
-                if row["Mindest-Vertragsleistung-" + str(int(jahr))] == 0:
-                    label_mv.set_text("Für den Abnehmer " + row["Name"] + " " + row["Vorname"] + " mit der Anschluss-Nr. " + row["Ident"] + " wurde im Abrechnungsjahr die Mindestabnahme ausgesetzt.")
-                    dialog_mv.open()
-                    await dialog_mv
-                else:
+                def mv_nicht_aussetzen():
+                    dialog_mv.close()
                     row["Mindest-Vertragsleistung-" + str(int(jahr) + 1)] = self.letzte_mindestabnahme(row["Ident"])
+
+                with ui.dialog().style("width: 800px, max-width: none") as dialog_mv:
+                    with ui.card().style("width: 800px"):
+                        with ui.row():
+                            label_mv = ui.label("hallo")
+                        with ui.row():
+                            ui.label("Möchten Sie die Mindestabnahme auch im folgenden Jahr aussetzen?")
+                        with ui.row():
+                            button_ja = ui.button("Ja", on_click=mv_aussetzen)
+                            button_nein = ui.button("Nein", on_click=mv_nicht_aussetzen)
+
+                # Es werden alle Abnehmer durchgegangen. Wenn die Mindestvertragsleistung im Vorjahr 0 war, wird gefragt, ob dies wieder übernommen werden soll oder nicht.
+
+                for row in self.anwendung.abnehmer_db:
+                    if row["Mindest-Vertragsleistung-" + str(int(jahr))] == 0:
+                        label_mv.set_text("Für den Abnehmer " + row["Name"] + " " + row["Vorname"] + " mit der Anschluss-Nr. " + row["Ident"] + " wurde im Abrechnungsjahr die Mindestabnahme ausgesetzt.")
+                        dialog_mv.open()
+                        await dialog_mv
+                    else:
+                        row["Mindest-Vertragsleistung-" + str(int(jahr) + 1)] = self.letzte_mindestabnahme(row["Ident"])
 
         def mindestabnahme_speichern(jahr):
             # Änderung 2.03: Zustand über die Ansicht bzw. gemeinsame Anwendung verwenden.
@@ -128,19 +135,25 @@ class AbrechnungOberflaeche:
 
 
         def abrechnung_speichern_exec():
-            # Speichert neuen Abschlag und Abrechnung
-            for abrechnung_row in self.abrechnung:
-                for abschlag_row in self.anwendung.abschlag_db:
-                    if abrechnung_row["Ident"] == abschlag_row["Ident"]:
-                        abschlag_row["Abschlag-"+ str(abrechnung_row["Folgejahr"])] = abrechnung_row["neuer Abschlag"]
-            self.anwendung.db_datei_speichern(self.anwendung.db_abschlag, self.anwendung.abschlag_db)
-            self.anwendung.abschlag_aus_db()
-            datei_speichern(self.datei_abrechnung_aktuell, self.abrechnung)
-            ui.notify(self.text_bestaetigung, type="positive")
-            self.abr_button_download.enable()
-            self.abr_button_plausibel.enable()
-            self.abr_button_pdf.enable()
-            self.abr_button_speichern.disable()
+            # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+            with aenderungen_protokollieren(
+                self.anwendung, 'ABRECHNUNG', 'Abrechnung und Folgeabschläge speichern',
+                daten=lambda: {'Abschläge': self.anwendung.abschlag_db},
+                dateien=lambda: (self.datei_abrechnung_aktuell,),
+            ):
+                # Speichert neuen Abschlag und Abrechnung
+                for abrechnung_row in self.abrechnung:
+                    for abschlag_row in self.anwendung.abschlag_db:
+                        if abrechnung_row["Ident"] == abschlag_row["Ident"]:
+                            abschlag_row["Abschlag-"+ str(abrechnung_row["Folgejahr"])] = abrechnung_row["neuer Abschlag"]
+                self.anwendung.db_datei_speichern(self.anwendung.db_abschlag, self.anwendung.abschlag_db)
+                self.anwendung.abschlag_aus_db()
+                datei_speichern(self.datei_abrechnung_aktuell, self.abrechnung)
+                ui.notify(self.text_bestaetigung, type="positive")
+                self.abr_button_download.enable()
+                self.abr_button_plausibel.enable()
+                self.abr_button_pdf.enable()
+                self.abr_button_speichern.disable()
 
         # Überprüft, ob Vorhandensein der Abrechnung erkannt wurde und blendet dann zusätzlich Checkbox für das Überschreiben ein
 

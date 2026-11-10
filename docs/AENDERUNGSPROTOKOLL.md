@@ -20,6 +20,36 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Änderungsprotokoll nach Version 2.047 – 10.11.2026
+
+<!-- Änderung: Autorisierten Umfang Daten und Einstellungen dokumentieren. -->
+
+- Ergänzende Kontextverwaltung in `anwendung/aenderungsprotokoll.py` beobachtet
+  22 Änderungswege. Daten werden vor dem bisherigen Fachkörper kopiert, Dateien
+  über SHA256 verglichen. Der ursprüngliche Fachkörper bleibt jeweils unverändert.
+- Erfasst werden Mitgliederanlage/-bearbeitung/-löschung/Anschlusswechsel und
+  Verwerfen, alle fünf Uploads, Tabellen- und Zählerdialogänderungen, abhängige
+  Mitgliederaktualisierung, Datenbankspeicherung, Mindestabnahmen/Folgeabschläge,
+  Jahresabrechnungs- und Rückvergütungsdateien sowie beide Einstellungsdateien.
+  Vorhandene Detailprotokolle, einschließlich Wartung, bleiben erhalten.
+- Neue Einträge nennen Aktion und betroffene Bestände bzw. Dateinamen; sie
+  unterscheiden Arbeitsspeicher von Dateispeicherung. Bei einer Ausnahme werden
+  bereits erfolgte Änderungen als Teiländerung erfasst. Identische beobachtete
+  Bestände erzeugen keinen zusätzlichen Eintrag. Keine zusätzlichen Datenwerte,
+  Kontodaten oder Konfigurationsinhalte in den ergänzenden Zusammenfassungen.
+- Keine Änderungen an Importvalidierung, Berechnungen, Speicherreihenfolge oder
+  Datenformaten. Insbesondere keine Rücknahme bisheriger Teiländerungen bei
+  Importfehlern. Exporte und Sicherungen sind gemäß Benutzerentscheidung ausgenommen.
+- Protokollfehler dürfen den Fachablauf oder dessen ursprünglichen Fehler nicht
+  ersetzen. Bei unlesbarem Ausgangsstand oder fehlerhafter Protokollaktualisierung
+  erfolgt eine feste RuntimeWarning; keine Zusage bei unbeschreibbarem Loglaufwerk.
+- Exakte Strukturreferenzen prüfen alle 22 Protokollrahmen und danach weiterhin
+  die bisherigen Funktionskörper. Fachvergleiche isolieren nur die ergänzende
+  Protokollausgabe; ein eigener Test prüft reale lokale Protokolle und Beispieldaten.
+- Zusätzliche Filter: ABRECHNUNG, EINSTELLUNGEN, DATENBANK. Bestehende Filterlogik
+  und vorhandene Protokollformate unverändert. Version/Anzeige 2.047 unverändert,
+  keine neue EXE, kein neuer Versionstag oder Versionsrelease.
+
 ## Exportoberfläche nach Version 2.047 – 10.11.2026
 
 <!-- Änderung: Fehleranzeige und Absicherung der Exportstarts dokumentieren. -->

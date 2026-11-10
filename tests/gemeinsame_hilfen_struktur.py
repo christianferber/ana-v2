@@ -22,6 +22,9 @@ def methoden_als_funktionen(basis, originalfunktionen):
             ('sicherung', 'Sicherung', {'db_sichern', 'max_anzahl_ordner'}),
             ('protokollierung', 'Protokollierung', {'change_log', 'change_log_info'})):
         baum = ast.parse((basis / ('anwendung/' + modul + '.py')).read_text(encoding='utf-8'))
+        # Änderung: Protokollrahmen vor unverändertem Fachvergleich prüfen.
+        from tests.protokoll_struktur import protokoll_rahmen_pruefen
+        protokoll_rahmen_pruefen(baum, modul)
         typ = next(k for k in baum.body if isinstance(k, ast.ClassDef) and k.name == klasse)
         methoden = [k for k in typ.body if isinstance(k, ast.FunctionDef) and k.name != '__init__']
         assert {k.name for k in methoden} == namen

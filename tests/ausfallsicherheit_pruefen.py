@@ -9,6 +9,8 @@ from anwendung import datenhaltung
 from anwendung.sicherung import Sicherung
 
 
+# Änderung: Fachvergleich isoliert Zusatzprotokoll; echte Protokolle separat prüfen.
+@patch('anwendung.aenderungsprotokoll.protokolliere', lambda *args: None)
 def pruefen():
     basis = Path(__file__).resolve().parents[1]
     with tempfile.TemporaryDirectory(dir=basis / '.lokal') as tmp:

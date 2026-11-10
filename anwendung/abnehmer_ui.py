@@ -1,4 +1,6 @@
 """Änderung 2.034: Abnehmeroberfläche mit eigenem Tabellen- und Bedienzustand."""
+# Änderung: Änderungsprotokoll ergänzen; vorhandene Fachlogik unverändert ausführen.
+from anwendung.aenderungsprotokoll import aenderungen_protokollieren
 from io import StringIO
 from nicegui import events, ui
 from anwendung.datenhaltung import import_csv_inhalt
@@ -14,43 +16,48 @@ class AbnehmerOberflaeche:
         ui.label(label).style('font-size:100%')
 
     def abnehmer_upload(self, e: events.UploadEventArguments):
-        # Änderung 2.034: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.
-        if self.anwendung.mitglieder_db == []:
-            ui.notify('Mitglieder sind noch nicht erfasst. Bitte vorher Mitgliederliste anlegen.', type="info")
-            return
-        with StringIO(e.content.read().decode('iso-8859-1', errors='ignore')) as f:
-            abnehmer_import = import_csv_inhalt(f)
-        if self.anwendung.string_in_dict(abnehmer_import[0], 'Ident') == True and self.anwendung.string_in_dict(abnehmer_import[0], 'Name') == True and self.anwendung.string_in_dict(abnehmer_import[0], 'Vorname') == True and self.anwendung.string_in_dict(abnehmer_import[0], 'Original-Vertragsleistung') == True and self.anwendung.string_in_dict(abnehmer_import[0], 'Mindest-Vertragsleistung') == True:
-            for mrow in self.anwendung.mitglieder_db:
-                ident_found = 0
-                temprow = {}
-                for row in abnehmer_import:
-                    if mrow["Ident"] == row["Ident"]:
-                        for key,value in row.items():
-                            if key == "Ident" or key == "Name" or key == "Vorname":
-                                temprow[key] = mrow[key]
-                            else:
-                                temprow[key] = row[key]
-                        self.anwendung.abnehmer_db.append(temprow)
-                        ident_found = 1
-                if ident_found != 1 and mrow["Ident"] != "":
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'ABNEHMER', 'Abnehmer importieren',
+            daten=lambda: {'Abnehmer': self.anwendung.abnehmer_db},
+        ):
+            # Änderung 2.034: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.
+            if self.anwendung.mitglieder_db == []:
+                ui.notify('Mitglieder sind noch nicht erfasst. Bitte vorher Mitgliederliste anlegen.', type="info")
+                return
+            with StringIO(e.content.read().decode('iso-8859-1', errors='ignore')) as f:
+                abnehmer_import = import_csv_inhalt(f)
+            if self.anwendung.string_in_dict(abnehmer_import[0], 'Ident') == True and self.anwendung.string_in_dict(abnehmer_import[0], 'Name') == True and self.anwendung.string_in_dict(abnehmer_import[0], 'Vorname') == True and self.anwendung.string_in_dict(abnehmer_import[0], 'Original-Vertragsleistung') == True and self.anwendung.string_in_dict(abnehmer_import[0], 'Mindest-Vertragsleistung') == True:
+                for mrow in self.anwendung.mitglieder_db:
+                    ident_found = 0
                     temprow = {}
-                    temprow["Ident"] = mrow["Ident"]
-                    temprow["Name"] = mrow["Name"]
-                    temprow["Voranme"] = mrow["Vorname"]
-                    ui.notify("Ident " + mrow["Ident"] + " nicht gefunden.", type="warning")
-                    self.anwendung.abnehmer_db.append(temprow)
-        else:
-            ui.notify('Importdaten entsprechen nicht dem erforderlichen Format. Es müssen Tabellenspalten für Ident, Name, Vorname, Original-Vertragsleistung und Mindest-Vertragsleistung-<Jahr> enthalten sein.', type="Warning")
-            return
-        self.anwendung.abnehmer_db = sorted(self.anwendung.abnehmer_db, key=lambda x: int(x["Ident"]))  
-        for row in self.anwendung.abnehmer_db:
-            for key,value in row.items():
-                if "Ident" in key or "Vertragsleistung" in key:
-                    row[key] = int(value)
-        self.anwendung.db_sichern("Upload Abnehmerdaten")
-        self.button_abnehmer_speichern.enable()
-        self.anwendung.abnehmer_grid_ui.refresh()
+                    for row in abnehmer_import:
+                        if mrow["Ident"] == row["Ident"]:
+                            for key,value in row.items():
+                                if key == "Ident" or key == "Name" or key == "Vorname":
+                                    temprow[key] = mrow[key]
+                                else:
+                                    temprow[key] = row[key]
+                            self.anwendung.abnehmer_db.append(temprow)
+                            ident_found = 1
+                    if ident_found != 1 and mrow["Ident"] != "":
+                        temprow = {}
+                        temprow["Ident"] = mrow["Ident"]
+                        temprow["Name"] = mrow["Name"]
+                        temprow["Voranme"] = mrow["Vorname"]
+                        ui.notify("Ident " + mrow["Ident"] + " nicht gefunden.", type="warning")
+                        self.anwendung.abnehmer_db.append(temprow)
+            else:
+                ui.notify('Importdaten entsprechen nicht dem erforderlichen Format. Es müssen Tabellenspalten für Ident, Name, Vorname, Original-Vertragsleistung und Mindest-Vertragsleistung-<Jahr> enthalten sein.', type="Warning")
+                return
+            self.anwendung.abnehmer_db = sorted(self.anwendung.abnehmer_db, key=lambda x: int(x["Ident"]))
+            for row in self.anwendung.abnehmer_db:
+                for key,value in row.items():
+                    if "Ident" in key or "Vertragsleistung" in key:
+                        row[key] = int(value)
+            self.anwendung.db_sichern("Upload Abnehmerdaten")
+            self.button_abnehmer_speichern.enable()
+            self.anwendung.abnehmer_grid_ui.refresh()
 
     def abnehmer_aus_db(self):
         # Änderung 2.034: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.
@@ -68,19 +75,24 @@ class AbnehmerOberflaeche:
         ui.notify("Abnehmerdaten gespeichert", type='positive')
 
     def abnehmer_tabelle_on_change(self, event):
-        # Änderung 2.034: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.
-        if event["newValue"] == None:
-            return
-        self.anwendung.abnehmer_db[int(event["rowId"])][event["colId"]] = event["newValue"]
-        if "Mindest" in event["colId"]:
-            abschlag_db_wert_alt = self.anwendung.abschlag_db[int(event["rowId"])]["Abschlag-" + str(event["colId"])[-4:]]
-            if event["newValue"] != 0:
-                self.anwendung.abschlag_db[int(event["rowId"])]["Abschlag-" + str(event["colId"])[-4:]] = round((event["newValue"] / 100 * self.anwendung.arbeitspreis / 4),2)
-            abschlag_db_wert_neu = self.anwendung.abschlag_db[int(event["rowId"])]["Abschlag-" + str(event["colId"])[-4:]]
-            log_daten = event["data"]["Ident"] + " " + event["data"]["Name"] + " " + event["data"]["Vorname"] + " ::: " + "Abschlag-" + str(event["colId"])[-4:] + " ::: " + str(abschlag_db_wert_alt) + " ===> " + str(abschlag_db_wert_neu)
-            self.anwendung.change_log_info("ABSCHLAG", log_daten)
-        self.anwendung.change_log("ABNEHMER", event)
-        self.button_abnehmer_speichern.enable()
+        # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
+        with aenderungen_protokollieren(
+            self.anwendung, 'ABNEHMER', 'Abnehmerdaten bearbeiten',
+            daten=lambda: {'Abnehmer': self.anwendung.abnehmer_db, 'Abschläge': self.anwendung.abschlag_db},
+        ):
+            # Änderung 2.034: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.
+            if event["newValue"] == None:
+                return
+            self.anwendung.abnehmer_db[int(event["rowId"])][event["colId"]] = event["newValue"]
+            if "Mindest" in event["colId"]:
+                abschlag_db_wert_alt = self.anwendung.abschlag_db[int(event["rowId"])]["Abschlag-" + str(event["colId"])[-4:]]
+                if event["newValue"] != 0:
+                    self.anwendung.abschlag_db[int(event["rowId"])]["Abschlag-" + str(event["colId"])[-4:]] = round((event["newValue"] / 100 * self.anwendung.arbeitspreis / 4),2)
+                abschlag_db_wert_neu = self.anwendung.abschlag_db[int(event["rowId"])]["Abschlag-" + str(event["colId"])[-4:]]
+                log_daten = event["data"]["Ident"] + " " + event["data"]["Name"] + " " + event["data"]["Vorname"] + " ::: " + "Abschlag-" + str(event["colId"])[-4:] + " ::: " + str(abschlag_db_wert_alt) + " ===> " + str(abschlag_db_wert_neu)
+                self.anwendung.change_log_info("ABSCHLAG", log_daten)
+            self.anwendung.change_log("ABNEHMER", event)
+            self.button_abnehmer_speichern.enable()
 
     def abnehmer_columns_erstellen(self, table):
         # Änderung 2.034: Bisherigen Ablauf mit Ansichts- und Anwendungszustand ausführen.
@@ -155,4 +167,4 @@ class AbnehmerOberflaeche:
         else:
             self.anwendung.db_abnehmer_found = 1
             self.anwendung.abnehmer_label_ui.refresh('Abnehmer-Datenbank gefunden! Daten wurden geladen und können über einen neuen Upload überschrieben und ergänzt werden.')
-            self.anwendung.abnehmer_aus_db()   
+            self.anwendung.abnehmer_aus_db()

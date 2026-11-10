@@ -30,7 +30,8 @@ def pruefen():
     # Änderung: Fehlt ein Beispielprotokoll, lokale Prüfeinträge aus Beispieldaten ableiten.
     from anwendung.datenhaltung import datei_oeffnen
     mitglied = datei_oeffnen(daten / 'Datenbank' / 'db_mitglieder.csv')[0]
-    module = ('MITGLIEDER', 'WARTUNG', 'ABNEHMER', 'ZÄHLER', 'ABSCHLAG', 'RÜCKVERGÜTUNG', 'KONTODATEN')
+    # Änderung: Zusätzliche Änderungsbereiche mit realer Filteranzeige prüfen.
+    module = ('MITGLIEDER', 'WARTUNG', 'ABNEHMER', 'ZÄHLER', 'ABSCHLAG', 'RÜCKVERGÜTUNG', 'KONTODATEN', 'ABRECHNUNG', 'EINSTELLUNGEN', 'DATENBANK')
     beispielinhalt = ''.join('08.11.2026 12:00:00 | ' + name + ' | ' + str(mitglied['Ident']) + ' ' + mitglied['Name'] + ' ' + mitglied['Vorname'] + '\n' for name in module).encode(locale.getpreferredencoding(False))
 
     altbaum = ast.parse((basis.parent / '_Vorlagen' / 'ana' / 'ana.py').read_text(encoding='utf-8-sig'))
@@ -66,7 +67,7 @@ def pruefen():
                     pfad.unlink(missing_ok=True)
                 else:
                     pfad.write_bytes(inhalt)
-            for filterwert in ('ALLE', 'MITGLIEDER', 'WARTUNG', 'ABNEHMER', 'ZÄHLER', 'ABSCHLAG', 'RÜCKVERGÜTUNG', 'KONTODATEN', 'NICHT-VORHANDEN'):
+            for filterwert in ('ALLE', *module, 'NICHT-VORHANDEN'):
                 alt['filter_toggle'].value = ansicht.filter_toggle.value = filterwert
                 alt['changelog_markdown_ui_refresh']()
                 ansicht.changelog_markdown_ui_refresh()

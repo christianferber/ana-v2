@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung: Ergänzende Daten-/Einstellungsprotokolle mit lokalen Daten prüfen.
+        ('Änderungsprotokoll für Daten und Einstellungen', ['-m', 'tests.protokollierung_pruefen']),
         # Änderung: Fehleranzeige, Doppelstartsperre und erneute Exportversuche prüfen.
         ('Exportoberfläche bei Fehlern', ['-m', 'tests.exportsteuerung_pruefen']),
         # Änderung: Ressourcenfreigabe beider PDF-Exporte bei simulierten Fehlern prüfen.

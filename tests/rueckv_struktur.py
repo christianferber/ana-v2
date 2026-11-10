@@ -7,6 +7,9 @@ def methoden_als_funktionen(basis, originalfunktionen):
     # Änderung: Nur den expliziten Wechsel von globalen Namen auf self und
     # self.anwendung zurückführen; alle fachlichen Anweisungen weiter vergleichen.
     baum = ast.parse((basis / 'anwendung' / 'rueckverguetung_ui.py').read_text(encoding='utf-8'))
+    # Änderung: Exakte Protokollrahmen prüfen; ursprüngliche Fachkörper zurückführen.
+    from tests.protokoll_struktur import protokoll_rahmen_pruefen
+    protokoll_rahmen_pruefen(baum, 'rueckverguetung_ui')
     klasse = next(k for k in baum.body if isinstance(k, ast.ClassDef))
 
     class NamenZurueckfuehren(ast.NodeTransformer):
