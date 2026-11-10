@@ -309,7 +309,6 @@ mit zwei Nachkommastellen bleibt unverändert.
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
 
-
 <!-- Änderung: Abschlussprüfung der Word-Fehlerbereinigung vom 10.11.2026. -->
 ## Word-Fehlerbereinigung – 10.11.2026
 
@@ -407,3 +406,21 @@ Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumenti
   Funktionale Prüfung der nativen Fenster einschließlich echter App-Verbindung bestanden.
 - Kein EXE-Build und kein Test eines neuen Windows-Pakets. Python313 enthält Tk 8.6.
   Version/Anzeige 2.047 unverändert, keine neue EXE und kein neuer Versionsrelease.
+
+<!-- Änderung 2.048: Abschließende Quellfreigabeprüfung. -->
+## Freigabe Version 2.048 – 10.11.2026
+
+Version 2.048 bündelt die Startanzeige, erweiterte Änderungsprotokolle,
+Exportfehlerbehandlung und sichere CSV-/Datenbankspeicherung und Sicherungen.
+Am 10.11.2026 alle 27 Freigabeprüfungen und Syntaxprüfung bestanden.
+Regulärer vollständiger Praxislauf mit normaler Word-Anbindung und echter
+Startanzeige erfolgreich: 73 neue Word-/PDF-Paare, CSV-Referenz und
+Originalbestand unverändert. Die Startanzeige schließt selbständig.
+Keine neue EXE kompiliert oder geprüft. Bekannte zweistellige Formatierung
+der Versionsanzeige bleibt erhalten; die Versionskonstante lautet 2.048.
+
+Gegen den vorherigen Praxislauf Word-Paketinhalte, PDF-Texte und Seitenzahlen
+identisch. Test-App/Fenster/Browser beendet, unabhängige Abfrage ohne ANA-,
+Word- oder Testbrowserprozesse. Keine visuelle Dokumentprüfung. Optische Prüfung
+der Startanzeige durch fehlende Node-Laufzeit des Computer-Use-Werkzeugs blockiert;
+native Fenster und vollständiger App-Start funktional erfolgreich geprüft.

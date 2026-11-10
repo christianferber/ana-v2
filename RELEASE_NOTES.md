@@ -5,9 +5,9 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
-<!-- Änderung: Bereinigung bei ausdrücklich unveränderter Version dokumentieren. -->
-Wartungsstand nach Version 2.047
-------------------------------
+<!-- Änderung 2.048: Bisherigen Wartungsstand als neue Version veröffentlichen. -->
+Version 2.048 – 10.11.2026
+-------------------------
 
 <!-- Änderung: Sichtbare Rückmeldung beim Programmstart beschreiben. -->
 Feature: Beim Start zeigt ANA ein kleines Fenster mit laufendem Fortschrittsbalken und Statusmeldungen. Es schließt sich automatisch, sobald das Hauptfenster verbunden ist. Eine geschätzte Restzeit wird nicht angezeigt.
@@ -24,7 +24,7 @@ Bugfix: Beim Abrechnungs-PDF-Export wird eine eigene Word-Sitzung verwendet und 
 <!-- Änderung: Schutz vor Datenverlust bei Speicher- und Sicherungsfehlern beschreiben. -->
 Bugfix: CSV-Dateien werden erst nach vollständigem Schreiben ersetzt. Bei einer fehlgeschlagenen neuen Datensicherung bleiben die bisherigen Sicherungen erhalten. Wiederholte Sicherungen in derselben Sekunde werden getrennt gespeichert.
 
-Interne Bereinigung; Bedienung, Dateiformate und Abrechnungsergebnisse bleiben unverändert.
+Dateiformate und Abrechnungsergebnisse bleiben unverändert.
 
 <!-- Änderung 2.047: Interne Wartung aus Anwendersicht dokumentieren. -->
 Version 2.047 – 09.11.2026

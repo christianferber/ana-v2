@@ -316,6 +316,15 @@ def main():
                 'unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.',
                 'Keine neue EXE, keine visuelle Dokumentprüfung. Bekannter Versionsanzeigefehler',
                 'mit zwei Nachkommastellen bleibt unverändert.', '']
+    # Änderung 2.048: Erfolgreiche Quellfreigabe und deren Praxisnachweis dauerhaft dokumentieren.
+    bericht += ['Version 2.048 bündelt die Startanzeige, erweiterte Änderungsprotokolle,',
+                'Exportfehlerbehandlung und sichere CSV-/Datenbankspeicherung und Sicherungen.',
+                'Am 10.11.2026 alle 27 Freigabeprüfungen und Syntaxprüfung bestanden.',
+                'Regulärer vollständiger Praxislauf mit normaler Word-Anbindung und echter',
+                'Startanzeige erfolgreich: 73 neue Word-/PDF-Paare, CSV-Referenz und',
+                'Originalbestand unverändert. Die Startanzeige schließt selbständig.',
+                'Keine neue EXE kompiliert oder geprüft. Bekannte zweistellige Formatierung',
+                'der Versionsanzeige bleibt erhalten; die Versionskonstante lautet 2.048.', '']
     # Änderung für v2: Einen EXE-Test nur für das tatsächlich geprüfte Paket bestätigen.
     paket = basis / 'release' / 'ANA-2.00-Windows-x64.zip'
     pruefsumme = basis / '.lokal' / 'exe-smoketest.sha256'

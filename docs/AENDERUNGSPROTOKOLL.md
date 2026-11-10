@@ -20,6 +20,19 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Version 2.048 – 10.11.2026
+
+<!-- Änderung 2.048: Zuvor separat geprüfte Wartungsstände als Quellrelease bündeln. -->
+
+- Neuer Benutzerauftrag zur Versionierung: Versionskonstante von 2.047 auf 2.048,
+  Release Notes und README aktualisiert. Die bewusst beibehaltene Formatierung
+  der Versionsanzeige mit zwei Nachkommastellen bleibt unverändert.
+- Bündelt Startanzeige, ergänzende Daten-/Einstellungsprotokolle, Exportfehlerbehandlung,
+  Bereinigung ungenutzter Hilfen und sichere CSV-/Datenbankspeicherung und Sicherungen.
+  Implementierungsdetails und damalige Prüfungen stehen in den folgenden Abschnitten.
+- Veröffentlichung als Quellrelease mit Quell-ZIP, Prüfbericht und SHA256SUMS.
+  Keine neue EXE: Kompilierung nicht beauftragt. Importlogik unverändert.
+
 ## Startanzeige nach Version 2.047 – 10.11.2026
 
 <!-- Änderung: Startfortschritt ohne Änderung des Fachablaufs dokumentieren. -->
