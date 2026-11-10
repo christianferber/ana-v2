@@ -9,6 +9,9 @@ Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL
 Wartungsstand nach Version 2.047
 ------------------------------
 
+<!-- Änderung: Sichtbare Rückmeldung beim Programmstart beschreiben. -->
+Feature: Beim Start zeigt ANA ein kleines Fenster mit laufendem Fortschrittsbalken und Statusmeldungen. Es schließt sich automatisch, sobald das Hauptfenster verbunden ist. Eine geschätzte Restzeit wird nicht angezeigt.
+
 <!-- Änderung: Vollständigere Änderungsprotokollierung aus Anwendersicht beschreiben. -->
 Verbesserung: Daten- und Einstellungsänderungen werden umfassender im Changelog erfasst. Mitgliederänderungen erscheinen bereits bei der Übernahme; Änderungen im Arbeitsspeicher und gespeicherte Dateien werden unterschieden. Bereits erfolgte Teiländerungen nach einem Abbruch sind gekennzeichnet. Für Abrechnungen, Einstellungen und Datenbankspeicherungen stehen zusätzliche Filter bereit.
 

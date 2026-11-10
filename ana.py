@@ -4,7 +4,20 @@ import multiprocessing
 import os
 from pathlib import Path
 
-from anwendung.oberflaeche import main
+# Änderung: Die Startanzeige vor den großen Oberflächenbibliotheken laden.
+from anwendung.startanzeige import Startanzeige
+
+
+def main():
+    # Änderung: Anzeige und Fachanwendung laufen in derselben App-Instanz.
+    with Startanzeige() as startanzeige:
+        from anwendung.oberflaeche import main as oberflaeche_starten
+        from nicegui import app
+
+        startanzeige.status(55, 'Oberfläche wird vorbereitet …')
+        app.on_startup(lambda: startanzeige.status(85, 'Anwendungsfenster wird geöffnet …'))
+        app.on_connect(startanzeige.bereit)
+        oberflaeche_starten()
 
 
 if __name__ == '__main__':

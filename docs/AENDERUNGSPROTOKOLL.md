@@ -20,6 +20,28 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Startanzeige nach Version 2.047 – 10.11.2026
+
+<!-- Änderung: Startfortschritt ohne Änderung des Fachablaufs dokumentieren. -->
+
+- `ana.py` lädt zunächst nur die Standardbibliothek und `Startanzeige`. Der Import
+  der Fachoberfläche erfolgt innerhalb der geöffneten Anzeige. `ana_start.py`
+  verwendet denselben Einstieg; Freeze-Support und Arbeitsverzeichnis erhalten.
+- Native Tk-Anzeige in einem eigenen Thread desselben App-Prozesses. Ausschließlich
+  dieser Thread erstellt, aktualisiert und zerstört Tk-Objekte. Lock und Events
+  übertragen Status und Abschluss. Ein laufender Balken vermeidet unbegründete
+  Prozent-/Restzeitschätzungen. Texte zeigen Laden, Vorbereitung und Fensteröffnung.
+- NiceGUI-Startup meldet Fensteröffnung; die tatsächliche Clientverbindung meldet
+  Bereit. Danach zeigt der Balken kurz vollständig gefüllt und das Fenster schließt.
+  Kontextabschluss räumt auch bei Startfehlern auf. Keine zweite Fachanwendung.
+- Bei nicht verfügbarer Tk-Anzeige fester Hinweis auf stderr, bisheriger App-Start
+  läuft weiter. Keine Berechnungs-, Daten-, Import- oder Einstellungsänderungen.
+- Tests prüfen echte Fenster/Threads wiederholt, Abschluss, Startfehler, fehlendes Tk
+  und Reihenfolge der Importe. Regulärer Oberflächentest verwendet jetzt auch den
+  echten Startwrapper und prüft den selbständigen Abschluss des Startfensters.
+- Python313 enthält Tk 8.6. PyInstaller-Build nicht ausgeführt; keine neue EXE.
+  Version/Anzeige 2.047 unverändert; kein neuer Versionstag oder Versionsrelease.
+
 ## Änderungsprotokoll nach Version 2.047 – 10.11.2026
 
 <!-- Änderung: Autorisierten Umfang Daten und Einstellungen dokumentieren. -->

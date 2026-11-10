@@ -1,5 +1,11 @@
 # Projektstruktur
 
+<!-- Änderung: Frühe Startanzeige und verzögertes Laden der Oberfläche dokumentieren. -->
+`ana.py` öffnet die Startanzeige aus `anwendung/startanzeige.py` vor dem Laden der
+Oberflächenbibliotheken. Ein eigener Fensterthread betreibt die native Tk-Anzeige;
+Startphasen und Abschluss werden über threadsichere Zustände übermittelt.
+Der vorhandene EXE-Einstieg `ana_start.py` verwendet denselben Ablauf.
+
 <!-- Änderung: Ergänzende Beobachtung von Daten- und Einstellungsänderungen dokumentieren. -->
 `anwendung/aenderungsprotokoll.py` vergleicht Datenkopien und Dateiprüfsummen vor
 und nach einer Änderungsaktion und ergänzt das bestehende lokale Changelog.

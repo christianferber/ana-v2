@@ -6,6 +6,7 @@ Stand: 10.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Startanzeige und Ladefolge: bestanden.
 - Änderungsprotokoll für Daten und Einstellungen: bestanden.
 - Exportoberfläche bei Fehlern: bestanden.
 - Word-Fehlerbereinigung: bestanden.
@@ -383,3 +384,26 @@ Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumenti
   vorhandene detaillierte Feldprotokolle bleiben ergänzend bestehen.
 - Exporte und Sicherungen gemäß Benutzerentscheidung nicht zusätzlich erfasst;
   keine Änderung der Importlogik. Version/Anzeige 2.047 unverändert, keine neue EXE.
+
+<!-- Änderung: Native Startanzeige im Python-Startweg geprüft. -->
+## Startanzeige – 10.11.2026
+
+- Alle 27 Freigabeprüfungen und Syntaxprüfung bestanden. Nach Umstellung auf
+  einen laufenden Aktivitätsbalken den Startanzeigentest erneut erfolgreich geprüft;
+  abschließende Syntaxprüfung ebenfalls bestanden.
+- Echte native Tk-Fenster wiederholt geöffnet/geschlossen: automatische Fertigmeldung,
+  Kontextabschluss, Freigabe der Fensterthreads und anschließende Speicherbereinigung.
+  Ausfall ohne Tk und Startfehler geprüft; Fachstart darf dadurch nicht verhindert werden.
+- Ladefolge: ana importiert die Fachoberfläche erst innerhalb der geöffneten Startanzeige.
+- Regulärer vollständiger Praxislauf mit echter Startanzeige und normaler Word-
+  Anbindung bestanden. Das Startfenster schließt nach tatsächlicher Verbindung
+  selbständig; Abschlussmarker vorhanden, kein Ausfallhinweis im lokalen App-Protokoll.
+- 73 neue Word-/PDF-Paare, CSV-Referenz und Originalbestand unverändert. Gegen
+  vorherigen Praxislauf Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch.
+- Test-App, Fenster und Browser beendet; unabhängige Abfrage ohne ANA-, Word-,
+  Testbrowser- oder Startvorschauprozesse. Keine visuelle Dokumentprüfung.
+- Optische Kontrolle der reinen Startanzeige versucht; Computer-Use-Werkzeug meldet
+  fehlende Node-Laufzeit. Keine Screenshotprüfung durchgeführt, Vorschau beendet.
+  Funktionale Prüfung der nativen Fenster einschließlich echter App-Verbindung bestanden.
+- Kein EXE-Build und kein Test eines neuen Windows-Pakets. Python313 enthält Tk 8.6.
+  Version/Anzeige 2.047 unverändert, keine neue EXE und kein neuer Versionsrelease.

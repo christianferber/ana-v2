@@ -63,7 +63,19 @@ def app_starten(ordner):
         kwargs.update(host='127.0.0.1', port=int((ordner / 'port.txt').read_text()))
         return original_run(**kwargs)
     ana.ui.run = test_run
-    ana.main()
+    # Änderung: Den echten Programmeinstieg samt Startanzeige mit isolierter INI prüfen.
+    import ana as programm
+    original_anzeige = programm.Startanzeige
+    def anzeige_anlegen():
+        anzeige = original_anzeige()
+        fenster = anzeige._fenster
+        def fenster_pruefen():
+            fenster()
+            (ordner / 'startanzeige-geschlossen.txt').write_text('1')
+        anzeige._fenster = fenster_pruefen
+        return anzeige
+    programm.Startanzeige = anzeige_anlegen
+    programm.main()
 
 
 def bestand(daten):
@@ -330,6 +342,8 @@ def _testen(prozesse, rueckverguetung=False):
             warten("Array.from(document.querySelectorAll('button')).some(e=>e.textContent.trim().endsWith("
                    + json.dumps(exporttext) + ") && !e.disabled)")
         assert bestand(daten) == originalbestand
+        # Änderung: Das Startfenster muss sich nach Verbindung selbständig geschlossen haben.
+        assert (run / 'startanzeige-geschlossen.txt').is_file()
         erfolgreich = True
         print('Original-Beispieldaten unverändert. Oberflächentest bestanden.', flush=True)
         print('Lokale Testausgabe: ' + str(run), flush=True)

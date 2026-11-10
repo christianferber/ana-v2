@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung: Frühe Startanzeige und vollständige Fenster-/Threadbereinigung prüfen.
+        ('Startanzeige und Ladefolge', ['-m', 'tests.startanzeige_pruefen']),
         # Änderung: Ergänzende Daten-/Einstellungsprotokolle mit lokalen Daten prüfen.
         ('Änderungsprotokoll für Daten und Einstellungen', ['-m', 'tests.protokollierung_pruefen']),
         # Änderung: Fehleranzeige, Doppelstartsperre und erneute Exportversuche prüfen.
