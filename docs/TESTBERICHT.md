@@ -6,6 +6,7 @@ Stand: 10.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Exportoberfläche bei Fehlern: bestanden.
 - Word-Fehlerbereinigung: bestanden.
 - Ausfallsicherheit von CSV und Sicherungen: bestanden.
 - Mitgliederaktualisierung gegen Original: bestanden.
@@ -306,6 +307,7 @@ mit zwei Nachkommastellen bleibt unverändert.
 Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
 Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
 
+
 <!-- Änderung: Abschlussprüfung der Word-Fehlerbereinigung vom 10.11.2026. -->
 ## Word-Fehlerbereinigung – 10.11.2026
 
@@ -324,3 +326,28 @@ Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumenti
   Close-/Quit-Fehler können den ursprünglichen Fehler weiterhin überdecken.
   UI-Fehlermeldungen, Parallelexportsperre und Mitgliederlisten nicht geändert.
 - Version/Anzeige 2.047 unverändert; keine neue EXE oder neuer Versionsrelease.
+
+<!-- Änderung: Prüfung der Exportoberfläche vom 10.11.2026. -->
+## Exportoberfläche – 10.11.2026
+
+- Alle 25 Freigabeprüfungen und Syntaxprüfung bestanden. Ergänzte tatsächliche
+  Mitgliederlisten-Fehlertests nachträglich ebenfalls erfolgreich: jeweils Fehler
+  beim Erstellen und Speichern, Fehleranzeige und erneute Knopffreigabe.
+- Gezielte Tests aller drei Ansichten: Doppelstart während laufender Arbeit
+  verhindert; Vorbereitungs-/Hintergrund-/Threadstartfehler berücksichtigt;
+  Freigabe erst nach Threadende, erneuter Versuch möglich, keine internen
+  Fehlermeldungen oder Dateninhalte im Meldungstext.
+- Regulärer vollständiger Abrechnungslauf mit normaler Word-Anbindung und lokalen
+  Beispieldaten bestanden: 73 neue Word-/PDF-Paare, CSV-Referenz und Originalbestand
+  unverändert. Gegen vorherigen Stand Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch.
+- Rückvergütung im echten Testbrowser: gezielter erster PDF-Fehler sichtbar,
+  Exportknopf wieder verfügbar, nächster Versuch mit normaler Word-Anbindung
+  erfolgreich. Ein vorhandener Datensatz wie im regulären Rückvergütungs-Smoke-Test;
+  CSV-Referenz, lesbares PDF und unveränderter Originalbestand geprüft.
+- Test-App, Fenster und Browser beendet; unabhängige Prozessprüfung anschließend.
+- Mitgliederlistenfehler mit tatsächlichen Methoden und Ersatz-UI geprüft;
+  kein zusätzlicher Browserlauf für diese Listen. Keine visuelle Dokumentprüfung.
+- Sperre gilt für erneute Starts derselben Ansicht. Unterschiedliche Exportbereiche
+  sind nicht gegenseitig gesperrt. Ein tatsächlich hängender Hintergrundprozess
+  bleibt gesperrt; kein automatischer Abbruch oder Wiederanlauf.
+- Version/Anzeige 2.047 unverändert, keine neue EXE und kein neuer Versionsrelease.

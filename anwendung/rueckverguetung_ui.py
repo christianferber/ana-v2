@@ -8,6 +8,8 @@ from pathlib import Path
 import threading
 
 from nicegui import ui
+# Änderung: Doppelstarts verhindern und Hintergrundfehler in der Oberfläche melden.
+from anwendung.exportsteuerung import export_start_absichern, export_hintergrund_absichern
 from anwendung.datenhaltung import datei_oeffnen, datei_speichern
 from anwendung.berechnungen import rueckverguetung_vorbereiten, rueckverguetung_berechnen
 from anwendung.dokumente import rueckverguetung_word_schreiben, rueckverguetung_pdf_konvertieren
@@ -249,6 +251,7 @@ class RueckverguetungOberflaeche:
                 ui.button('Nein', on_click=self.dialog_rueckv_bestaetigung.close)
         self.rueckv_grid_ui()
 
+    @export_start_absichern('rueckv_button_pdf', 'rueckv_pdf_background')
     def rueckv_dateien_erstellen(self):
         self.rueckv_word_erstellen()
         self.rueckv_pdf_erstellen()
@@ -298,6 +301,7 @@ class RueckverguetungOberflaeche:
 
     # PDF-Erzeugung Performance-optimiert (Word wird nur 1x gestartet)
 
+    @export_hintergrund_absichern
     def rueckv_pdf_process(self):
         # Änderung 2.02: Bereichszustand liegt auf self.
 

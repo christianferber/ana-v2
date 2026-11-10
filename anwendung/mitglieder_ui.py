@@ -1,6 +1,8 @@
 """Änderung 2.035: Mitgliederoberfläche mit eigenem Tabellen- und Dialogzustand."""
 from anwendung.datenhaltung import import_csv_inhalt, check_ordner_exists, datei_speichern
 from nicegui import events, ui
+# Änderung: Listenexporte sperren und Fehler über den UI-Kontext zurückmelden.
+from anwendung.exportsteuerung import export_start_absichern, export_hintergrund_absichern
 import threading
 import time
 from io import StringIO
@@ -857,6 +859,7 @@ class MitgliederOberflaeche:
             cant_split = OxmlElement('w:cantSplit')  # Keine Teilung zulassen
             trPr.append(cant_split)
 
+    @export_hintergrund_absichern
     def mitglieder_ja_word_erstellen(self, dateiname):
         # Änderung 2.035: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
         # Neues Word-Dokument erstellen für Jahresabschluss
@@ -919,6 +922,7 @@ class MitgliederOberflaeche:
         self.mgl_progress.set_value(100)
         self.button_word_export.enable()
 
+    @export_hintergrund_absichern
     def mitglieder_gv_word_erstellen(self, dateiname, datum, ort):
         # Änderung 2.035: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
         # Neues Word-Dokument erstellen für Generalversammlung
@@ -991,6 +995,7 @@ class MitgliederOberflaeche:
         self.mgl_progress.set_value(100)
         self.button_word_export.enable()
 
+    @export_start_absichern('button_word_export', 'word_erstellung_background')
     def mitglieder_word_process(self, quelle, dateiname, datum, ort):
         # Änderung 2.035: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
         # eigene Funktion für die Tabellen erstellung, da resourcenhungrig und in eigenem Thread

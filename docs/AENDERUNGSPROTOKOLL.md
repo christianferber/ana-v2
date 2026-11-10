@@ -20,6 +20,25 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Exportoberfläche nach Version 2.047 – 10.11.2026
+
+<!-- Änderung: Fehleranzeige und Absicherung der Exportstarts dokumentieren. -->
+
+- Gemeinsame Dekoratoren in `anwendung/exportsteuerung.py` reservieren den Export
+  vor der Vorbereitung und sperren weitere Starts derselben Ansicht. Der Knopf
+  bleibt bis zum tatsächlichen Threadende gesperrt. Ein UI-Timer im ursprünglichen
+  Client-Kontext gibt ihn frei und meldet Fehler mit einem festen Text ohne Dateninhalte.
+- Vorbereitungsfehler, Threadstartfehler und Hintergrundfehler werden berücksichtigt.
+  Die Mitgliederlisten erhalten dieselbe Abschlussbehandlung für Jahresabschluss
+  und Generalversammlung. Bestehende Dokumentfunktionen bleiben unverändert.
+- Strukturprüfungen validieren die sieben neuen Dekoratoren ausdrücklich und
+  vergleichen die ursprünglichen Funktionskörper weiterhin vollständig.
+  Neue Tests prüfen Doppelstarts, Fehler und erneute Versuche für alle drei Ansichten,
+  zusätzlich Erstellungs-/Speicherfehler beider tatsächlicher Mitgliederfunktionen.
+- Optionaler lokaler Oberflächentest mit `--exportfehler`: erster PDF-Versuch
+  scheitert gezielt, anschließend wird der Export mit normaler Word-Anbindung wiederholt.
+- Version/Anzeige 2.047 unverändert. Keine neue EXE, kein Versionstag oder Release.
+
 ## Word-Fehlerbereinigung nach Version 2.047 – 10.11.2026
 
 <!-- Änderung: Ressourcenfreigabe beim Abrechnungs-PDF-Export dokumentieren. -->

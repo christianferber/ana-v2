@@ -9,6 +9,9 @@ Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL
 Wartungsstand nach Version 2.047
 ------------------------------
 
+<!-- Änderung: Verständliche Exportfehler und erneute Startmöglichkeit beschreiben. -->
+Bugfix: Fehler beim Erzeugen von Abrechnungen, Rückvergütungen und Mitgliederlisten werden angezeigt. Während eines laufenden Exports ist ein weiterer Start desselben Exports gesperrt. Nach einem Fehler wird der Exportknopf wieder freigegeben.
+
 <!-- Änderung: Bereinigung nach fehlgeschlagenem Abrechnungs-PDF-Export beschreiben. -->
 Bugfix: Beim Abrechnungs-PDF-Export wird eine eigene Word-Sitzung verwendet und auch bei einem Exportfehler geschlossen. Bereits geöffnete Word-Sitzungen werden dadurch nicht mitverwendet.
 

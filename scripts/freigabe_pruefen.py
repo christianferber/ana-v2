@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung: Fehleranzeige, Doppelstartsperre und erneute Exportversuche prüfen.
+        ('Exportoberfläche bei Fehlern', ['-m', 'tests.exportsteuerung_pruefen']),
         # Änderung: Ressourcenfreigabe beider PDF-Exporte bei simulierten Fehlern prüfen.
         ('Word-Fehlerbereinigung', ['-m', 'tests.word_fehlerpfade_pruefen']),
         # Änderung: Bei Schreib-/Kopierfehlern müssen bisherige Daten vollständig erhalten bleiben.

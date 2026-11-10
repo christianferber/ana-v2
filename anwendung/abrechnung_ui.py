@@ -8,6 +8,8 @@ from pathlib import Path
 import threading
 
 from nicegui import ui
+# Änderung: Doppelstarts verhindern und Hintergrundfehler in der Oberfläche melden.
+from anwendung.exportsteuerung import export_start_absichern, export_hintergrund_absichern
 from anwendung.datenhaltung import datei_oeffnen, datei_speichern
 from anwendung.berechnungen import abrechnung_berechnen
 from anwendung.berechnungen import letzte_mindestabnahme as mindestabnahme_berechnen
@@ -482,6 +484,7 @@ class AbrechnungOberflaeche:
         return mindestabnahme_berechnen(Ident, self.anwendung.abnehmer_db)
 
 
+    @export_start_absichern('abr_button_pdf', 'abrechnung_pdf_background')
     def abrechnungen_dateien_erstellen(self):
         self.abrechnungen_word_erstellen()
         self.abrechnungen_pdf_erstellen()
@@ -533,6 +536,7 @@ class AbrechnungOberflaeche:
 
     # PDF Verarbeitung Performance-optimiert
 
+    @export_hintergrund_absichern
     def abr_pdf_process(self):
         # Änderung für v2: Hintergrund-Thread und Fortschrittsanzeige bleiben an dieser Schnittstelle.
         abrechnung_pdf_konvertieren(self.ordner_abrechnungen_word, self.ordner_abrechnungen_pdf,

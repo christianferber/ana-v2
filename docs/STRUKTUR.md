@@ -1,5 +1,10 @@
 # Projektstruktur
 
+<!-- Änderung: Gemeinsame Start- und Fehlerbehandlung für Dokumentexporte dokumentieren. -->
+`anwendung/exportsteuerung.py` sichert die Exportstarts für Abrechnung,
+Rückvergütung und Mitgliederlisten ab. Hintergrundfehler werden über einen
+UI-Timer gemeldet; erneute Starts bleiben bis zum Threadende gesperrt.
+
 <!-- Änderung 2.047: Gemeinsame Mitgliederaktualisierung dokumentieren. -->
 `DatenbankZugriff` in `anwendung/datenhaltung.py` übernimmt auch
 `dbs_mitglieder_aktualisieren`: Namen und Vornamen werden wie bisher nacheinander

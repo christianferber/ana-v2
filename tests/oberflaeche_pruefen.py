@@ -42,6 +42,21 @@ def freier_port():
 def app_starten(ordner):
     # Änderung für v2: Originaloberfläche mit separater Konfiguration starten.
     from anwendung import oberflaeche as ana
+    # Änderung: Optional einen Hintergrundfehler auslösen; der nächste Versuch läuft regulär.
+    if (ordner / 'exportfehler.txt').exists():
+        from anwendung import abrechnung_ui, rueckverguetung_ui
+        for modul, name in ((abrechnung_ui, 'abrechnung_pdf_konvertieren'),
+                            (rueckverguetung_ui, 'rueckverguetung_pdf_konvertieren')):
+            def fehler_einmal(original):
+                erster_aufruf = True
+                def konvertieren(*args, **kwargs):
+                    nonlocal erster_aufruf
+                    if erster_aufruf:
+                        erster_aufruf = False
+                        raise OSError('Lokaler simulierter Exportfehler')
+                    return original(*args, **kwargs)
+                return konvertieren
+            setattr(modul, name, fehler_einmal(getattr(modul, name)))
     ana.ini = str(ordner / 'ana.ini')
     original_run = ana.ui.run
     def test_run(**kwargs):
@@ -86,6 +101,10 @@ def _testen(prozesse, rueckverguetung=False):
     erwartete_csv = dictlist_to_csv(__import__('copy').deepcopy(fall['ergebnis']))
     run = BASIS / '.lokal' / ('oberflaechentest-' + datetime.now().strftime('%Y%m%d-%H%M%S-%f'))
     run.mkdir(parents=True)
+    # Änderung: Fehlersimulation bleibt auf die isolierte Test-App begrenzt.
+    exportfehler = '--exportfehler' in sys.argv
+    if exportfehler:
+        (run / 'exportfehler.txt').write_text('1')
     kopie = run / 'daten'
     shutil.copytree(daten, kopie)
     if rueckverguetung:
@@ -207,6 +226,15 @@ def _testen(prozesse, rueckverguetung=False):
                    + json.dumps(str(wert)) + ");e.dispatchEvent(new Event('input',{bubbles:true}));"
                    "e.dispatchEvent(new Event('change',{bubbles:true}));e.blur()})()")
                 time.sleep(1)
+            def export_starten(text):
+                # Änderung: Optional Fehlermeldung und wieder freigegebenen Knopf prüfen.
+                knopf(text)
+                if exportfehler:
+                    warten("document.body.innerText.includes('Der Export konnte nicht vollständig erstellt werden.')")
+                    warten("Array.from(document.querySelectorAll('button')).some(e=>e.textContent.trim().endsWith("
+                           + json.dumps(text) + ") && !e.disabled)")
+                    print('Exportfehler sichtbar und erneuter Start möglich: bestanden.', flush=True)
+                    knopf(text)
             SCHRITT = 'Testseite laden'
             cdp('Page.navigate', {'url': url})
             if rueckverguetung:
@@ -235,7 +263,7 @@ def _testen(prozesse, rueckverguetung=False):
                 assert gespeichert.read_text() == erwartete_csv
                 print('Rückvergütung gespeichert und mit Referenz verglichen: bestanden.', flush=True)
                 SCHRITT = 'Rückvergütungsdokumente erzeugen'
-                knopf('Word/PDF-Rückvergütungen erzeugen')
+                export_starten('Word/PDF-Rückvergütungen erzeugen')
                 zielordner = gespeichert.parent
                 for _ in range(300):
                     docs = list((zielordner / 'word').glob('*.docx'))
@@ -282,7 +310,9 @@ def _testen(prozesse, rueckverguetung=False):
                 assert gespeichert.read_text() == erwartete_csv
                 print('Speichern und Vergleich mit Referenzergebnis: bestanden.', flush=True)
                 SCHRITT = 'Word und PDF aus Oberfläche erzeugen'
-                knopf('Word/PDF-Abrechnungen erzeugen')
+                export_starten('Word/PDF-Abrechnungen erzeugen')
+                # Änderung: Während des tatsächlichen Stapels muss der Knopf gesperrt sein.
+                warten("Array.from(document.querySelectorAll('button')).some(e=>e.textContent.trim().endsWith('Word/PDF-Abrechnungen erzeugen') && e.disabled)")
                 zielordner = gespeichert.parent
                 for _ in range(240):
                     docs = list((zielordner / 'word').glob('*.docx'))
@@ -295,6 +325,10 @@ def _testen(prozesse, rueckverguetung=False):
                 from pypdf import PdfReader
                 assert all(len(PdfReader(p).pages) > 0 for p in pdfs)
                 print('Echte Word-/PDF-Erstellung über die Oberfläche: bestanden.', flush=True)
+            # Änderung: Abschluss des Threads und UI-Timers vor Testende abwarten.
+            exporttext = 'Word/PDF-Rückvergütungen erzeugen' if rueckverguetung else 'Word/PDF-Abrechnungen erzeugen'
+            warten("Array.from(document.querySelectorAll('button')).some(e=>e.textContent.trim().endsWith("
+                   + json.dumps(exporttext) + ") && !e.disabled)")
         assert bestand(daten) == originalbestand
         erfolgreich = True
         print('Original-Beispieldaten unverändert. Oberflächentest bestanden.', flush=True)
@@ -309,7 +343,7 @@ if __name__ == '__main__':
         app_starten(Path(sys.argv[2]))
     else:
         try:
-            testen(sys.argv[1:] == ['--rueckverguetung'])
+            testen('--rueckverguetung' in sys.argv[1:])
         except Exception as fehler:
             print('Oberflächentest nicht abgeschlossen. Schritt: ' + SCHRITT
                   + '. Fehlertyp: ' + type(fehler).__name__, flush=True)

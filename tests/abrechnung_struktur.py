@@ -40,6 +40,9 @@ def methoden_als_funktionen(basis, originalfunktionen):
             continue
         assert methode.args.args[0].arg == 'self'
         funktion = NamenZurueckfuehren().visit(copy.deepcopy(methode))
+        # Änderung: Autorisierte Exportabsicherung prüfen; Fachkörper weiter vergleichen.
+        from tests.export_struktur import export_dekoratoren_pruefen
+        export_dekoratoren_pruefen(funktion)
         funktion.args.args = funktion.args.args[1:]
         globale_ergaenzen(vorlagen[methode.name], funktion)
         if isinstance(funktion, ast.AsyncFunctionDef):
