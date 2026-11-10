@@ -75,20 +75,30 @@ def abrechnung_word_schreiben(abrechnung_fuer_pdf, datei_vorlage_abrechnung,
 def abrechnung_pdf_konvertieren(ordner_abrechnungen_word, ordner_abrechnungen_pdf,
                                fortschritt):
     # Änderung für v2: Bestehende COM-Konvertierung auslagern; Fortschritt als Rückruf.
-    # Reihenfolge, Dateiauswahl und Word-Aufrufe entsprechen der Ausgangsversion.
-    pythoncom.CoInitialize()
-    word = Dispatch("Word.Application")
-    word.Visible = False
-
+    # Änderung: Dateiauswahl, PDF-Format und Fortschrittswerte erhalten;
+    # die eigene Word-Instanz wird nun auch im Fehlerfall freigegeben.
     files = [f for f in os.listdir(ordner_abrechnungen_word) if f.endswith(".docx")]
+    # Änderung: Ohne Dokumente keine Word-Instanz starten und nicht durch null teilen.
+    if not files:
+        return
     step = 100 / len(files)
-
-    for i, datei in enumerate(files, 1):
-        doc = word.Documents.Open(os.path.join(ordner_abrechnungen_word, datei))
-        pdf = os.path.join(ordner_abrechnungen_pdf, datei[:-4] + "pdf")
-        doc.SaveAs(pdf, FileFormat=17)
-        doc.Close(False)
-
-        fortschritt(int(i * step))
-
-    word.Quit()
+    # Änderung: Eigene Word-Sitzung verwenden und Ressourcen auch bei Fehlern freigeben.
+    pythoncom.CoInitialize()
+    word = None
+    try:
+        word = DispatchEx("Word.Application")
+        word.Visible = False
+        for i, datei in enumerate(files, 1):
+            doc = word.Documents.Open(os.path.join(ordner_abrechnungen_word, datei))
+            try:
+                pdf = os.path.join(ordner_abrechnungen_pdf, datei[:-4] + "pdf")
+                doc.SaveAs(pdf, FileFormat=17)
+            finally:
+                doc.Close(False)
+            fortschritt(int(i * step))
+    finally:
+        try:
+            if word is not None:
+                word.Quit()
+        finally:
+            pythoncom.CoUninitialize()

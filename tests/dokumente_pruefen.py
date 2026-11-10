@@ -195,7 +195,9 @@ def pruefen():
         def fortschritt(wert):
             protokoll.append(('fortschritt', wert))
 
-        com = SimpleNamespace(CoInitialize=lambda: protokoll.append(('com',)))
+        # Änderung: Neue Ressourcenfreigabe getrennt vom unveränderten Fachablauf prüfen.
+        com = SimpleNamespace(CoInitialize=lambda: protokoll.append(('com',)),
+                              CoUninitialize=lambda: protokoll.append(('com_ende',)))
         umgebung.update({'pythoncom': com, 'Dispatch': starten, 'os': dokumente.os,
                          'ordner_abrechnungen_word': 'word', 'ordner_abrechnungen_pdf': 'pdf',
                          'abr_progress_pdf': SimpleNamespace(set_value=fortschritt)})
@@ -207,13 +209,18 @@ def pruefen():
                 vorher_fehler = type(fehler)
             vorher = copy.deepcopy(protokoll)
             protokoll.clear()
-            with patch.object(dokumente, 'pythoncom', com), patch.object(dokumente, 'Dispatch', starten):
+            with patch.object(dokumente, 'pythoncom', com), patch.object(dokumente, 'DispatchEx', starten):
                 try:
                     dokumente.abrechnung_pdf_konvertieren('word', 'pdf', fortschritt)
                     nachher_fehler = None
                 except Exception as fehler:
                     nachher_fehler = type(fehler)
-            assert protokoll == vorher and vorher_fehler == nachher_fehler
+            # Änderung: Leere Stapel starten Word nicht mehr; sonst nur COM-Freigabe ergänzen.
+            if any(f.endswith('.docx') for f in dateien):
+                assert protokoll == vorher + [('com_ende',)]
+                assert vorher_fehler == nachher_fehler is None
+            else:
+                assert protokoll == [] and nachher_fehler is None
 
 
 if __name__ == '__main__':

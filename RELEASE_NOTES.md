@@ -9,6 +9,9 @@ Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL
 Wartungsstand nach Version 2.047
 ------------------------------
 
+<!-- Änderung: Bereinigung nach fehlgeschlagenem Abrechnungs-PDF-Export beschreiben. -->
+Bugfix: Beim Abrechnungs-PDF-Export wird eine eigene Word-Sitzung verwendet und auch bei einem Exportfehler geschlossen. Bereits geöffnete Word-Sitzungen werden dadurch nicht mitverwendet.
+
 <!-- Änderung: Schutz vor Datenverlust bei Speicher- und Sicherungsfehlern beschreiben. -->
 Bugfix: CSV-Dateien werden erst nach vollständigem Schreiben ersetzt. Bei einer fehlgeschlagenen neuen Datensicherung bleiben die bisherigen Sicherungen erhalten. Wiederholte Sicherungen in derselben Sekunde werden getrennt gespeichert.
 

@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung: Ressourcenfreigabe beider PDF-Exporte bei simulierten Fehlern prüfen.
+        ('Word-Fehlerbereinigung', ['-m', 'tests.word_fehlerpfade_pruefen']),
         # Änderung: Bei Schreib-/Kopierfehlern müssen bisherige Daten vollständig erhalten bleiben.
         ('Ausfallsicherheit von CSV und Sicherungen', ['-m', 'tests.ausfallsicherheit_pruefen']),
         # Änderung 2.047: Vier abhängige Datenbestände und Speicher-/Ladereihenfolge lokal prüfen.

@@ -333,6 +333,15 @@ def pruefen():
     del neue_funktionen['text_sicher_speichern']
     assert alte_funktionen.keys() == neue_funktionen.keys()
     for name in alte_funktionen:
+        # Änderung: Abrechnungsadapter bleibt exakt; Ressourcenfreigabe separat prüfen.
+        if name == 'abr_pdf_process':
+            erwartet = copy.deepcopy(alte_funktionen[name])
+            erwartet.body = [k for k in erwartet.body if isinstance(k, ast.Global)]
+            erwartet.body += ast.parse(
+                'abrechnung_pdf_konvertieren(ordner_abrechnungen_word, '
+                'ordner_abrechnungen_pdf, abr_progress_pdf.set_value)').body
+            assert ast.dump(neue_funktionen[name]) == ast.dump(erwartet)
+            continue
         # Änderung: Die freigegebene Stapelkonvertierung hat einen neuen Ablauf.
         # Ihren unveränderten GUI-Adapter hier, COM-Verhalten in dokumente_pruefen prüfen.
         if name == 'rueckv_pdf_process':

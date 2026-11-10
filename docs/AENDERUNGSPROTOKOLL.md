@@ -20,6 +20,22 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Word-Fehlerbereinigung nach Version 2.047 – 10.11.2026
+
+<!-- Änderung: Ressourcenfreigabe beim Abrechnungs-PDF-Export dokumentieren. -->
+
+- Abrechnung verwendet `DispatchEx` für eine eigene Word-Instanz. Verschachtelte
+  `finally`-Blöcke versuchen Dokumentabschluss und Word-Ende und geben COM frei.
+  Leere Dateilisten starten Word nicht mehr. Dateifilter, Reihenfolge, PDF-Format,
+  Dateinamen und Fortschrittswerte bleiben für vorhandene Dokumente unverändert.
+- 20 Fehlersimulationen für beide PDF-Funktionen in die Freigabeprüfung aufgenommen.
+  Der Strukturvergleich prüft den unveränderten Adapter; Dokumentaufrufvergleiche
+  berücksichtigen ausschließlich neue Freigabe und leere Stapel.
+- Version 2.047 und Versionsanzeige bleiben gemäß Benutzerwunsch unverändert.
+  Keine neue EXE, kein neuer Versionstag oder Versionsrelease.
+- UI-Fehlermeldungen, Parallelexportsperre, Mitgliederlisten und das Überdecken
+  ursprünglicher Fehler durch fehlschlagendes Close/Quit sind nicht geändert.
+
 ## Bereinigung nach Version 2.047 – 09.11.2026
 
 <!-- Änderung: Autorisierte Absicherung der Dateizugriffe bei unveränderter Fachlogik dokumentieren. -->

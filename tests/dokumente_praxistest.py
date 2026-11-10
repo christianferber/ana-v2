@@ -80,7 +80,8 @@ def erzeugen():
         return word
 
     try:
-        with patch.object(dokumente, 'Dispatch', word_starten):
+        # Änderung: Abrechnung verwendet jetzt ebenfalls eine eigene Word-Instanz.
+        with patch.object(dokumente, 'DispatchEx', word_starten):
             dokumente.abrechnung_pdf_konvertieren(str(wordordner), str(pdfordner), lambda wert: None)
     finally:
         for word in instanzen:
@@ -88,7 +89,7 @@ def erzeugen():
                 word.Quit()
             except Exception:
                 pass
-        pythoncom.CoUninitialize()
+        # Änderung: COM wird bereits von der geprüften Konvertierungsfunktion freigegeben.
 
     SCHRITT = 'PDF prüfen'
     pdfdatei = pdfordner / 'Beispielabrechnung.pdf'
