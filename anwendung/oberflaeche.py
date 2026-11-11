@@ -28,6 +28,8 @@ from anwendung.einstellungen_ui import EinstellungenOberflaeche
 from anwendung.changelog_ui import ChangelogOberflaeche
 # Änderung 2.040: Statistikansicht einbinden; Register bleibt deaktiviert.
 from anwendung.statistik_ui import StatistikOberflaeche
+# Änderung nach 2.049: Neuer lesender Statistikbereich mit Verbrauch und Mindestabnahme.
+from anwendung.verbrauchsstatistik import Verbrauchsstatistik
 # Änderung 2.041: Buchungsexport-Bedienabläufe einbinden.
 from anwendung.buchungsexport_ui import BuchungsexportOberflaeche
 # Änderung 2.035: Mitgliederansicht mit eigenem Bedienzustand einbinden.
@@ -954,6 +956,8 @@ def main():
             tab5 = ui.tab('Abrechnungen', icon='receipt_long')
             tab6 = ui.tab('Rückvergütung', icon='savings')
             tab7 = ui.tab('Buchungsvorlagen', icon='table_view')
+            # Änderung nach 2.049: Eigenen Statistikbereich in der Navigation anbieten.
+            tab9 = ui.tab('Statistik', icon='show_chart')
             ui.label('Programm').classes('ana-nav-section')
             tab8 = ui.tab('Tools', icon='build')
             tab10 = ui.tab('Changelog', icon='history')
@@ -992,11 +996,15 @@ def main():
             buchung_ui()
         with ui.tab_panel(tab8):
             tools_ui()
-#        with ui.tab_panel(tab9):
-#            statistik_ui()
+        # Änderung nach 2.049: Verbrauchsübersicht getrennt von Berechnungen aufbauen.
+        with ui.tab_panel(tab9):
+            verbrauchsstatistik = Verbrauchsstatistik(sys.modules[__name__])
+            verbrauchsstatistik.aufbauen()
         with ui.tab_panel(tab10):
             changelog_ui()
 
+    # Änderung nach 2.049: Neue Abnehmer und Jahresdateien bei jedem Öffnen berücksichtigen.
+    tabs.on_value_change(lambda e: verbrauchsstatistik.aktualisieren() if e.value == 'Statistik' else None)
     ui.run(reload=False, native=True, window_size=(2048, 1536), title="ANA", favicon=str(RESSOURCEN / "ANA-favicon.ico"))
 
 

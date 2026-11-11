@@ -254,6 +254,30 @@ def _testen(prozesse, rueckverguetung=False):
                     knopf(text)
             SCHRITT = 'Testseite laden'
             cdp('Page.navigate', {'url': url})
+            # Änderung nach 2.049: Neue Statistik mit zwei lokalen Abnehmern im Browser bedienen.
+            if not rueckverguetung:
+                SCHRITT = 'Statistikregister laden'
+                statistik_tab = "Array.from(document.querySelectorAll('.q-tab')).find(e=>e.querySelector('.q-tab__label')?.textContent.trim()==='Statistik')"
+                warten('Boolean(' + statistik_tab + ')')
+                js('(' + statistik_tab + ').click()')
+                warten("Boolean(document.querySelector('.ana-statistik'))")
+                assert js("document.querySelectorAll('.ana-statistik .q-select').length===2")
+                from anwendung.verbrauchsstatistik import verbrauchswerte_lesen
+                for abnehmer in datei_oeffnen(kopie / 'Datenbank/db_abnehmer.csv')[:2]:
+                    auswahl('Abnehmer (Ident | Name Vorname)',
+                            abnehmer['Ident'] + ' | ' + abnehmer['Name'] + ' ' + abnehmer['Vorname'])
+                    jahre, verbrauch, minimum, fehler = verbrauchswerte_lesen(kopie / 'Abrechnungen', abnehmer['Ident'])
+                    plot = "document.querySelector('.ana-statistik .js-plotly-plot')"
+                    warten('Boolean(' + plot + '?.data?.length===2)')
+                    assert json.loads(js('JSON.stringify(' + plot + '.data.map(s=>s.y))')) == [verbrauch, minimum]
+                    assert json.loads(js('JSON.stringify(' + plot + '.data[0].x)')) == jahre
+                    assert fehler == 0
+                for breite in (1440, 800):
+                    cdp('Emulation.setDeviceMetricsOverride', {'width': breite, 'height': 1000,
+                        'deviceScaleFactor': 1, 'mobile': False})
+                    time.sleep(1)
+                    assert js("document.querySelector('.ana-statistik').getBoundingClientRect().width <= window.innerWidth")
+                print('Statistik: zwei Dropdowns, Abnehmerwechsel, beide Jahresreihen und Layout 1440/800 bestanden.', flush=True)
             # Änderung nach 2.049: Einstellungen mit echten Dialogelementen prüfen, ohne zu speichern.
             if not rueckverguetung:
                 SCHRITT = 'Einstellungsdialog prüfen'

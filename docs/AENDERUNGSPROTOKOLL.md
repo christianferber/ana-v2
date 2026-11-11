@@ -20,6 +20,40 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Arbeitsstand nach 2.049 – Verbrauchsstatistik
+
+<!-- Änderung nach 2.049: Neuen ausschließlich lesenden Statistikbereich dokumentieren. -->
+
+- Neuer Menüpunkt „Statistik“ und eigenes Panel mit `Verbrauchsstatistik`.
+  Zwei obere Dropdowns: Statistik (zunächst Verbrauchsübersicht) und durchsuchbare
+  Abnehmerauswahl mit Ident, Name und Vorname. Beim Öffnen Daten erneut einlesen.
+- `verbrauchsstatistik.py` liest ausschließlich gespeicherte
+  `Abrechnung-JJJJ/Abrechnung-JJJJ.csv`. Ident bleibt Text, Jahre sind aufsteigend.
+  Die zwei Linien verwenden `verbrauchte kWh` und `Mindestvertragsleistung` aus
+  derselben Jahresabrechnung. Keine Neuberechnung und keine Schreibzugriffe.
+- Fehlende Werte bleiben Lücken, echte Nullwerte erhalten. Ungültige Dateien,
+  doppelte Ident-Zeilen und ungültige Zahlen führen zu einem Hinweis und werden
+  nicht als Null dargestellt. UTF-8 und bisherige Windows-Kodierung unterstützt.
+- Unabhängiger Vergleich sämtlicher verfügbarer lokaler Jahreswerte sowie
+  Sonderfälle und tatsächliche NiceGUI-/Plotly-Komponenten ergänzt. Navigationstest
+  erlaubt genau den neuen Tab und das neue Panel; bisherige neun Panels unverändert.
+- Historische ungenutzte Statistikhilfen bleiben für den bisherigen Referenzvergleich
+  erhalten. Der neue Bereich verwendet ausschließlich das neue Modul.
+- Version bleibt 2.049; keine Veröffentlichung und kein EXE-Build.
+
+## Arbeitsstand nach 2.049 – Fettmarkierungen im Serienbrief
+
+<!-- Änderung nach 2.049: Autorisierte zusätzliche Textformatierung dokumentieren. -->
+
+- `serienbrief_formatierung.py` wertet vollständige `<bold>…</bold>`-Paare nach
+  der bisherigen Platzhalterersetzung aus. Nur betroffene Word-Textstücke werden
+  aufgeteilt und fett gesetzt; vorhandene Eigenschaften und Umbrüche bleiben erhalten.
+- Ausschließlich Serienbriefe verwenden die Hilfe. Berechnungen, Importe und
+  Buchungsexporte bleiben unverändert. Der Dialog erläutert die Schreibweise.
+- Lokaler Serienbrieftest mit tatsächlicher Vorlage und Mitgliederdaten sowie
+  Sonderfällen ergänzt. Strukturvergleich nimmt exakt die zwei neuen Dialogzeilen aus.
+- Version bleibt 2.049; keine Veröffentlichung und kein EXE-Build.
+
 ## Arbeitsstand nach 2.049 – verständlicher Einstellungsdialog
 
 <!-- Änderung nach 2.049: Einstellungsdarstellung ohne Änderungen an Daten oder Speicherablauf. -->

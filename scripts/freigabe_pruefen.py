@@ -11,6 +11,10 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung nach 2.049: Neue Verbrauchsübersicht gegen lokale Jahresdateien prüfen.
+        ('Verbrauchsstatistik aus Jahresabrechnungen', ['-m', 'tests.verbrauchsstatistik_pruefen']),
+        # Änderung nach 2.049: Serienbriefmarkierungen mit echten lokalen Dokumenten prüfen.
+        ('Serienbrief-Fettformatierung', ['-m', 'tests.serienbrief_pruefen']),
         # Änderung nach 2.049: Prozentbalken in PDF-Buttons mit echter UI-Komponente prüfen.
         ('PDF-Fortschritt im Button', ['-m', 'tests.buttonfortschritt_pruefen']),
         # Änderung: Frühe Startanzeige und vollständige Fenster-/Threadbereinigung prüfen.

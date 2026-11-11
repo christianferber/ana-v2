@@ -20,6 +20,11 @@ def hauptfenster_vergleichen(alt, neu):
     # Änderung 2.049: Namen, Reihenfolge und Registerwechsel-Callback erhalten.
     vorher = aufrufe(alt, 'tab')
     nachher = aufrufe(neu, 'tab')
+    # Änderung nach 2.049: Genau den neuen Statistik-Tab zusätzlich erlauben.
+    statistik_tabs = [k for k in nachher if k.args[0].value == 'Statistik']
+    assert len(statistik_tabs) == 1
+    gleich(statistik_tabs[0], ast.parse("ui.tab('Statistik', icon='show_chart')", mode='eval').body)
+    nachher.remove(statistik_tabs[0])
     assert len(vorher) == len(nachher) == 9
     for links, rechts in zip(vorher, nachher):
         gleich(links.args[0], rechts.args[0])
@@ -29,8 +34,15 @@ def hauptfenster_vergleichen(alt, neu):
     def panels(funktion):
         return [k for k in ast.walk(funktion) if isinstance(k, ast.With)
                 and any(aufrufe(item.context_expr, 'tab_panel') for item in k.items)]
-    assert len(panels(alt)) == len(panels(neu)) == 9
-    for links, rechts in zip(panels(alt), panels(neu)):
+    # Änderung nach 2.049: Neues Panel exakt prüfen; vorhandene neun Panels weiter vergleichen.
+    neue_panels = panels(neu)
+    statistik_panel = next(p for p in neue_panels if ast.unparse(p.items[0].context_expr) == 'ui.tab_panel(tab9)')
+    gleich(statistik_panel, ast.parse('with ui.tab_panel(tab9):\n'
+        '    verbrauchsstatistik = Verbrauchsstatistik(sys.modules[__name__])\n'
+        '    verbrauchsstatistik.aufbauen()').body[0])
+    neue_panels.remove(statistik_panel)
+    assert len(panels(alt)) == len(neue_panels) == 9
+    for links, rechts in zip(panels(alt), neue_panels):
         gleich(links, rechts)
     vorher = aufrufe(alt, 'tab_panels')[0]
     nachher = copy.deepcopy(aufrufe(neu, 'tab_panels')[0])

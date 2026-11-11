@@ -6,121 +6,9 @@ Stand: 11.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
-## Arbeitsstand nach 2.049 – verständlicher Einstellungsdialog
-
-<!-- Änderung nach 2.049: Neu gegliederten Dialog und unveränderte Speicherabläufe prüfen. -->
-
-- Alle 28 Freigabeprüfungen und Syntax bestanden. Lokale Konfigurationskopien:
-  INI-Inhalte, Speicher-/Neuladefolge, Ordnerwechsel, Standard, native Ordnerwahl
-  einschließlich bisheriger Abbruchbehandlung gegen Original unverändert.
-- Echter Browserlauf: acht Eingabefelder, zunächst geschlossene erweiterte
-  Darstellung, Öffnen des Bereichs und Abbrechen erfolgreich. Dialog und untere
-  Aktionsleiste bei 1440, 800 und 400 Pixeln innerhalb des sichtbaren Fensters.
-  Dabei keine Einstellungen gespeichert und kein nativer Ordner ausgewählt.
-- Anschließend regulärer vollständiger Abrechnungslauf mit normalem Word bestanden:
-  Berechnung, CSV-Referenz, Word-/PDF-Ausgabe und Prozentanzeige. Gegen 2.049
-  alle 73 Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch.
-- Original-Beispieldaten unverändert; Test-App, Fenster und Testbrowser beendet.
-  Keine visuelle Screenshot-/Dokumentprüfung. Versionskonstante bleibt 2.049;
-  lokaler Stand ohne neue Veröffentlichung oder EXE.
-
-## Arbeitsstand nach 2.049 – weitere Ansichten und PDF-Fortschritt
-
-<!-- Änderung nach 2.049: Erweiterte Darstellung samt Fortschrittsadapter lokal verifizieren. -->
-
-- Ergänzte Prozentzahl im PDF-Button: erneut alle 28 Freigabeprüfungen und Syntax
-  bestanden. Komponentenprüfung erfasst Zahl, Wertänderungen und Sichtbarkeit.
-  Regulärer vollständiger Abrechnungslauf und Rückvergütungs-Smoke-Test mit normalem
-  Word erfolgreich; sichtbare Prozentzahl bis „100 %“ in beiden Exportbuttons geprüft.
-  73 neue Word-Paketinhalte sowie PDF-Texte/Seitenzahlen gegenüber 2.049 identisch,
-  Originalbestand unverändert und Testprozesse beendet.
-- Alle 28 gebündelten Freigabeprüfungen und Syntax bestanden. Neu geprüft:
-  echte lineare UI-Komponente, Einbettung im Button, Prozentmaßstab, direkte
-  Wertzuweisung, erneute Wertfolge und bisherige Sichtbarkeitsaufrufe.
-- Referenzvergleiche bestätigen unveränderte Berechnungs- und Exportkörper;
-  ausschließlich bekannte Layout-, Farb- und Fortschrittsanzeigen zurückgeführt.
-- Regulärer vollständiger Abrechnungslauf mit normalem Word erfolgreich:
-  Layout bei 1440/800 Pixeln, Umsatz bei den Feldern, versteckte alte Ergebniszeile,
-  sechs Buttons in zwei Gruppen, Berechnung, CSV-Referenz und 73 neue Word-/PDF-Paare.
-  Balken direkt im Button und vollständiger Füllstand nach Ausgabe geprüft.
-- Erster Praxisversuch scheiterte nach erfolgreicher Ausgabe an einer Prüfung,
-  die fälschlich 100 statt des neuen Maximalwerts 1 erwartete. Nach Korrektur
-  regulären vollständigen Praxislauf erfolgreich wiederholt.
-- Rückvergütungs-Smoke-Test mit einem Datensatz: Berechnung, CSV, Speichern,
-  simulierter erster Exportfehler, sichtbare Fehlermeldung, erneute Freigabe und
-  anschließend echte Word-/PDF-Ausgabe mit integriertem Fortschritt bestanden.
-- Gegen 2.049 Word-Paketinhalte, PDF-Texte und Seitenzahlen der 73 Paare identisch.
-  Original-Beispieldaten unverändert; Test-App, Fenster und Testbrowser beendet.
-- Übrige Ansichten erhalten den kompakten Buttonstil zentral über CSS.
-  PDF-Werkzeug durch Referenzvergleich und Komponentenprüfung verifiziert;
-  keine zusätzliche native Ordnerdialog-Bedienprüfung oder Screenshotprüfung.
-- Version bleibt 2.049; keine neue Veröffentlichung und keine neue EXE.
-
-## Arbeitsstand nach 2.049 – kompakte Aktionsleiste
-
-<!-- Änderung nach 2.049: Gewählte kompakte Buttonansicht lokal verifizieren. -->
-
-- Alle 27 Freigabeprüfungen und Syntax bestanden. Bestehende Fachkörper nach
-  gezielter Abgrenzung der Layoutanweisungen weiter mit der Vorlage verglichen.
-- Regulärer vollständiger Praxislauf mit normalem Word bestanden: sechs Buttons
-  in zwei Gruppen, kurze Beschriftungen, Layout bei 1440/800 Pixeln, Berechnung,
-  Speichern und CSV-Referenz sowie 73 neue Word-/PDF-Paare.
-- Gegen Version 2.049 Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch;
-  Original-Beispieldaten unverändert. Test-App/Fenster/Testbrowser beendet.
-- Keine visuelle Screenshot-/Dokumentprüfung. Versionskonstante 2.049 unverändert;
-  lokaler Arbeitsstand ohne neue Veröffentlichung und ohne neue EXE.
-
-## Arbeitsstand nach 2.049 – einheitliche Exportbuttons
-
-<!-- Änderung nach 2.049: Reine Farbanpassung mit regulären lokalen Praxisläufen verifizieren. -->
-
-- Alle 27 Freigabeprüfungen und Syntax bestanden; Strukturvergleich lässt
-  ausschließlich die beiden bekannten Buttonfarbänderungen zu.
-- Regulärer vollständiger Abrechnungslauf mit normalem Word erfolgreich:
-  Berechnung, Speichern, CSV-Referenz und 73 neue Word-/PDF-Paare. Gegen 2.049
-  Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch.
-- Rückvergütungs-Smoke-Test mit einem vorhandenen Datensatz über die echte
-  Oberfläche erfolgreich: Berechnung, CSV-Referenz, Speichern und Word/PDF-Ausgabe.
-- Original-Beispieldaten unverändert, Test-App/Fenster/Testbrowser beendet.
-  Keine visuelle Screenshot-/Dokumentprüfung. Version 2.049 unverändert;
-  Änderungen lokal und noch nicht veröffentlicht, keine neue EXE.
-
-<!-- Änderung 2.049: UI-Fortsetzung und konkretisierte Logo-/Menüwünsche lokal prüfen. -->
-## Freigabe Version 2.049 – 11.11.2026
-
-<!-- Änderung 2.049: Abschließende Prüfung mit der neuen Versionskonstante dokumentieren. -->
-- Nach Erhöhung auf Version 2.049 alle 27 Freigabeprüfungen und Syntax bestanden.
-  Regulärer vollständiger Praxislauf mit echter Startanzeige, normalem Word und
-  isolierter lokaler Datenkopie erfolgreich: Layout bei 1440/800 Pixeln,
-  Berechnung, CSV-Referenz und 73 neue Word-/PDF-Paare. Gegen Version 2.048
-  Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch. Originalbestand unverändert.
-  Test-App, Fenster und Testbrowser vollständig beendet.
-- Nach Angleichung der Einstellungen-Einrückung und Umstellung auf einen festen
-  Startphasenbalken erneut alle 27 Prüfungen einschließlich echter Startfenster
-  und Syntax bestanden. Regulärer vollständiger Abrechnungslauf mit normalem
-  Word, lokaler Datenkopie, Layoutprüfung bei 1440/800 Pixeln, CSV-Referenz und
-  73 neuen Word-/PDF-Paaren erfolgreich. Original-Beispieldaten unverändert.
-- Alle 27 gebündelten Freigabeprüfungen einschließlich Syntax nach den letzten
-  Änderungen bestanden. Echte Startfenster mit dem offiziellen ANA-Logo erfolgreich
-  geöffnet und geschlossen. Einstellungen bleiben über den bisherigen Callback links erreichbar.
-- Einklappbare Seitennavigation und kompakte Kopfzeile; Jahresabrechnung als Pilot.
-  Einstellungen ausschließlich links, keine doppelte Produktbeschriftung in der
-  Navigation und größeres Partnerlogo rechts. Layout bei 1440 und 800 Pixeln
-  ohne horizontalen Seitenüberlauf geprüft; Menüknopf bleibt auch mobil erreichbar.
-- Regulärer vollständiger Praxislauf nach den Logo-/Menüänderungen bestanden:
-  Berechnung, Tabellenanzeige, Speichern, identische CSV-Referenz und 73 neue
-  Word-/PDF-Paare. Gegen 2.048 alle Word-Paketinhalte, PDF-Texte und Seitenzahlen
-  identisch; Original-Beispieldaten unverändert.
-- Rückvergütungs-Smoke-Test zuvor mit der neuen Navigation bestanden:
-  ein vorhandener Datensatz, Berechnung, CSV-Referenz und echte Word-/PDF-Erstellung.
-- Frühere Praxisversuche der UI-Fortsetzung scheiterten an verdeckten Kopfaktionen;
-  nach Behebung vollständiger Abrechnungslauf erfolgreich wiederholt.
-- Test-App, Fenster und Testbrowser nach den erfolgreichen Läufen beendet.
-  Beispieldaten ausschließlich lokal verarbeitet. Keine visuelle Screenshot-/Dokumentprüfung.
-- Versionskonstante 2.049; Freigabe als Quellversion ohne neuen EXE-Build.
-
-## Gebündelte Prüfungen
-
+- Verbrauchsstatistik aus Jahresabrechnungen: bestanden.
+- Serienbrief-Fettformatierung: bestanden.
+- PDF-Fortschritt im Button: bestanden.
 - Startanzeige und Ladefolge: bestanden.
 - Änderungsprotokoll für Daten und Einstellungen: bestanden.
 - Exportoberfläche bei Fehlern: bestanden.
@@ -539,3 +427,37 @@ identisch. Test-App/Fenster/Browser beendet, unabhängige Abfrage ohne ANA-,
 Word- oder Testbrowserprozesse. Keine visuelle Dokumentprüfung. Optische Prüfung
 der Startanzeige durch fehlende Node-Laufzeit des Computer-Use-Werkzeugs blockiert;
 native Fenster und vollständiger App-Start funktional erfolgreich geprüft.
+
+## Arbeitsstand nach 2.049 – Serienbrief-Fettdruck, 11.11.2026
+
+<!-- Änderung nach 2.049: Lokale Serienbriefprüfung dokumentieren. -->
+
+- Tatsächliche Serienbrieferstellung mit lokaler Vorlage und Mitgliederdaten:
+  lesbare Word-Dateien, Fettformat, Platzhalter und mehrzeilige Bereiche bestanden.
+- Aufgeteilte und unvollständige Markierungen geprüft; ohne Markierung bleiben
+  sämtliche Word-XML-Teile unverändert. Originaldatenbank unverändert.
+- Im aktuellen Lauf erneut bestanden. Keine visuelle Dokumentprüfung.
+
+## Arbeitsstand nach 2.049 – Verbrauchsstatistik, 11.11.2026
+
+<!-- Änderung nach 2.049: Jahreswerte und neue echte Browserbedienung dokumentieren. -->
+
+- Alle 30 Freigabeprüfungen einschließlich Syntax bestanden.
+- Verbrauch und Mindestabnahme sämtlicher vorhandener lokaler Jahresdateien
+  unabhängig aus den CSV-Dateien gelesen und gegen die neue Aufbereitung geprüft.
+- Text-Ident mit führenden Nullen, chronologische Reihenfolge, echte Nullwerte,
+  fehlende Jahre/Abnehmer, ungültige Zahlen, falsche Spalten und doppelte Treffer
+  geprüft. Echte NiceGUI-Elemente und beide Plotly-Datenreihen bestanden.
+- Vollständiger regulärer Praxislauf mit normaler Word-Anbindung bestanden:
+  .lokal/oberflaechentest-20261111-232012-517799. Statistik im echten Browser:
+  zwei Dropdowns, zwei Abnehmer nacheinander ausgewählt, beide Jahresreihen exakt
+  mit lokaler Aufbereitung verglichen, Layout bei 1440/800 Pixeln bestanden.
+- Danach Einstellungen, Berechnung, Speichern/CSV-Referenz und 73 neue Word-/PDF-
+  Paare erfolgreich. Original-Beispieldaten vollständig per Prüfsummen unverändert.
+- Test-App, Fenster und Testbrowser beendet. Keine visuelle Screenshot- oder
+  Dokumentprüfung; keine EXE, keine Veröffentlichung. Version bleibt 2.049.
+
+<!-- Änderung nach 2.049: Abschließenden lokalen Dokumentvergleich ergänzen. -->
+Die 73 neuen Word-Paketinhalte und die Texte/Seitenzahlen der 73 PDFs sind
+gegenüber dem vorherigen Praxislauf vom 11.11.2026 unverändert. Lokale Vergleichshilfe:
+.lokal/statistik_dokumentvergleich_20261111.py.

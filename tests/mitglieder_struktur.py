@@ -46,6 +46,19 @@ def methoden_als_funktionen(basis, originalfunktionen):
             continue
         assert methode.args.args[0].arg == 'self'
         funktion = NamenZurueckfuehren().visit(copy.deepcopy(methode))
+        # Änderung nach 2.049: Nur die beiden ausdrücklich neuen Serienbriefzeilen ausnehmen.
+        if methode.name == 'serienbrief_dialog':
+            erlaubt = [ast.parse(quelle).body[0] for quelle in (
+                'fettmarkierungen_anwenden(document)',
+                "ui.label('Fettdruck in Betreff und Brieftext: <bold>TEXT</bold> (auch mit Platzhaltern).')")]
+            class FormatierungAusnehmen(ast.NodeTransformer):
+                def visit_Expr(self, knoten):
+                    if any(ast.dump(knoten) == ast.dump(e) for e in erlaubt):
+                        return None
+                    return self.generic_visit(knoten)
+            for e in erlaubt:
+                assert sum(ast.dump(k) == ast.dump(e) for k in ast.walk(funktion)) == 1
+            funktion = FormatierungAusnehmen().visit(funktion)
         # Änderung: Autorisierte Exportabsicherung prüfen; Fachkörper weiter vergleichen.
         from tests.export_struktur import export_dekoratoren_pruefen
         export_dekoratoren_pruefen(funktion)

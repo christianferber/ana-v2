@@ -5,6 +5,15 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung nach 2.049: Neue Serienbriefformatierung im lokalen Arbeitsstand. -->
+Noch nicht veröffentlicht
+------------------------
+
+<!-- Änderung nach 2.049: Verbrauchsstatistik aus Sicht der Anwender beschreiben. -->
+Feature: Neuer Bereich „Statistik“ mit Auswahl der Statistik und des Abnehmers über Ident, Name und Vorname. Die „Verbrauchsübersicht“ zeigt tatsächlichen Verbrauch und Mindestabnahme aller gespeicherten Jahresabrechnungen als zwei Linien in kWh. Fehlende Jahreswerte erscheinen als Lücken.
+
+Feature: In Serienbriefen lässt sich Text in Betreff und Brieftext mit `<bold>TEXT</bold>` fett darstellen. Das funktioniert auch mit Platzhaltern und Zeilenumbrüchen. Ein Hinweis im Dialog erklärt die Schreibweise.
+
 <!-- Änderung 2.049: UI-Modernisierung aus Sicht der Anwender beschreiben. -->
 Version 2.049 – 11.11.2026
 -------------------------

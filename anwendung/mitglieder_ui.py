@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 from datetime import datetime
 from mailmerge import MailMerge
+# Änderung nach 2.049: Explizite Fettmarkierungen im Serienbrief auswerten.
+from anwendung.serienbrief_formatierung import fettmarkierungen_anwenden
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.section import WD_ORIENT
@@ -1180,6 +1182,8 @@ class MitgliederOberflaeche:
                 document = MailMerge(serienbrief_vorlage)
                 docmergelist = mergestring
                 document.merge(**docmergelist)
+                # Änderung nach 2.049: Nach Platzhalterersetzung markierten Text fett setzen.
+                fettmarkierungen_anwenden(document)
                 if self.radio_filter.value == "Laufende Nummer":
                     prefix = "lnr" + mitglied["Laufende Nummer"] + "-"
                 elif self.radio_filter.value == "Ident":
@@ -1227,6 +1231,8 @@ class MitgliederOberflaeche:
                     input_betreff = ui.input("Betreff").style("width: 500px;")
                 with ui.row():
                     input_text = ui.textarea(label='Brieftext').style('width: 400px')
+                    # Änderung nach 2.049: Schreibweise der neuen Textformatierung erklären.
+                    ui.label('Fettdruck in Betreff und Brieftext: <bold>TEXT</bold> (auch mit Platzhaltern).')
                 with ui.row():
                     ui.button("Serienbrief erstellen", icon='keyboard', on_click=lambda: serienbrief_process(input_betreff.value, input_text.value))
         dialog.open()
