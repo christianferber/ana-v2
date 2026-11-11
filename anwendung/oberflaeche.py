@@ -132,8 +132,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.044: Gemeinsame Datenaufbereitung auslagern.
 # Änderung 2.045: Datenbankzugriffe auslagern.
 # Änderung 2.046: Gemeinsame CSV-Speicherhilfe auslagern.
-# Änderung 2.048: Geprüfte Startanzeige, Änderungsprotokolle und Absicherungen veröffentlichen.
-version = 2.048
+# Änderung 2.049: Geprüfte UI-Modernisierung und angepasste Startanzeige veröffentlichen.
+version = 2.049
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -937,32 +937,45 @@ def main():
 
 
 
-    ### Zentrales GUI
-    with ui.header().classes('justify-between border').style('background-color: #FFFFFF; align-items: center'):
-        ui.image(str(RESSOURCEN / "ANA logo.png")).classes('w-32').style('size: (140,80)')
-        ui.label("Automatische Nahwärme-Abrechnung").classes('center').style('font-size: 200%; color: #1761A0')
-        ui.image(str(RESSOURCEN / 'Logo NWS.JPG')).classes('w-48')
-    with ui.row().classes('w-full'):
+    # Änderung 2.049: Nur den gemeinsamen Rahmen gestalten; Tabellen und Editieraufrufe bleiben unverändert.
+    ui.colors(primary='#1761a0', secondary='#526879')
+    ui.add_css((RESSOURCEN / 'ana-ui.css').read_text(encoding='utf-8'))
 
+    # Änderung 2.049: Dieselben Register in einer einklappbaren Seitenleiste verwenden.
+    with ui.left_drawer(bordered=True).props('width=220 breakpoint=900').classes('ana-sidebar') as navigation:
+        # Änderung 2.049: Produktname nur in der Kopfzeile zeigen.
+        with ui.tabs(on_change=on_tab_change).props('vertical no-caps').classes('ana-nav w-full') as tabs:
+            ui.label('Stammdaten').classes('ana-nav-section')
+            tab1 = ui.tab("Mitglieder", icon='groups')
+            tab2 = ui.tab('Abnehmerdaten', icon='home_work')
+            tab3 = ui.tab('Zähler', icon='speed')
+            tab4 = ui.tab('Abschlag', icon='payments')
+            ui.label('Abrechnung').classes('ana-nav-section')
+            tab5 = ui.tab('Abrechnungen', icon='receipt_long')
+            tab6 = ui.tab('Rückvergütung', icon='savings')
+            tab7 = ui.tab('Buchungsvorlagen', icon='table_view')
+            ui.label('Programm').classes('ana-nav-section')
+            tab8 = ui.tab('Tools', icon='build')
+            tab10 = ui.tab('Changelog', icon='history')
+        ui.separator().classes('my-4')
+        # Änderung 2.049: Icon und Text an den übrigen Navigationseinträgen ausrichten.
+        ui.button('Einstellungen', icon='settings', on_click=einstellungen_ui).props('flat no-caps').classes('w-full ana-settings')
+        # Änderung 2.049: Die bisherige Versionsformatierung unverändert übernehmen.
+        ui.label("Version: " + str("{:.2f}".format(version))).classes('ana-sidebar-version')
 
-    #   ui.label("Programm zur Jahresabrechnung des Wärmeverbrauchs der Nahwaerme Sulzdorf eG").classes('center').style('color: #000000; font-size: 150%; justify-content: center')
-        ui.space()
-        ui.label("Version: " + str("{:.2f}".format(version)))
-        ui.button('', icon='settings', on_click=einstellungen_ui).props('color=dark')
-        ui.button('', icon='close', on_click=app.shutdown).props('color=dark')
+    with ui.header().classes('ana-header'):
+        with ui.row().classes('ana-header-row'):
+            # Änderung 2.049: Für breite Tabellen die Navigation jederzeit aus-/einblenden können.
+            ui.button(icon='menu', on_click=navigation.toggle).props('flat round aria-label="Navigation ein-/ausblenden"').tooltip('Navigation ein-/ausblenden')
+            ui.image(str(RESSOURCEN / "ANA logo.png")).classes('ana-header-logo')
+            ui.label("Automatische Nahwärme-Abrechnung").classes('ana-header-title')
+            ui.space()
+            # Änderung 2.049: Rechtes Logo vergrößern; Einstellungen ausschließlich links anbieten.
+            ui.image(str(RESSOURCEN / 'Logo NWS.JPG')).classes('ana-header-logo ana-header-partner-logo')
+            ui.button('', icon='close', on_click=app.shutdown).props('flat round aria-label="Programm beenden"').tooltip('Programm beenden')
 
-    with ui.tabs(on_change=on_tab_change).classes('w-full') as tabs:
-        tab1 = ui.tab("Mitglieder")
-        tab2 = ui.tab('Abnehmerdaten')
-        tab3 = ui.tab('Zähler')
-        tab4 = ui.tab('Abschlag')
-        tab5 = ui.tab('Abrechnungen')
-        tab6 = ui.tab('Rückvergütung')
-        tab7 = ui.tab('Buchungsvorlagen')
-        tab8 = ui.tab('Tools')
-#        tab9 = ui.tab('Statistik (BETA)')
-        tab10 = ui.tab('Changelog')
-    with ui.tab_panels(tabs, value=tab1).classes('w-full'):
+    # Änderung 2.049: Keep-alive, Startregister und alle Panel-/Funktionsbindungen ausdrücklich erhalten.
+    with ui.tab_panels(tabs, value=tab1, keep_alive=True).classes('ana-workspace'):
         with ui.tab_panel(tab1):
             mitglieder_ui()
         with ui.tab_panel(tab2):

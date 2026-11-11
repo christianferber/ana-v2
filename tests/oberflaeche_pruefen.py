@@ -162,7 +162,8 @@ def _testen(prozesse, rueckverguetung=False):
         profil = run / 'chrome'
         browser = prozesse.starten([
             r'C:\Program Files\Google\Chrome\Application\chrome.exe',
-            '--headless=new', '--remote-debugging-port=0', '--user-data-dir=' + str(profil),
+            # Änderung 2.049: Desktop-Oberfläche mit realistischer Fensterbreite bedienen.
+            '--headless=new', '--window-size=1440,1000', '--remote-debugging-port=0', '--user-data-dir=' + str(profil),
             '--disable-background-networking', '--disable-extensions', '--no-first-run',
             '--no-default-browser-check', 'about:blank'],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -249,11 +250,12 @@ def _testen(prozesse, rueckverguetung=False):
                     knopf(text)
             SCHRITT = 'Testseite laden'
             cdp('Page.navigate', {'url': url})
+            # Änderung 2.049: Register anhand ihrer Beschriftung finden; Navigationsicons nicht mitlesen.
             if rueckverguetung:
                 # Änderung für v2: Rückvergütung vollständig über die echte Oberfläche prüfen.
                 SCHRITT = 'Rückvergütungsregister laden'
-                warten("Boolean(Array.from(document.querySelectorAll('.q-tab')).find(e=>e.textContent.trim()==='Rückvergütung'))")
-                js("Array.from(document.querySelectorAll('.q-tab')).find(e=>e.textContent.trim()==='Rückvergütung').click()")
+                warten("Boolean(Array.from(document.querySelectorAll('.q-tab')).find(e=>e.querySelector('.q-tab__label')?.textContent.trim()==='Rückvergütung'))")
+                js("Array.from(document.querySelectorAll('.q-tab')).find(e=>e.querySelector('.q-tab__label')?.textContent.trim()==='Rückvergütung').click()")
                 time.sleep(1)
                 auswahl('Jahr der Rückvergütung', jahr)
                 SCHRITT = 'Rückvergütungssatz und Beschlussdatum eingeben'
@@ -293,9 +295,35 @@ def _testen(prozesse, rueckverguetung=False):
             else:
                 SCHRITT = 'Abrechnungsregister laden'
                 # Änderung für v2: Textinhalt verwenden; CSS-Großschreibung verändert innerText.
-                warten("Boolean(Array.from(document.querySelectorAll('.q-tab')).find(e=>e.textContent.trim()==='Abrechnungen'))")
-                js("Array.from(document.querySelectorAll('.q-tab')).find(e=>e.textContent.trim()==='Abrechnungen').click()")
+                warten("Boolean(Array.from(document.querySelectorAll('.q-tab')).find(e=>e.querySelector('.q-tab__label')?.textContent.trim()==='Abrechnungen'))")
+                js("Array.from(document.querySelectorAll('.q-tab')).find(e=>e.querySelector('.q-tab__label')?.textContent.trim()==='Abrechnungen').click()")
                 time.sleep(1)
+                # Änderung 2.049: Desktop- und schmale Ansicht sowie Einklappen wirklich prüfen.
+                for breite in (1440, 800):
+                    cdp('Emulation.setDeviceMetricsOverride', {'width': breite, 'height': 1000,
+                        'deviceScaleFactor': 1, 'mobile': False})
+                    time.sleep(1)
+                    menue = "document.querySelector('button[aria-label=\"Navigation ein-/ausblenden\"]')"
+                    assert js('Boolean(' + menue + ')')
+                    vorher = js("document.querySelector('.q-drawer').getBoundingClientRect().right")
+                    klicken(menue)
+                    time.sleep(1)
+                    nachher = js("document.querySelector('.q-drawer').getBoundingClientRect().right")
+                    assert abs(vorher - nachher) > 100
+                    # Bei schmalem Fenster die überlagernde Navigation geschlossen lassen.
+                    if nachher > 0:
+                        klicken(menue)
+                        time.sleep(1)
+                    assert js("document.documentElement.scrollWidth <= window.innerWidth + 1")
+                # Änderung 2.049: Für native Mausklicks anschließend die echte Fenstergröße verwenden.
+                cdp('Emulation.clearDeviceMetricsOverride', {})
+                time.sleep(1)
+                # Änderung 2.049: Der Größenwechsel kann die mobile Navigation erneut öffnen.
+                # Vor der Fachbedienung die überlagernde Leiste über den echten Menüknopf schließen.
+                if js("document.querySelector('.q-drawer').getBoundingClientRect().right > 0"):
+                    klicken(menue)
+                    time.sleep(1)
+                print('Navigation ein-/ausklappen und Layout bei 1440/800 Pixeln: bestanden.', flush=True)
                 SCHRITT = 'Jahr und Mehrwertsteuer auswählen'
                 auswahl('Abrechnungsjahr', jahr)
                 auswahl('Mehrwertsteuer in %', mwst)

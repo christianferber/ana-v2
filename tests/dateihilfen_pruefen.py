@@ -333,6 +333,11 @@ def pruefen():
     del neue_funktionen['text_sicher_speichern']
     assert alte_funktionen.keys() == neue_funktionen.keys()
     for name in alte_funktionen:
+        # Änderung 2.049: Neues Layout zulassen, sämtliche Fachbindungen gezielt prüfen.
+        if name == 'main':
+            from tests.navigation_struktur import hauptfenster_vergleichen
+            hauptfenster_vergleichen(alte_funktionen[name], neue_funktionen[name])
+            continue
         # Änderung: Abrechnungsadapter bleibt exakt; Ressourcenfreigabe separat prüfen.
         if name == 'abr_pdf_process':
             erwartet = copy.deepcopy(alte_funktionen[name])

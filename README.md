@@ -1,6 +1,6 @@
-# ANA 2.048
+# ANA 2.049
 
-<!-- Änderung 2.048: Aktuelle Quellversion kennzeichnen. -->
+<!-- Änderung 2.049: Aktuelle Quellversion mit modernisierter Oberfläche kennzeichnen. -->
 
 Automatische Nahwärme-Abrechnung für Windows.
 

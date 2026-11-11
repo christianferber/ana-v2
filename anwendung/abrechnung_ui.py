@@ -436,8 +436,9 @@ class AbrechnungOberflaeche:
 
     def abrechnung_ui(self):
         # Änderung 2.03: Zustand über die Ansicht bzw. gemeinsame Anwendung verwenden.
-        ui.label('Jahresabrechnung Wärmelieferung').classes("text-2xl font-bold")
-        with ui.row():
+        # Änderung 2.049: Pilotansicht mit klar getrennten Eingaben und Aktionen gestalten.
+        ui.label('Jahresabrechnung Wärmelieferung').classes("text-2xl font-bold ana-page-title")
+        with ui.row().classes('ana-input-row'):
             self.jahre_dropdown = ui.select([], label='Abrechnungsjahr', on_change=self.reset_abrechnung).classes('w-48')
             self.mwst_jahr = ui.select(['7','19'], label='Mehrwertsteuer in %').classes('w-48')
             self.za_switch = ui.switch("Zwischenablesung", on_change=self.zwischenablesung)
@@ -448,7 +449,8 @@ class AbrechnungOberflaeche:
             self.abr_button_speichern = ui.button('Speichern', icon='save', on_click=self.abr_speichern).props('color=' + self.anwendung.speichernbutton)
             self.abr_button_speichern.disable()
 
-        with ui.row():
+        # Änderung 2.049: Reihenfolge, Callbacks und Freigabebedingungen bleiben unverändert.
+        with ui.row().classes('ana-action-row'):
             self.abr_button_erstellen = ui.button('Erstellung Jahresabrechnung', icon='calculate', on_click=self.abrechnung_erstellen_gui)
             self.abr_button_einlesen = ui.button('Jahresabrechnung von DB einlesen', icon='file_open', on_click=self.abrechnung_von_db)
             self.abr_button_erstellen.disable()
@@ -457,7 +459,8 @@ class AbrechnungOberflaeche:
             self.abr_button_download.disable()
             self.abr_button_plausibel = ui.button("Plausibilitätsprüfung", icon="check_circle", on_click=self.abrechnung_plausibel)
             self.abr_button_plausibel.disable()
-            self.abr_button_pdf = ui.button('Word/PDF-Abrechnungen erzeugen', icon='picture_as_pdf', on_click=self.abrechnungen_dateien_erstellen).props('color=red-5')
+            # Änderung 2.049: Dokumentausgabe ist eine normale Aktion, keine rote Warnaktion.
+            self.abr_button_pdf = ui.button('Word/PDF-Abrechnungen erzeugen', icon='picture_as_pdf', on_click=self.abrechnungen_dateien_erstellen).props('outline color=primary')
             self.abr_button_pdf.disable()
             self.abr_progress_pdf = ui.circular_progress(min=0, max=100, color="black").classes('invisible')
             ui.label('Gesamtumsatz netto: ')

@@ -2,9 +2,45 @@
 
 <!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
 
-Stand: 10.11.2026
+Stand: 11.11.2026
 
 Umgebung: Windows, Python 3.13.5.
+
+<!-- Änderung 2.049: UI-Fortsetzung und konkretisierte Logo-/Menüwünsche lokal prüfen. -->
+## Freigabe Version 2.049 – 11.11.2026
+
+<!-- Änderung 2.049: Abschließende Prüfung mit der neuen Versionskonstante dokumentieren. -->
+- Nach Erhöhung auf Version 2.049 alle 27 Freigabeprüfungen und Syntax bestanden.
+  Regulärer vollständiger Praxislauf mit echter Startanzeige, normalem Word und
+  isolierter lokaler Datenkopie erfolgreich: Layout bei 1440/800 Pixeln,
+  Berechnung, CSV-Referenz und 73 neue Word-/PDF-Paare. Gegen Version 2.048
+  Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch. Originalbestand unverändert.
+  Test-App, Fenster und Testbrowser vollständig beendet.
+- Nach Angleichung der Einstellungen-Einrückung und Umstellung auf einen festen
+  Startphasenbalken erneut alle 27 Prüfungen einschließlich echter Startfenster
+  und Syntax bestanden. Regulärer vollständiger Abrechnungslauf mit normalem
+  Word, lokaler Datenkopie, Layoutprüfung bei 1440/800 Pixeln, CSV-Referenz und
+  73 neuen Word-/PDF-Paaren erfolgreich. Original-Beispieldaten unverändert.
+- Alle 27 gebündelten Freigabeprüfungen einschließlich Syntax nach den letzten
+  Änderungen bestanden. Echte Startfenster mit dem offiziellen ANA-Logo erfolgreich
+  geöffnet und geschlossen. Einstellungen bleiben über den bisherigen Callback links erreichbar.
+- Einklappbare Seitennavigation und kompakte Kopfzeile; Jahresabrechnung als Pilot.
+  Einstellungen ausschließlich links, keine doppelte Produktbeschriftung in der
+  Navigation und größeres Partnerlogo rechts. Layout bei 1440 und 800 Pixeln
+  ohne horizontalen Seitenüberlauf geprüft; Menüknopf bleibt auch mobil erreichbar.
+- Regulärer vollständiger Praxislauf nach den Logo-/Menüänderungen bestanden:
+  Berechnung, Tabellenanzeige, Speichern, identische CSV-Referenz und 73 neue
+  Word-/PDF-Paare. Gegen 2.048 alle Word-Paketinhalte, PDF-Texte und Seitenzahlen
+  identisch; Original-Beispieldaten unverändert.
+- Rückvergütungs-Smoke-Test zuvor mit der neuen Navigation bestanden:
+  ein vorhandener Datensatz, Berechnung, CSV-Referenz und echte Word-/PDF-Erstellung.
+- Frühere Praxisversuche der UI-Fortsetzung scheiterten an verdeckten Kopfaktionen;
+  nach Behebung vollständiger Abrechnungslauf erfolgreich wiederholt.
+- Test-App, Fenster und Testbrowser nach den erfolgreichen Läufen beendet.
+  Beispieldaten ausschließlich lokal verarbeitet. Keine visuelle Screenshot-/Dokumentprüfung.
+- Versionskonstante 2.049; Freigabe als Quellversion ohne neuen EXE-Build.
+
+## Gebündelte Prüfungen
 
 - Startanzeige und Ladefolge: bestanden.
 - Änderungsprotokoll für Daten und Einstellungen: bestanden.

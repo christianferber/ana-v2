@@ -5,6 +5,20 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung 2.049: UI-Modernisierung aus Sicht der Anwender beschreiben. -->
+Version 2.049 – 11.11.2026
+-------------------------
+
+Feature: Einklappbare Seitennavigation mit den bisherigen Bereichen, gruppiert nach Stammdaten, Abrechnung und Programm.
+
+Verbesserung: Kompakte Kopfzeile, einheitliche Farben und Abstände sowie übersichtlichere Eingabe- und Aktionsflächen in der Jahresabrechnung. Einstellungen stehen links bei den übrigen Menüpunkten; das rechte Logo ist größer dargestellt.
+
+Verbesserung: Die Startanzeige verwendet das offizielle ANA-Logo und einen sich anhand der Startphasen füllenden Fortschrittsbalken. Sie schließt sich weiterhin automatisch, sobald das Hauptfenster verbunden ist.
+
+Bugfix: Der Menüknopf bleibt auch bei geöffneter mobiler Seitennavigation erreichbar.
+
+Berechnungen, Importabläufe, Dateiformate und Abrechnungsergebnisse bleiben unverändert.
+
 <!-- Änderung 2.048: Bisherigen Wartungsstand als neue Version veröffentlichen. -->
 Version 2.048 – 10.11.2026
 -------------------------

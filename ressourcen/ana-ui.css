@@ -1,0 +1,57 @@
+/* Änderung 2.049: Gemeinsamer Rahmen; keine Tabelleneditoren oder Zellstile überschreiben. */
+body { background: #f4f7fa; color: #233747; font-family: "Segoe UI", Arial, sans-serif; }
+.nicegui-content { width: 100%; min-width: 0; padding: 0; gap: 0; }
+
+/* Änderung 2.049: Kompakter Kopf mit dauerhaft erreichbarer Navigation. */
+/* Änderung 2.049: Kopfaktionen auch über der mobilen Quasar-Navigation erreichbar halten. */
+.ana-header { background: #fff; color: #233747; border-bottom: 1px solid #dce5ec; box-shadow: none; padding: 10px 20px; z-index: 3100; }
+.ana-header-row { min-height: 42px; width: 100%; gap: 16px; align-items: center; flex-wrap: nowrap; }
+.ana-header-title { font-size: 19px; font-weight: 500; }
+.ana-header-logo { width: 82px; flex-shrink: 0; }
+/* Änderung 2.049: Partnerlogo rechts etwas größer darstellen. */
+.ana-header-partner-logo { width: 112px; }
+
+/* Änderung 2.049: Vorhandene Register senkrecht darstellen; Ereignisse und Namen bleiben erhalten. */
+.ana-sidebar { background: #fff; color: #233747; }
+.ana-sidebar .q-drawer__content { padding: 18px 12px; }
+.ana-nav .q-tabs__content { align-items: stretch; }
+.ana-nav-section { color: #526879; font-size: 11px; font-weight: 500; letter-spacing: .7px; text-transform: uppercase; padding: 17px 12px 6px; text-align: left; }
+.ana-nav .q-tab { min-height: 42px; justify-content: flex-start; padding: 0 12px; border-radius: 7px; margin: 2px 0; text-transform: none; }
+.ana-nav .q-tab__content { flex-direction: row; justify-content: flex-start; gap: 10px; }
+.ana-nav .q-tab__icon { font-size: 19px; width: 22px; }
+.ana-nav .q-tab__label { font-size: 14px; font-weight: 500; text-align: left; }
+.ana-nav .q-tab--active { background: #eaf2f8; color: #1761a0; }
+.ana-nav .q-tab__indicator { display: none; }
+/* Änderung 2.049: Dieselbe Einrückung, Iconbreite und Textlücke wie bei den Registern. */
+.ana-settings { padding: 0 12px; min-height: 42px; }
+.ana-settings .q-btn__content { justify-content: flex-start; gap: 10px; }
+.ana-settings .q-icon { font-size: 19px; width: 22px; margin: 0; }
+.ana-settings .block { font-size: 14px; font-weight: 500; }
+.ana-sidebar-version { color: #526879; font-size: 12px; padding: 14px 12px 0; }
+
+/* Änderung 2.049: Arbeitsbereiche einbetten, Tabellen und ihre eigene Bildlaufsteuerung erhalten. */
+.ana-workspace { width: 100%; min-width: 0; background: transparent; border-radius: 0; }
+.ana-workspace .q-tab-panel { padding: 24px; }
+.q-btn { border-radius: 7px; text-transform: none; box-shadow: none; }
+.q-card { border-radius: 10px; }
+.q-separator { opacity: .25; }
+
+/* Änderung 2.049: Jahresabrechnung als Pilot; Feldwerte und Tabellenstile erhalten. */
+.ana-page-title { color: #233747; font-size: 24px; font-weight: 600; margin-bottom: 6px; }
+.ana-input-row, .ana-action-row { width: 100%; align-items: center; gap: 12px; padding: 16px; background: #fff; border: 1px solid #dce5ec; border-radius: 10px; }
+.ana-action-row { margin-bottom: 8px; }
+.ana-action-row .q-btn { min-height: 38px; }
+
+@media (max-width: 900px) {
+    .ana-header { padding: 8px 12px; }
+    .ana-header-row { gap: 10px; }
+    .ana-header-title { font-size: 16px; }
+    .ana-header-logo { width: 60px; }
+    /* Änderung 2.049: Größenunterschied auch bei schmalen Fenstern erhalten. */
+    .ana-header-partner-logo { width: 82px; }
+    .ana-workspace .q-tab-panel { padding: 16px; }
+}
+@media (max-width: 600px) {
+    .ana-header-logo { display: none; }
+    .ana-header-title { font-size: 14px; }
+}

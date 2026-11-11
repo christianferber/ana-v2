@@ -20,6 +20,29 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Version 2.049 – 11.11.2026
+
+<!-- Änderung 2.049: UI-Modernisierung als neue Quellversion dokumentieren. -->
+
+- Gemeinsamer Rahmen mit kompakter Kopfzeile und einklappbarer Seitennavigation.
+  Die neun bestehenden Register, ihr Startwert und ihre Funktionsbindungen bleiben erhalten.
+- Gemeinsame Gestaltung in `ressourcen/ana-ui.css`; Jahresabrechnung als Pilot
+  mit getrennten Eingabe- und Aktionsflächen und dezenter Dokumentausgabe.
+- Auf Benutzerwunsch Einstellungen ausschließlich links und keine wiederholte
+  Produktbeschriftung in der Navigation. Partnerlogo rechts oben vergrößert.
+  Die native Startanzeige verwendet die vorhandene Datei `ANA logo.png`
+  anstelle des Textlogos, proportional verkleinert im Fensterthread.
+- Einrückung, Iconbreite und Textabstand des Einstellungenknopfs an die
+  Navigation angepasst. Startbalken zeigt die vorhandenen Startphasen
+  10/55/85/100 als feste Füllstände ohne hin- und herlaufende Animation;
+  die Werte sind keine Messung der verbleibenden Ladezeit.
+- Strukturvergleiche erlauben gezielt die Darstellungsänderungen und prüfen weiterhin
+  Panelinhalte, Registerwechsel, Callbacks und den vollständigen fachlichen Ablauf.
+- Lokaler Browsertest prüft Navigation und Seitenüberlauf bei 1440 und 800 Pixeln.
+  Nach dem Größenwechsel wird die erneut geöffnete mobile Navigation vor der
+  Fachbedienung geschlossen. Prüfstatus und Grenzen stehen im Prüfbericht.
+- Versionskonstante auf 2.049 erhöht; Bereitstellung als Quellrelease ohne neue EXE.
+
 ## Version 2.048 – 10.11.2026
 
 <!-- Änderung 2.048: Zuvor separat geprüfte Wartungsstände als Quellrelease bündeln. -->

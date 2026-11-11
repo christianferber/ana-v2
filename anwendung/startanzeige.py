@@ -49,7 +49,8 @@ class Startanzeige:
             root.overrideredirect(True)
             root.attributes('-topmost', True)
             root.configure(background='#ffffff')
-            breite, hoehe = 460, 190
+            # Änderung 2.049: Platz für das offizielle Logo und den Fortschrittsbereich vorsehen.
+            breite, hoehe = 460, 230
             x = (root.winfo_screenwidth() - breite) // 2
             y = (root.winfo_screenheight() - hoehe) // 2
             root.geometry(f'{breite}x{hoehe}+{x}+{y}')
@@ -59,20 +60,23 @@ class Startanzeige:
                 root.iconbitmap(str(icon))
             rahmen = tk.Frame(root, background='#ffffff', highlightbackground='#d6e1e8', highlightthickness=1)
             rahmen.pack(fill='both', expand=True)
-            tk.Label(rahmen, text='ANA', font=('Segoe UI', 23, 'bold'),
-                     background='#ffffff', foreground='#1761a0').pack(anchor='w', padx=28, pady=(20, 0))
+            # Änderung 2.049: Dasselbe offizielle ANA-Logo wie im Hauptfenster verwenden.
+            # Ganzzahlig verkleinern, Seitenverhältnis bewahren und im Fensterthread halten.
+            logo = tk.PhotoImage(master=root, file=str(ordner / 'ressourcen' / 'ANA logo.png'))
+            faktor = max(1, (logo.width() + 199) // 200, (logo.height() + 69) // 70)
+            logo = logo.subsample(faktor, faktor)
+            tk.Label(rahmen, image=logo, background='#ffffff').pack(anchor='w', padx=28, pady=(20, 8))
             tk.Label(rahmen, text='Die Anwendung wird gestartet.', font=('Segoe UI', 11),
                      background='#ffffff', foreground='#334155').pack(anchor='w', padx=30, pady=(0, 15))
             stil = ttk.Style(root)
             stil.theme_use('clam')
             stil.configure('ANA.Horizontal.TProgressbar', background='#1761a0',
                            troughcolor='#e7eef3', borderwidth=0, lightcolor='#1761a0', darkcolor='#1761a0')
-            # Änderung: Während unbekannt langer Ladephasen Aktivität zeigen,
-            # ohne einen geschätzten Prozentwert oder eine Restzeit vorzutäuschen.
-            balken = ttk.Progressbar(rahmen, maximum=100, mode='indeterminate',
+            # Änderung 2.049: Fester Füllbalken für die gemeldeten Startphasen;
+            # keine Laufanimation und keine Aussage über verbleibende Ladezeit.
+            balken = ttk.Progressbar(rahmen, maximum=100, mode='determinate',
                                      style='ANA.Horizontal.TProgressbar')
             balken.pack(fill='x', padx=30)
-            balken.start(18)
             label = tk.Label(rahmen, font=('Segoe UI', 10), background='#ffffff', foreground='#475569')
             label.pack(anchor='w', padx=30, pady=(9, 0))
             fertig_angezeigt = False
@@ -85,10 +89,10 @@ class Startanzeige:
                 with self._sperre:
                     wert, text = self._status
                 label.configure(text=text)
+                # Änderung 2.049: Den Balken ausschließlich mit dem Phasenstatus füllen.
+                balken.configure(value=wert)
                 if self._bereit.is_set():
                     if not fertig_angezeigt:
-                        balken.stop()
-                        balken.configure(mode='determinate', value=wert)
                         fertig_angezeigt = True
                         root.after(350, root.quit)
                     return

@@ -43,6 +43,30 @@ def methoden_als_funktionen(basis, originalfunktionen):
             continue
         assert methode.args.args[0].arg == 'self'
         funktion = NamenZurueckfuehren().visit(copy.deepcopy(methode))
+        # Änderung 2.049: Ausschließlich die vier bekannten Pilot-Stiländerungen zurückführen.
+        if methode.name == 'abrechnung_ui':
+            class PilotStileZurueckfuehren(ast.NodeTransformer):
+                anzahl = 0
+
+                def visit_Call(self, knoten):
+                    knoten = self.generic_visit(knoten)
+                    if isinstance(knoten.func, ast.Attribute) and len(knoten.args) == 1:
+                        wert = knoten.args[0]
+                        if isinstance(wert, ast.Constant):
+                            if knoten.func.attr == 'classes' and wert.value in ('ana-input-row', 'ana-action-row'):
+                                self.anzahl += 1
+                                return knoten.func.value
+                            if knoten.func.attr == 'classes' and wert.value == 'text-2xl font-bold ana-page-title':
+                                self.anzahl += 1
+                                wert.value = 'text-2xl font-bold'
+                            if knoten.func.attr == 'props' and wert.value == 'outline color=primary':
+                                self.anzahl += 1
+                                wert.value = 'color=red-5'
+                    return knoten
+
+            stile = PilotStileZurueckfuehren()
+            funktion = stile.visit(funktion)
+            assert stile.anzahl == 4
         # Änderung: Autorisierte Exportabsicherung prüfen; Fachkörper weiter vergleichen.
         from tests.export_struktur import export_dekoratoren_pruefen
         export_dekoratoren_pruefen(funktion)
