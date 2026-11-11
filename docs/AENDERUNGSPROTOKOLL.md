@@ -20,6 +20,67 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Arbeitsstand nach 2.049 – verständlicher Einstellungsdialog
+
+<!-- Änderung nach 2.049: Einstellungsdarstellung ohne Änderungen an Daten oder Speicherablauf. -->
+
+- Bestehende acht Eingabefelder in Betreiber/Bankverbindung, Wärmepreise und
+  ausklappbare Darstellung/Tabellen gegliedert. Arbeitsordner mit lesbarem Pfad,
+  verständlichen Auswahl-/Standardaktionen und Hinweis auf den nötigen Neustart.
+- Kürzere Feldnamen und Formathinweise; zweispaltige Darstellung auf breiten
+  Fenstern, einspaltig bei schmaler Ansicht. Kopf und untere Aktionsleiste bleiben
+  erreichbar, der mittlere Inhaltsbereich kann bei Bedarf scrollen.
+- Neue reine Gestaltungshilfe `einstellungen_layout.py` verschiebt vorhandene
+  Eingaben und Buttons. Werte, Callbacks, Ordnerdialog und INI-Schreibfolge unverändert.
+- Strukturvergleich erlaubt nur Darstellungshilfe und lokale Buttonreferenzen;
+  Konfigurations- und Dialogabläufe weiterhin gegen Original geprüft.
+- Kein neuer Versionsstand, Release oder EXE-Build.
+
+## Arbeitsstand nach 2.049 – weitere Ansichten und PDF-Fortschritt
+
+<!-- Änderung nach 2.049: Kompakte Bedienung und platzsparende Anzeigen erweitern. -->
+
+- Kompakte Buttongeometrie und helle Aktionsfarben für alle Arbeitsansichten;
+  destruktive Sonderfarben bleiben erhalten. Rückvergütung mit denselben
+  Bearbeitungs-/Ausgabegruppen und kurzen Beschriftungen wie die Jahresabrechnung.
+- Nettoumsatz in einer kompakten Anzeige neben den Abrechnungsfeldern;
+  bisherige separate Ergebniszeile ausgeblendet, Datenbindung unverändert.
+- `ButtonFortschritt` stellt die bisherigen Prozentmeldungen von Abrechnung,
+  Rückvergütung und PDF-Kombination als linearen Balken im jeweiligen Button dar.
+  Vorhandene Aufrufe `set_value`, `value` und `classes` bleiben erhalten;
+  ausschließlich Darstellungsmaßstab 0–100 auf 0–1 umgerechnet.
+- Ergänzend zeigt derselbe Fortschrittsadapter die gemeldete Prozentzahl im
+  Button an; Zahl und Balken werden gemeinsam sichtbar. Die Buttonbeschriftung
+  bleibt erhalten. Komponenten- und Browserprüfung erfassen den Prozenttext.
+- Keine Änderung an Berechnungen, Exportreihenfolge, Dateiinhalten oder Sperren.
+  Neue Komponentenprüfung und gezielte AST-Rückführung für den Referenzvergleich.
+- Versionskonstante bleibt 2.049; noch keine neue Veröffentlichung oder EXE.
+
+## Arbeitsstand nach 2.049 – kompakte Aktionsleiste
+
+<!-- Änderung nach 2.049: Gewählte kompakte Vorschau in der Jahresabrechnung umsetzen. -->
+
+- Vorhandene Buttons in zwei beschriftete Gruppen verschoben: Berechnen/Laden/
+  Speichern sowie Prüfen/CSV/Word-PDF. Kürzere sichtbare Beschriftungen;
+  Berechnen als Hauptaktion, weitere Aktionen mit heller Primärfarbe.
+- Vorhandene Buttonobjekte, Callbacks und Freigabebedingungen wiederverwendet;
+  Umsatzanzeige und Exportfortschritt bleiben unter der Leiste erhalten.
+- Gemeinsame CSS-Klassen für Abstände, Höhe, Rundung und deaktivierten Zustand.
+  Strukturvergleich begrenzt neue Anweisungen auf die Darstellung und prüft
+  weiter die bisherigen Fachkörper. Praxislauf bedient die neuen Beschriftungen.
+- Version weiterhin 2.049, keine neue Veröffentlichung oder EXE.
+
+## Arbeitsstand nach 2.049 – einheitliche Exportbuttons
+
+<!-- Änderung nach 2.049: Ausschließlich angeforderte Buttondarstellung vereinheitlichen. -->
+
+- Word/PDF-Ausgabe in Jahresabrechnung und Rückvergütung verwendet dieselbe
+  gefüllte Primärfarbe wie die übrigen normalen Aktionsbuttons. Outline bzw.
+  rote Sonderfarbe entfernt; Mitglieder-Word-Export hatte bereits den Standardstil.
+- Strukturvergleich führt ausschließlich die beiden bekannten Farbänderungen
+  auf die Vorlage zurück. Callbacks, Sperren und Exportabläufe unverändert.
+- Versionskonstante bleibt 2.049; noch nicht als neue Version veröffentlicht.
+
 ## Version 2.049 – 11.11.2026
 
 <!-- Änderung 2.049: UI-Modernisierung als neue Quellversion dokumentieren. -->

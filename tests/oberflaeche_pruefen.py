@@ -209,8 +209,9 @@ def _testen(prozesse, rueckverguetung=False):
                 print('Browserdiagnose: ' + json.dumps(js("({geladen:document.readyState==='complete', tabs:document.querySelectorAll('.q-tab').length, layout:document.querySelectorAll('.q-layout').length, vue:typeof Vue!=='undefined', quasar:typeof Quasar!=='undefined', fehlerseite:document.body.innerText.includes('Internal Server Error')})")), flush=True)
                 raise TimeoutError()
             def knopf(text, scope='document'):
+                # Änderung nach 2.049: Beschriftung unabhängig von der zusätzlichen Prozentzahl finden.
                 suche = ("Array.from(" + scope + ".querySelectorAll('button')).find(e=>"
-                         "e.getClientRects().length && e.textContent.trim().endsWith(" + json.dumps(text) + "))")
+                         "e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith(" + json.dumps(text) + "))")
                 warten('Boolean(' + suche + ' && !(' + suche + ').disabled)')
                 klicken(suche)
                 time.sleep(.6)
@@ -240,16 +241,48 @@ def _testen(prozesse, rueckverguetung=False):
                    "e.dispatchEvent(new Event('change',{bubbles:true}));e.blur()})()")
                 time.sleep(1)
             def export_starten(text):
+                # Änderung nach 2.049: Fortschrittskomponente muss direkt im PDF-Button liegen.
+                assert js("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith("
+                          + json.dumps(text) + ") && e.querySelector('.ana-button-progress'))")
                 # Änderung: Optional Fehlermeldung und wieder freigegebenen Knopf prüfen.
                 knopf(text)
                 if exportfehler:
                     warten("document.body.innerText.includes('Der Export konnte nicht vollständig erstellt werden.')")
-                    warten("Array.from(document.querySelectorAll('button')).some(e=>e.textContent.trim().endsWith("
+                    warten("Array.from(document.querySelectorAll('button')).some(e=>(e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith("
                            + json.dumps(text) + ") && !e.disabled)")
                     print('Exportfehler sichtbar und erneuter Start möglich: bestanden.', flush=True)
                     knopf(text)
             SCHRITT = 'Testseite laden'
             cdp('Page.navigate', {'url': url})
+            # Änderung nach 2.049: Einstellungen mit echten Dialogelementen prüfen, ohne zu speichern.
+            if not rueckverguetung:
+                SCHRITT = 'Einstellungsdialog prüfen'
+                warten("Boolean(document.querySelector('.ana-settings'))")
+                menue = "document.querySelector('button[aria-label=\"Navigation ein-/ausblenden\"]')"
+                navigation_offen = js("document.querySelector('.q-drawer').getBoundingClientRect().right > 0")
+                if not navigation_offen:
+                    klicken(menue)
+                    time.sleep(1)
+                knopf('Einstellungen')
+                warten("Boolean(document.querySelector('.ana-settings-dialog'))")
+                assert js("document.querySelectorAll('.ana-settings-dialog .q-field').length === 8")
+                assert js("document.querySelector('.ana-settings-advanced').classList.contains('q-expansion-item--collapsed')")
+                klicken("document.querySelector('.ana-settings-advanced .q-expansion-item__container > .q-item')")
+                warten("document.querySelector('.ana-settings-advanced').classList.contains('q-expansion-item--expanded')")
+                assert js("document.querySelector('.ana-settings-advanced .q-field').getClientRects().length > 0")
+                for breite in (1440, 800, 400):
+                    cdp('Emulation.setDeviceMetricsOverride', {'width': breite, 'height': 900,
+                        'deviceScaleFactor': 1, 'mobile': False})
+                    time.sleep(1)
+                    assert js("(()=>{const r=document.querySelector('.ana-settings-dialog').getBoundingClientRect();const f=document.querySelector('.ana-settings-footer').getBoundingClientRect();return r.left>=0 && r.right<=window.innerWidth+1 && f.bottom<=window.innerHeight+1})()")
+                cdp('Emulation.clearDeviceMetricsOverride', {})
+                time.sleep(1)
+                knopf('Abbrechen', "document.querySelector('.ana-settings-dialog')")
+                warten("!document.querySelector('.ana-settings-dialog')")
+                if not navigation_offen:
+                    klicken(menue)
+                    time.sleep(1)
+                print('Einstellungen: acht Felder, erweiterte Darstellung, Abbrechen und Layout 1440/800/400 bestanden.', flush=True)
             # Änderung 2.049: Register anhand ihrer Beschriftung finden; Navigationsicons nicht mitlesen.
             if rueckverguetung:
                 # Änderung für v2: Rückvergütung vollständig über die echte Oberfläche prüfen.
@@ -262,8 +295,8 @@ def _testen(prozesse, rueckverguetung=False):
                 eingabe('Rückergütung in %', fall['satz'])
                 eingabe('Datum Beschluss', fall['datum'])
                 SCHRITT = 'Rückvergütung berechnen'
-                knopf('Erstellung Rückvergütung')
-                warten("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && e.textContent.trim().endsWith('Speichern') && !e.disabled)")
+                knopf('Berechnen')
+                warten("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith('Speichern') && !e.disabled)")
                 assert js("Array.from(document.querySelectorAll('.ag-root')).some(e=>e.getClientRects().length && e.querySelectorAll('.ag-center-cols-container .ag-row').length>0)")
                 print('Rückvergütung berechnet, Tabelle und Schaltflächen: bestanden.', flush=True)
                 SCHRITT = 'Rückvergütung speichern'
@@ -272,12 +305,12 @@ def _testen(prozesse, rueckverguetung=False):
                 warten('Boolean(' + dialog + ')')
                 js("(" + dialog + ").querySelectorAll('.q-checkbox').forEach(e=>{if(e.getClientRects().length && e.getAttribute('aria-checked')!=='true')e.click()})")
                 knopf('Ja', '(' + dialog + ')')
-                warten("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && e.textContent.trim().endsWith('Word/PDF-Rückvergütungen erzeugen') && !e.disabled)")
+                warten("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith('Word/PDF erstellen') && !e.disabled)")
                 gespeichert = kopie / 'Rückvergütungen' / ('Rückvergütung-' + jahr) / ('Rückvergütung-' + jahr + '.csv')
                 assert gespeichert.read_text() == erwartete_csv
                 print('Rückvergütung gespeichert und mit Referenz verglichen: bestanden.', flush=True)
                 SCHRITT = 'Rückvergütungsdokumente erzeugen'
-                export_starten('Word/PDF-Rückvergütungen erzeugen')
+                export_starten('Word/PDF erstellen')
                 zielordner = gespeichert.parent
                 for _ in range(300):
                     docs = list((zielordner / 'word').glob('*.docx'))
@@ -328,8 +361,14 @@ def _testen(prozesse, rueckverguetung=False):
                 auswahl('Abrechnungsjahr', jahr)
                 auswahl('Mehrwertsteuer in %', mwst)
                 SCHRITT = 'Berechnen und Anzeige prüfen'
-                knopf('Erstellung Jahresabrechnung')
-                warten("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && e.textContent.trim().endsWith('Speichern') && !e.disabled)")
+                # Änderung nach 2.049: Kurze Beschriftung der kompakten Aktionsleiste bedienen.
+                assert js("document.querySelectorAll('.ana-compact-toolbar button').length === 6")
+                assert js("document.querySelectorAll('.ana-compact-toolbar .ana-button-group').length === 2")
+                # Änderung nach 2.049: Umsatz gehört zu den Eingaben, keine sichtbare Extra-Ergebniszeile.
+                assert js("Boolean(document.querySelector('.ana-input-row .ana-inline-summary'))")
+                assert js("document.querySelector('.ana-action-row').classList.contains('hidden')")
+                knopf('Berechnen')
+                warten("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith('Speichern') && !e.disabled)")
                 assert js("document.querySelectorAll('.ag-center-cols-container .ag-row').length > 0")
                 print('Berechnung, Tabellenanzeige und Speichern-Schaltfläche: bestanden.', flush=True)
                 SCHRITT = 'Speicherdialog bestätigen'
@@ -342,7 +381,7 @@ def _testen(prozesse, rueckverguetung=False):
                     dialog = "Array.from(document.querySelectorAll('.q-dialog')).find(e=>e.getClientRects().length && e.innerText.includes('Mindestabnahme auch im folgenden Jahr aussetzen'))"
                     if js('Boolean(' + dialog + ')'):
                         knopf('Nein', '(' + dialog + ')')
-                    bereit = js("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && e.textContent.trim().endsWith('Word/PDF-Abrechnungen erzeugen') && !e.disabled)")
+                    bereit = js("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith('Word/PDF erstellen') && !e.disabled)")
                     if bereit and not js("Array.from(document.querySelectorAll('.q-dialog')).some(e=>e.getClientRects().length)"):
                         break
                     time.sleep(.5)
@@ -350,9 +389,9 @@ def _testen(prozesse, rueckverguetung=False):
                 assert gespeichert.read_text() == erwartete_csv
                 print('Speichern und Vergleich mit Referenzergebnis: bestanden.', flush=True)
                 SCHRITT = 'Word und PDF aus Oberfläche erzeugen'
-                export_starten('Word/PDF-Abrechnungen erzeugen')
+                export_starten('Word/PDF erstellen')
                 # Änderung: Während des tatsächlichen Stapels muss der Knopf gesperrt sein.
-                warten("Array.from(document.querySelectorAll('button')).some(e=>e.textContent.trim().endsWith('Word/PDF-Abrechnungen erzeugen') && e.disabled)")
+                warten("Array.from(document.querySelectorAll('button')).some(e=>(e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith('Word/PDF erstellen') && e.disabled)")
                 zielordner = gespeichert.parent
                 for _ in range(240):
                     docs = list((zielordner / 'word').glob('*.docx'))
@@ -366,9 +405,14 @@ def _testen(prozesse, rueckverguetung=False):
                 assert all(len(PdfReader(p).pages) > 0 for p in pdfs)
                 print('Echte Word-/PDF-Erstellung über die Oberfläche: bestanden.', flush=True)
             # Änderung: Abschluss des Threads und UI-Timers vor Testende abwarten.
-            exporttext = 'Word/PDF-Rückvergütungen erzeugen' if rueckverguetung else 'Word/PDF-Abrechnungen erzeugen'
-            warten("Array.from(document.querySelectorAll('button')).some(e=>e.textContent.trim().endsWith("
+            # Änderung nach 2.049: Gemeinsame kompakte Beschriftung in beiden Ansichten.
+            exporttext = 'Word/PDF erstellen'
+            warten("Array.from(document.querySelectorAll('button')).some(e=>(e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith("
                    + json.dumps(exporttext) + ") && !e.disabled)")
+            # Änderung nach 2.049: Quasar meldet den Balkenmaßstab über aria-valuemax (0 bis 1).
+            assert js("Array.from(document.querySelectorAll('button')).some(e=>{const p=e.querySelector('.ana-button-progress');return e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith('Word/PDF erstellen') && p && Number(p.getAttribute('aria-valuemax'))>0 && Number(p.getAttribute('aria-valuenow'))===Number(p.getAttribute('aria-valuemax'))})")
+            # Änderung nach 2.049: Prozentzahl muss im sichtbaren Exportbutton erscheinen.
+            assert js("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && e.querySelector('.ana-button-percent')?.textContent.trim()==='100 %' && !e.querySelector('.ana-button-percent').classList.contains('invisible'))")
         assert bestand(daten) == originalbestand
         # Änderung: Das Startfenster muss sich nach Verbindung selbständig geschlossen haben.
         assert (run / 'startanzeige-geschlossen.txt').is_file()

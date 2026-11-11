@@ -6,6 +6,8 @@ from pathlib import Path
 from nicegui import app, ui
 import webview
 from anwendung.einstellungen import ini_datei_schreiben
+# Änderung nach 2.049: Bestehende Eingaben und Aktionen verständlicher anordnen.
+from anwendung.einstellungen_layout import einstellungen_gestalten
 
 
 class EinstellungenOberflaeche:
@@ -16,7 +18,7 @@ class EinstellungenOberflaeche:
     def einstellungen_ui(self):
         # Änderung 2.038: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
         self.anwendung.ini_einlesen()
-        with ui.dialog() as self.dialog_einstellungen, ui.card():
+        with ui.dialog() as self.dialog_einstellungen, ui.card() as karte:
             ui.label('Betreiberdaten').style('font-size: 120%')
             self.ini_betreiber_name = ui.input(label='Betreiber Name', value=self.anwendung.betreiber_name).props("size=60")
             self.ini_glaeubiger_id = ui.input(label='Gläubiger ID', value=self.anwendung.betreiber_glaeubigerid).props("size=60")
@@ -30,15 +32,17 @@ class EinstellungenOberflaeche:
             self.ini_tabelle_pagination = ui.input(label='Anzahl Zeilen pro Tabellenseite', value=self.anwendung.pagination).props("size=60")
             ui.label('Arbeitsordner:')
             with ui.row():
-                ui.button("auswählen", icon='folder', on_click=lambda: (self.anwendung.ordner_auswaehlen()))
-                ui.button("Auf standard zurücksetzen", icon='folder_special', on_click=lambda: (self.anwendung.ordner_standard()))
+                auswahl = ui.button("auswählen", icon='folder', on_click=lambda: (self.anwendung.ordner_auswaehlen()))
+                standard = ui.button("Auf standard zurücksetzen", icon='folder_special', on_click=lambda: (self.anwendung.ordner_standard()))
             self.ini_arbeitsordner = ui.label(self.anwendung.arbeitsordner)
             with ui.row():
-                ui.button("Speichern", icon='save', on_click=lambda: (self.anwendung.ini_speichern())).props('color=' + self.anwendung.speichernbutton)
-                ui.button("Abbrechen", icon='close', on_click=self.dialog_einstellungen.close)
+                speichern = ui.button("Speichern", icon='save', on_click=lambda: (self.anwendung.ini_speichern())).props('color=' + self.anwendung.speichernbutton)
+                abbrechen = ui.button("Abbrechen", icon='close', on_click=self.dialog_einstellungen.close)
         with ui.dialog() as self.dialog_neustart, ui.card():
             ui.label('Der Arbeitsordner wurde geändert. Das Programm wird jetzt automatisch geschlossen. Beim nächsten Programmstart wird die neue Arbeitsordnereinstellung verwendet.')
             ui.button("OK", on_click=app.shutdown)
+        # Änderung nach 2.049: Nur Darstellung ändern; bestehende Werte und Callbacks wiederverwenden.
+        einstellungen_gestalten(self, karte, auswahl, standard, speichern, abbrechen)
         self.dialog_einstellungen.open()
 
     def ordner_standard(self):

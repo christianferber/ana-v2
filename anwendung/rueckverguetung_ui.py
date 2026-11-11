@@ -10,6 +10,8 @@ from pathlib import Path
 import threading
 
 from nicegui import ui
+# Änderung nach 2.049: PDF-Prozentmeldungen im Exportbutton darstellen.
+from anwendung.buttonfortschritt import ButtonFortschritt
 # Änderung: Doppelstarts verhindern und Hintergrundfehler in der Oberfläche melden.
 from anwendung.exportsteuerung import export_start_absichern, export_hintergrund_absichern
 from anwendung.datenhaltung import datei_oeffnen, datei_speichern
@@ -253,15 +255,37 @@ class RueckverguetungOberflaeche:
             self.rueckv_button_einlesen.disable()
             self.rueckv_button_download = ui.button('CSV mit Kommas herunterladen', icon='file_download', on_click=self.csv_komma_rueckv_download)
             self.rueckv_button_download.disable()
-            self.rueckv_button_pdf = ui.button('Word/PDF-Rückvergütungen erzeugen', icon='picture_as_pdf', on_click=self.rueckv_dateien_erstellen).props('color=red-5')
+            # Änderung nach 2.049: Gleicher gefüllter Standardstil wie bei anderen Aktionen.
+            self.rueckv_button_pdf = ui.button('Word/PDF-Rückvergütungen erzeugen', icon='picture_as_pdf', on_click=self.rueckv_dateien_erstellen).props('color=primary')
             self.rueckv_button_pdf.disable()
-            self.rueckv_progress_pdf = ui.circular_progress(min=0, max=100, color="black").classes('invisible')
+            # Änderung nach 2.049: Fortschritt ohne eigene Anzeige neben dem Button.
+            self.rueckv_progress_pdf = ButtonFortschritt(self.rueckv_button_pdf)
         with ui.dialog() as self.dialog_rueckv_bestaetigung, ui.card():
             self.dialog_rueckv_label01 = ui.label('Möchten Sie die Rückvergütung wirklich speichern?')
             self.rueckv_checkbox_ueberschreiben = ui.checkbox('bestehende Daten überschreiben')
             with ui.row():
                 ui.button('Ja', on_click=self.rueckv_speichern_ja)
                 ui.button('Nein', on_click=self.dialog_rueckv_bestaetigung.close)
+        # Änderung nach 2.049: Bestehende Aktionen wie in der Jahresabrechnung gruppieren.
+        with ui.row().classes('ana-compact-toolbar') as aktionsleiste:
+            with ui.column().classes('ana-button-group'):
+                ui.label('Rückvergütung').classes('ana-group-caption')
+                with ui.row().classes('ana-button-row') as bearbeiten:
+                    pass
+            with ui.column().classes('ana-button-group'):
+                ui.label('Ausgeben').classes('ana-group-caption')
+                with ui.row().classes('ana-button-row') as ausgeben:
+                    pass
+        aktionsleiste.move(target_index=2)
+        for button, text, gruppe in (
+                (self.rueckv_button_erstellen, 'Berechnen', bearbeiten),
+                (self.rueckv_button_einlesen, 'Laden', bearbeiten),
+                (self.rueckv_button_speichern, 'Speichern', bearbeiten),
+                (self.rueckv_button_download, 'CSV', ausgeben),
+                (self.rueckv_button_pdf, 'Word/PDF erstellen', ausgeben)):
+            button.move(gruppe)
+            button.set_text(text)
+            button.classes('ana-compact-button' if button is self.rueckv_button_erstellen else 'ana-compact-button ana-secondary-button')
         self.rueckv_grid_ui()
 
     @export_start_absichern('rueckv_button_pdf', 'rueckv_pdf_background')

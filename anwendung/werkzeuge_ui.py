@@ -2,6 +2,8 @@
 import os
 import re
 from nicegui import app, ui
+# Änderung nach 2.049: PDF-Fortschritt wie in den Abrechnungsbuttons integrieren.
+from anwendung.buttonfortschritt import ButtonFortschritt
 from pypdf import PdfReader, PdfWriter
 import webview
 
@@ -169,10 +171,12 @@ class WerkzeugeOberflaeche:
                     "PDF erstellen",
                     icon='picture_as_pdf',
                     on_click=lambda: self.anwendung.pdfjoin(progress),
-                    color='red'
+                    # Änderung nach 2.049: Dokumentausgabe als normale Aktion gestalten.
+                    color='primary'
                 ).props('align=left').style(f"width: {BUTTON_WIDTH}")
 
-                progress = ui.circular_progress(min=0, max=100, value=0, color="black")
+                # Änderung nach 2.049: Bestehende Prozentwerte im Button darstellen.
+                progress = ButtonFortschritt(pdf_button)
 
             self.log_feld = ui.textarea(
                 label="Hinweise / Mehrfachzuordnungen"

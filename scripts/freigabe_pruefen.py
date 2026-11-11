@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung nach 2.049: Prozentbalken in PDF-Buttons mit echter UI-Komponente prüfen.
+        ('PDF-Fortschritt im Button', ['-m', 'tests.buttonfortschritt_pruefen']),
         # Änderung: Frühe Startanzeige und vollständige Fenster-/Threadbereinigung prüfen.
         ('Startanzeige und Ladefolge', ['-m', 'tests.startanzeige_pruefen']),
         # Änderung: Ergänzende Daten-/Einstellungsprotokolle mit lokalen Daten prüfen.

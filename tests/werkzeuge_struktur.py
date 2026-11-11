@@ -43,6 +43,17 @@ def methoden_als_funktionen(basis, originalfunktionen):
             continue
         assert methode.args.args[0].arg == 'self'
         funktion = NamenZurueckfuehren().visit(copy.deepcopy(methode))
+        # Änderung nach 2.049: PDF-Anzeige und normale Aktionsfarbe gezielt zurückführen.
+        if methode.name == 'tools_ui':
+            from tests.buttondarstellung_struktur import pdf_anzeige_zurueckfuehren
+            pdf_anzeige_zurueckfuehren(funktion, 'pdf_button', mit_wert=True)
+            buttons = [k for k in ast.walk(funktion) if isinstance(k, ast.Call)
+                       and isinstance(k.func, ast.Attribute) and k.func.attr == 'button'
+                       and k.args and isinstance(k.args[0], ast.Constant) and k.args[0].value == 'PDF erstellen']
+            assert len(buttons) == 1
+            farbe = next(k for k in buttons[0].keywords if k.arg == 'color')
+            assert farbe.value.value == 'primary'
+            farbe.value.value = 'red'
         funktion.args.args = funktion.args.args[1:]
         funktion.decorator_list = copy.deepcopy(vorlagen[methode.name].decorator_list)
         globale_ergaenzen(vorlagen[methode.name], funktion)

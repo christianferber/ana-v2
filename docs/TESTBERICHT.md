@@ -6,6 +6,85 @@ Stand: 11.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+## Arbeitsstand nach 2.049 – verständlicher Einstellungsdialog
+
+<!-- Änderung nach 2.049: Neu gegliederten Dialog und unveränderte Speicherabläufe prüfen. -->
+
+- Alle 28 Freigabeprüfungen und Syntax bestanden. Lokale Konfigurationskopien:
+  INI-Inhalte, Speicher-/Neuladefolge, Ordnerwechsel, Standard, native Ordnerwahl
+  einschließlich bisheriger Abbruchbehandlung gegen Original unverändert.
+- Echter Browserlauf: acht Eingabefelder, zunächst geschlossene erweiterte
+  Darstellung, Öffnen des Bereichs und Abbrechen erfolgreich. Dialog und untere
+  Aktionsleiste bei 1440, 800 und 400 Pixeln innerhalb des sichtbaren Fensters.
+  Dabei keine Einstellungen gespeichert und kein nativer Ordner ausgewählt.
+- Anschließend regulärer vollständiger Abrechnungslauf mit normalem Word bestanden:
+  Berechnung, CSV-Referenz, Word-/PDF-Ausgabe und Prozentanzeige. Gegen 2.049
+  alle 73 Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch.
+- Original-Beispieldaten unverändert; Test-App, Fenster und Testbrowser beendet.
+  Keine visuelle Screenshot-/Dokumentprüfung. Versionskonstante bleibt 2.049;
+  lokaler Stand ohne neue Veröffentlichung oder EXE.
+
+## Arbeitsstand nach 2.049 – weitere Ansichten und PDF-Fortschritt
+
+<!-- Änderung nach 2.049: Erweiterte Darstellung samt Fortschrittsadapter lokal verifizieren. -->
+
+- Ergänzte Prozentzahl im PDF-Button: erneut alle 28 Freigabeprüfungen und Syntax
+  bestanden. Komponentenprüfung erfasst Zahl, Wertänderungen und Sichtbarkeit.
+  Regulärer vollständiger Abrechnungslauf und Rückvergütungs-Smoke-Test mit normalem
+  Word erfolgreich; sichtbare Prozentzahl bis „100 %“ in beiden Exportbuttons geprüft.
+  73 neue Word-Paketinhalte sowie PDF-Texte/Seitenzahlen gegenüber 2.049 identisch,
+  Originalbestand unverändert und Testprozesse beendet.
+- Alle 28 gebündelten Freigabeprüfungen und Syntax bestanden. Neu geprüft:
+  echte lineare UI-Komponente, Einbettung im Button, Prozentmaßstab, direkte
+  Wertzuweisung, erneute Wertfolge und bisherige Sichtbarkeitsaufrufe.
+- Referenzvergleiche bestätigen unveränderte Berechnungs- und Exportkörper;
+  ausschließlich bekannte Layout-, Farb- und Fortschrittsanzeigen zurückgeführt.
+- Regulärer vollständiger Abrechnungslauf mit normalem Word erfolgreich:
+  Layout bei 1440/800 Pixeln, Umsatz bei den Feldern, versteckte alte Ergebniszeile,
+  sechs Buttons in zwei Gruppen, Berechnung, CSV-Referenz und 73 neue Word-/PDF-Paare.
+  Balken direkt im Button und vollständiger Füllstand nach Ausgabe geprüft.
+- Erster Praxisversuch scheiterte nach erfolgreicher Ausgabe an einer Prüfung,
+  die fälschlich 100 statt des neuen Maximalwerts 1 erwartete. Nach Korrektur
+  regulären vollständigen Praxislauf erfolgreich wiederholt.
+- Rückvergütungs-Smoke-Test mit einem Datensatz: Berechnung, CSV, Speichern,
+  simulierter erster Exportfehler, sichtbare Fehlermeldung, erneute Freigabe und
+  anschließend echte Word-/PDF-Ausgabe mit integriertem Fortschritt bestanden.
+- Gegen 2.049 Word-Paketinhalte, PDF-Texte und Seitenzahlen der 73 Paare identisch.
+  Original-Beispieldaten unverändert; Test-App, Fenster und Testbrowser beendet.
+- Übrige Ansichten erhalten den kompakten Buttonstil zentral über CSS.
+  PDF-Werkzeug durch Referenzvergleich und Komponentenprüfung verifiziert;
+  keine zusätzliche native Ordnerdialog-Bedienprüfung oder Screenshotprüfung.
+- Version bleibt 2.049; keine neue Veröffentlichung und keine neue EXE.
+
+## Arbeitsstand nach 2.049 – kompakte Aktionsleiste
+
+<!-- Änderung nach 2.049: Gewählte kompakte Buttonansicht lokal verifizieren. -->
+
+- Alle 27 Freigabeprüfungen und Syntax bestanden. Bestehende Fachkörper nach
+  gezielter Abgrenzung der Layoutanweisungen weiter mit der Vorlage verglichen.
+- Regulärer vollständiger Praxislauf mit normalem Word bestanden: sechs Buttons
+  in zwei Gruppen, kurze Beschriftungen, Layout bei 1440/800 Pixeln, Berechnung,
+  Speichern und CSV-Referenz sowie 73 neue Word-/PDF-Paare.
+- Gegen Version 2.049 Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch;
+  Original-Beispieldaten unverändert. Test-App/Fenster/Testbrowser beendet.
+- Keine visuelle Screenshot-/Dokumentprüfung. Versionskonstante 2.049 unverändert;
+  lokaler Arbeitsstand ohne neue Veröffentlichung und ohne neue EXE.
+
+## Arbeitsstand nach 2.049 – einheitliche Exportbuttons
+
+<!-- Änderung nach 2.049: Reine Farbanpassung mit regulären lokalen Praxisläufen verifizieren. -->
+
+- Alle 27 Freigabeprüfungen und Syntax bestanden; Strukturvergleich lässt
+  ausschließlich die beiden bekannten Buttonfarbänderungen zu.
+- Regulärer vollständiger Abrechnungslauf mit normalem Word erfolgreich:
+  Berechnung, Speichern, CSV-Referenz und 73 neue Word-/PDF-Paare. Gegen 2.049
+  Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch.
+- Rückvergütungs-Smoke-Test mit einem vorhandenen Datensatz über die echte
+  Oberfläche erfolgreich: Berechnung, CSV-Referenz, Speichern und Word/PDF-Ausgabe.
+- Original-Beispieldaten unverändert, Test-App/Fenster/Testbrowser beendet.
+  Keine visuelle Screenshot-/Dokumentprüfung. Version 2.049 unverändert;
+  Änderungen lokal und noch nicht veröffentlicht, keine neue EXE.
+
 <!-- Änderung 2.049: UI-Fortsetzung und konkretisierte Logo-/Menüwünsche lokal prüfen. -->
 ## Freigabe Version 2.049 – 11.11.2026
 

@@ -45,6 +45,42 @@ def methoden_als_funktionen(basis, originalfunktionen):
         funktion = NamenZurueckfuehren().visit(copy.deepcopy(methode))
         # Änderung 2.049: Ausschließlich die vier bekannten Pilot-Stiländerungen zurückführen.
         if methode.name == 'abrechnung_ui':
+            # Änderung nach 2.049: Nur Umsatzdarstellung verschieben, Datenbindung erhalten.
+            assert ast.unparse(funktion.body[-4]) == 'umsatz_titel.move(umsatz)'
+            assert ast.unparse(funktion.body[-3]) == 'label_umsatz.move(umsatz)'
+            assert ast.unparse(funktion.body[-2]) == "ergebniszeile.classes('hidden')"
+            assert isinstance(funktion.body[-5], ast.With)
+            del funktion.body[-5:-1]
+            for knoten in ast.walk(funktion):
+                if isinstance(knoten, ast.With):
+                    for item in knoten.items:
+                        if isinstance(item.optional_vars, ast.Name) and item.optional_vars.id in ('eingaben', 'ergebniszeile'):
+                            item.optional_vars = None
+            for zeile in funktion.body:
+                if isinstance(zeile, ast.With):
+                    zeile.body = [ast.Expr(value=k.value) if isinstance(k, ast.Assign)
+                                  and isinstance(k.targets[0], ast.Name) and k.targets[0].id == 'umsatz_titel'
+                                  else k for k in zeile.body]
+            from tests.buttondarstellung_struktur import pdf_anzeige_zurueckfuehren
+            pdf_anzeige_zurueckfuehren(funktion, 'abr_button_pdf')
+            # Änderung nach 2.049: Kompakte Darstellung separat begrenzen;
+            # anschließend sämtliche bisherigen Anweisungen unverändert vergleichen.
+            layout, verschieben, beschriften = funktion.body[-4:-1]
+            assert isinstance(layout, ast.With) and isinstance(beschriften, ast.For)
+            assert ast.unparse(verschieben) == 'aktionsleiste.move(target_index=2)'
+            erlaubt = {'row', 'column', 'classes', 'label', 'move', 'set_text'}
+            for teil in (layout, beschriften):
+                for aufruf in (k for k in ast.walk(teil) if isinstance(k, ast.Call)):
+                    assert isinstance(aufruf.func, ast.Attribute) and aufruf.func.attr in erlaubt
+            assert [(ast.unparse(e.elts[0]), e.elts[1].value, e.elts[2].id)
+                    for e in beschriften.iter.elts] == [
+                ('abr_button_erstellen', 'Berechnen', 'bearbeiten'),
+                ('abr_button_einlesen', 'Laden', 'bearbeiten'),
+                ('abr_button_speichern', 'Speichern', 'bearbeiten'),
+                ('abr_button_plausibel', 'Prüfen', 'ausgeben'),
+                ('abr_button_download', 'CSV', 'ausgeben'),
+                ('abr_button_pdf', 'Word/PDF erstellen', 'ausgeben')]
+            del funktion.body[-4:-1]
             class PilotStileZurueckfuehren(ast.NodeTransformer):
                 anzahl = 0
 
@@ -59,7 +95,8 @@ def methoden_als_funktionen(basis, originalfunktionen):
                             if knoten.func.attr == 'classes' and wert.value == 'text-2xl font-bold ana-page-title':
                                 self.anzahl += 1
                                 wert.value = 'text-2xl font-bold'
-                            if knoten.func.attr == 'props' and wert.value == 'outline color=primary':
+                            # Änderung nach 2.049: Gefüllte Standardfarbe gezielt zurückführen.
+                            if knoten.func.attr == 'props' and wert.value == 'color=primary':
                                 self.anzahl += 1
                                 wert.value = 'color=red-5'
                     return knoten

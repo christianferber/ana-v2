@@ -46,6 +46,18 @@ def methoden_als_funktionen(basis, originalfunktionen):
             continue
         assert methode.args.args[0].arg == 'self'
         funktion = NamenZurueckfuehren().visit(copy.deepcopy(methode))
+        # Änderung nach 2.049: Nur zusätzliche Darstellung und lokale Buttonreferenzen ausnehmen.
+        if methode.name == 'einstellungen_ui':
+            assert ast.unparse(funktion.body[-2]) == 'einstellungen_gestalten(self, karte, auswahl, standard, speichern, abbrechen)'
+            del funktion.body[-2]
+            assert funktion.body[1].items[1].optional_vars.id == 'karte'
+            funktion.body[1].items[1].optional_vars = None
+            class ButtonreferenzenEntfernen(ast.NodeTransformer):
+                def visit_Assign(self, knoten):
+                    if len(knoten.targets) == 1 and isinstance(knoten.targets[0], ast.Name) and knoten.targets[0].id in {'auswahl', 'standard', 'speichern', 'abbrechen'}:
+                        return ast.Expr(value=knoten.value)
+                    return self.generic_visit(knoten)
+            funktion = ButtonreferenzenEntfernen().visit(funktion)
         funktion.args.args = funktion.args.args[1:]
         funktion.decorator_list = copy.deepcopy(vorlagen[methode.name].decorator_list)
         globale_ergaenzen(vorlagen[methode.name], funktion)

@@ -10,6 +10,8 @@ from pathlib import Path
 import threading
 
 from nicegui import ui
+# Änderung nach 2.049: Prozentanzeige ohne separaten Platzbedarf im Exportbutton.
+from anwendung.buttonfortschritt import ButtonFortschritt
 # Änderung: Doppelstarts verhindern und Hintergrundfehler in der Oberfläche melden.
 from anwendung.exportsteuerung import export_start_absichern, export_hintergrund_absichern
 from anwendung.datenhaltung import datei_oeffnen, datei_speichern
@@ -438,7 +440,7 @@ class AbrechnungOberflaeche:
         # Änderung 2.03: Zustand über die Ansicht bzw. gemeinsame Anwendung verwenden.
         # Änderung 2.049: Pilotansicht mit klar getrennten Eingaben und Aktionen gestalten.
         ui.label('Jahresabrechnung Wärmelieferung').classes("text-2xl font-bold ana-page-title")
-        with ui.row().classes('ana-input-row'):
+        with ui.row().classes('ana-input-row') as eingaben:
             self.jahre_dropdown = ui.select([], label='Abrechnungsjahr', on_change=self.reset_abrechnung).classes('w-48')
             self.mwst_jahr = ui.select(['7','19'], label='Mehrwertsteuer in %').classes('w-48')
             self.za_switch = ui.switch("Zwischenablesung", on_change=self.zwischenablesung)
@@ -450,7 +452,7 @@ class AbrechnungOberflaeche:
             self.abr_button_speichern.disable()
 
         # Änderung 2.049: Reihenfolge, Callbacks und Freigabebedingungen bleiben unverändert.
-        with ui.row().classes('ana-action-row'):
+        with ui.row().classes('ana-action-row') as ergebniszeile:
             self.abr_button_erstellen = ui.button('Erstellung Jahresabrechnung', icon='calculate', on_click=self.abrechnung_erstellen_gui)
             self.abr_button_einlesen = ui.button('Jahresabrechnung von DB einlesen', icon='file_open', on_click=self.abrechnung_von_db)
             self.abr_button_erstellen.disable()
@@ -459,12 +461,43 @@ class AbrechnungOberflaeche:
             self.abr_button_download.disable()
             self.abr_button_plausibel = ui.button("Plausibilitätsprüfung", icon="check_circle", on_click=self.abrechnung_plausibel)
             self.abr_button_plausibel.disable()
-            # Änderung 2.049: Dokumentausgabe ist eine normale Aktion, keine rote Warnaktion.
-            self.abr_button_pdf = ui.button('Word/PDF-Abrechnungen erzeugen', icon='picture_as_pdf', on_click=self.abrechnungen_dateien_erstellen).props('outline color=primary')
+            # Änderung nach 2.049: Dokumentausgabe wie die übrigen normalen Aktionen füllen.
+            self.abr_button_pdf = ui.button('Word/PDF-Abrechnungen erzeugen', icon='picture_as_pdf', on_click=self.abrechnungen_dateien_erstellen).props('color=primary')
             self.abr_button_pdf.disable()
-            self.abr_progress_pdf = ui.circular_progress(min=0, max=100, color="black").classes('invisible')
-            ui.label('Gesamtumsatz netto: ')
+            # Änderung nach 2.049: Dieselben Fortschrittsmeldungen direkt im Button zeigen.
+            self.abr_progress_pdf = ButtonFortschritt(self.abr_button_pdf)
+            umsatz_titel = ui.label('Gesamtumsatz netto: ')
             self.label_umsatz = ui.label("")
+        # Änderung nach 2.049: Nur die Darstellung umordnen; bestehende Buttons,
+        # Ereignisse und Freigaben wiederverwenden. Speichern gehört zu den Aktionen.
+        with ui.row().classes('ana-compact-toolbar') as aktionsleiste:
+            with ui.column().classes('ana-button-group'):
+                ui.label('Abrechnung').classes('ana-group-caption')
+                with ui.row().classes('ana-button-row') as bearbeiten:
+                    pass
+            with ui.column().classes('ana-button-group'):
+                ui.label('Prüfen & ausgeben').classes('ana-group-caption')
+                with ui.row().classes('ana-button-row') as ausgeben:
+                    pass
+        # Änderung nach 2.049: Leiste vor der bisherigen Umsatz-/Fortschrittszeile platzieren.
+        aktionsleiste.move(target_index=2)
+        for button, text, gruppe in (
+                (self.abr_button_erstellen, 'Berechnen', bearbeiten),
+                (self.abr_button_einlesen, 'Laden', bearbeiten),
+                (self.abr_button_speichern, 'Speichern', bearbeiten),
+                (self.abr_button_plausibel, 'Prüfen', ausgeben),
+                (self.abr_button_download, 'CSV', ausgeben),
+                (self.abr_button_pdf, 'Word/PDF erstellen', ausgeben)):
+            button.move(gruppe)
+            button.set_text(text)
+            button.classes('ana-compact-button' if button is self.abr_button_erstellen else 'ana-compact-button ana-secondary-button')
+        # Änderung nach 2.049: Umsatz kompakt neben den Auswahlfeldern statt in eigener Zeile.
+        with eingaben:
+            with ui.column().classes('ana-inline-summary') as umsatz:
+                pass
+        umsatz_titel.move(umsatz)
+        self.label_umsatz.move(umsatz)
+        ergebniszeile.classes('hidden')
         self.abrechnung_grid_ui()
 
 
