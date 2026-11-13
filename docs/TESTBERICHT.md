@@ -1,38 +1,34 @@
-# Freigabeprüfung – Release 2.06.00 vom 13.11.2026
+# Aktuelle Paketierungsprüfung – 2.06.00 gemäß Freigabeprozess 7
 
-<!-- Änderung 2.06.00: Vollständigen Freigabestand einschließlich Windows-Ordner dokumentieren. -->
-Alle 31 Freigabeprüfungen und Syntax bestanden. Vollständiger regulärer Praxislauf
-mit isolierten lokalen Beispieldaten und normaler Word-Anbindung bestanden:
-maximierter Start mit Titelleiste/Fenster-X, Einstellungen und Navigation,
-Berechnung und CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs.
-Word-Paketinhalte sowie PDF-Texte/Seitenzahlen gegenüber vorherigem Stand identisch.
-Manuelle und automatische ZIP-Sicherung, sichtbare eigenständige Anzeige und
-reguläres Ende nach nativem Fenster-X bestanden. Originaldaten unverändert.
+<!-- Änderung 2.06.00: Erneute Auslieferung als minimale Onefile-EXE dokumentieren. -->
+Alle 31 Freigabeprüfungen bestanden. Anwendungsmodule entsprechen dem ursprünglichen
+Anwendungsstand 2.06.00. Die Paketierung verwendet jetzt Onefile, der EXE-Einstieg
+legt die früher mitgelieferten leeren Datenordner beim ersten Start an.
 
-Windows-EXE mit vorgegebener Python-3.13.5-Installation und PyInstaller kompiliert.
-Fertiges Windows-ZIP auf CRC-Lesbarkeit, neutrale INI, leere Nutzdatenordner und
-fehlende lokale Projekt-/Git-Daten geprüft, anschließend vollständig entpackt.
-Entpackte EXE mit lokaler Beispieldatenkopie tatsächlich geprüft:
-- Oberfläche und Versionsanzeige 2.06 erreichbar.
-- Maximierter Start per SW_SHOWMAXIMIZED, Titelleiste und Systemmenü vorhanden.
-- Gesamtes natives Hauptfenster über WM_CLOSE entsprechend Fenster-X geschlossen.
-- Sichtbares, nicht minimiertes Fortschrittsfenster im eigenen EXE-Prozess.
-- Genau eine vollständige ZIP-Sicherung einschließlich aller Dateien und Programm-INI.
-- ZIP-CRC und vollständiger Hashvergleich gegen den gespeicherten Testbestand bestanden.
-- Reguläres Programmende, Testprozesse beendet, Originaldaten unverändert.
+Das Windows-ZIP wurde auf exakt diese Dateien geprüft:
+ANA.exe, RELEASE_NOTES.md, ana.ini und die fünf erforderlichen Ressourcen
+(ANA logo.png, Logo NWS.JPG, ANA-favicon.ico, ANA-icon.ico, ana-ui.css).
+Auf oberster Ebene sind nur EXE, Release Notes, INI und ressourcen vorhanden.
+README.md, docs und _internal gehören nicht zur korrigierten Auslieferung.
 
-RELEASE_NOTES.md auf genau sieben kurze Versionsabschnitte 2.00 bis 2.06 geprüft.
-Ältere technische Zwischenstände im Änderungsprotokoll erhalten.
-Ausführungsordner release/ANA-2.06.00 enthält ANA.exe, _internal, ressourcen,
-neutrale ana.ini, RELEASE_NOTES.md, README.md und Dokumentation. Sämtliche Dateien
-werden bytegleich gegen das Windows-ZIP bestätigt. Die finale Dokumentation wird
-in ZIP und Ordner ergänzt, die übrigen Programmdateien werden bytegleich gegen das
-bereits tatsächlich geprüfte Paket bestätigt.
+Tatsächliche EXE-Prüfungen aus zwei unabhängigen entpackten Paketkopien bestanden:
+- Neutraler Erststart ohne vorab angelegte Datenordner. Lokale Oberfläche erreicht,
+  benötigte Datenordner automatisch angelegt und regulär per Fenster-X beendet.
+- Start mit isolierter lokaler Beispieldatenkopie. Versionsanzeige 2.06,
+  SW_SHOWMAXIMIZED und native Titelleiste/Fenster-X bestätigt.
+- Fenster-X mit sichtbarer eigenständiger Sicherungsanzeige und regulärem Ende.
+- Vollständige ZIP-Sicherung, CRC-Lesbarkeit und Vergleich sämtlicher gespeicherter
+  Dateien sowie der Programm-INI gegen die Testkopie bestanden.
+- Original-Beispieldaten unverändert und alle Testprozesse beendet.
 
-Prüfungen ausschließlich lokal. Word-/PDF-Erzeugung im regulären Python-Praxislauf
-geprüft; kein erneuter Word-/PDF-Export aus der kompilierten EXE. Keine visuelle
-Dokumentprüfung. Quellarchiv, Prüfbericht und SHA256-Prüfsummen gehören zur Freigabe.
-Nachfolgend Einzelstatus und historische Nachweise.
+Die erzeugten EXE-Dateien wurden nach den Tests nicht verändert. ZIP und
+Ausführungsordner werden vollständig gegeneinander gehasht. Die vorherige
+Auslieferung wird vor Austausch lokal aufbewahrt. Korrigierte Release-Dateien
+werden vor Austausch auf GitHub hochgeladen und anhand ihrer Digests geprüft.
+Paketierungsquellen liegen in einem Folgecommit zum bestehenden Anwendungstag.
+Word-/PDF-Export aus dieser Onefile-EXE nicht zusätzlich geprüft. Keine visuelle
+Dokumentprüfung. Sämtliche Datenprüfungen ausschließlich lokal.
+Nachfolgend frühere Prüfnachweise zur ursprünglichen Paketierung und Fachlogik.
 # Prüfbericht ANA – aktueller Arbeitsstand
 
 <!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->

@@ -13,6 +13,13 @@ in den [Release Notes](../RELEASE_NOTES.md).
 
 ## Version 2.06.00 – 13.11.2026
 
+<!-- Änderung 2.06.00: Paketierung gemäß nachträglich ergänztem Freigabeprozess 7 korrigieren. -->
+Erneute Paketierung derselben Anwendungsversion als Onefile-EXE. ZIP und
+Ausführungsordner enthalten EXE, Release Notes, neutrale INI und notwendige
+Oberflächenressourcen. Laufzeitdateien sind eingebettet. Leere Datenordner werden
+im EXE-Einstieg beim ersten Start angelegt. Frischer temporärer Paketordner
+verhindert die Übernahme früherer Paketbestandteile.
+
 <!-- Änderung 2.06.00: Maximierten Start freigeben und Endbenutzerhistorie zusammenfassen. -->
 Versionsanzeige 2.06, vollständige Releasekennung 2.06.00. Maximierter Start mit
 nativer Titelleiste und Fenster-X. RELEASE_NOTES.md auf kurze Abschnitte 2.00 bis

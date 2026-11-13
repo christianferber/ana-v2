@@ -9,7 +9,7 @@ Automatische Nahwärme-Abrechnung für Windows.
 ## Windows-Paket starten
 
 Das Windows-ZIP vollständig in einen beschreibbaren Ordner entpacken und `ANA.exe`
-im Unterordner `ANA` starten. `_internal` muss neben der EXE erhalten bleiben.
+im Unterordner `ANA` starten. Die Laufzeitdateien sind in der Onefile-EXE enthalten.
 Das Paket enthält keine Mitglieds-, Konto-, Zähler- oder Abrechnungsdaten.
 Über das Zahnradsymbol den Arbeitsordner einstellen und die Anwendung danach neu starten.
 Für Word-/PDF-Ausgaben wird eine lokale Microsoft-Word-Installation benötigt.
@@ -44,13 +44,14 @@ python -m pip install -r requirements-build.txt
 python -m scripts.build_windows
 ```
 
-Ergebnis: `release/ANA-2.06.00-Windows-x64.zip`. Die Anwendung wird als Ordnerpaket
-mit EXE und Laufzeitdateien erzeugt. Lokale INI-Dateien, Beispieldaten und Testausgaben
-werden nicht in das Paket übernommen.
+Ergebnis: `release/ANA-2.06.00-Windows-x64.zip`. Das Paket enthält `ANA.exe`,
+`RELEASE_NOTES.md`, eine neutrale `ana.ini` und die benötigten Bilder und
+Oberflächenressourcen in `ressourcen`. Die EXE entpackt ihre eingebetteten
+Laufzeitdateien beim Start temporär. Datenordner werden beim ersten EXE-Start angelegt.
 
 <!-- Änderung 2.06.00: Bereitgestellten Ordner mit allen notwendigen Dateien erläutern. -->
 Für Release 2.06.00 steht zusätzlich `release/ANA-2.06.00` als ausführbarer Ordner
-bereit. `ANA.exe`, `_internal`, `ressourcen`, `ana.ini` und die Dokumentation gemeinsam
+bereit. `ANA.exe`, `ressourcen`, `ana.ini` und `RELEASE_NOTES.md` gemeinsam
 kopieren. Die Anwendung startet maximiert. Für den ersten Start ist eine neutrale
 INI enthalten; den eigenen Arbeitsordner anschließend in den Einstellungen wählen.
 

@@ -1,12 +1,12 @@
 # ANA Release Notes
 
 <!-- Änderung 2.06.00: Nur Versionen 2.xx aufführen und Zwischenstände knapp zusammenfassen. -->
-Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
+<!-- Änderung 2.06.00: Technische Dokumentation wird gemäß Freigabeprozess 7 separat geführt. -->
 
 ## Version 2.06 – 13.11.2026
 
 - Verbesserung: ANA startet automatisch maximiert mit erreichbarem Fenster-X.
-- Verbesserung: Vollständiger Windows-Ordner mit EXE, Laufzeitdateien, Bildern, INI und Release Notes.
+- Verbesserung: Kompaktes Windows-Paket mit EXE, Bildern, INI und Release Notes. Die EXE enthält ihre Laufzeitdateien.
 - Verbesserung: Kompakte Release Notes nach Versionen 2.xx.
 
 ## Version 2.05 – 13.11.2026
