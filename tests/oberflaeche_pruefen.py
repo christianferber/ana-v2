@@ -161,6 +161,27 @@ def _testen(prozesse, rueckverguetung=False):
         else:
             raise TimeoutError()
         print('Oberfläche mit neuem Code und Datenkopie gestartet.', flush=True)
+        # Änderung nach 2.05.01: Tatsächlichen maximierten Start mit verfügbarer Titelleiste prüfen.
+        import win32con
+        import win32gui
+        import win32process
+        from tests.testprozesse import prozessliste
+        for _ in range(60):
+            pids = {p['ProcessId'] for p in prozessliste() if p['ParentProcessId'] == app.pid}
+            hauptfenster = []
+            def startfenster_suchen(hwnd, _):
+                if (win32process.GetWindowThreadProcessId(hwnd)[1] in pids
+                        and win32gui.GetWindowText(hwnd) == 'ANA' and win32gui.IsWindowVisible(hwnd)):
+                    hauptfenster.append(hwnd)
+            win32gui.EnumWindows(startfenster_suchen, None)
+            if hauptfenster and win32gui.GetWindowPlacement(hauptfenster[0])[1] == win32con.SW_SHOWMAXIMIZED:
+                break
+            time.sleep(.2)
+        else:
+            raise AssertionError('ANA wurde nicht maximiert gestartet')
+        stil = win32gui.GetWindowLong(hauptfenster[0], win32con.GWL_STYLE)
+        assert stil & win32con.WS_CAPTION and stil & win32con.WS_SYSMENU
+        print('Maximierter Start mit Titelleiste und Fenster-X: bestanden.', flush=True)
         SCHRITT = 'Lokalen Testbrowser starten'
         profil = run / 'chrome'
         browser = prozesse.starten([

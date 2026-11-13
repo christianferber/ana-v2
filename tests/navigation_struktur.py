@@ -22,6 +22,11 @@ def hauptfenster_vergleichen(alt, neu):
              and ast.unparse(k.func) == 'app.on_shutdown']
     assert len(hooks) == 1
     gleich(hooks[0], ast.parse('app.on_shutdown(vollsicherung.beim_beenden)', mode='eval').body)
+    # Änderung nach 2.05.01: Maximierten Start ausdrücklich prüfen.
+    starts = [k for k in ast.walk(neu) if isinstance(k, ast.Call)
+              and ast.unparse(k.func) == 'app.on_startup']
+    assert len(starts) == 1
+    gleich(starts[0], ast.parse('app.on_startup(lambda: app.native.main_window.maximize())', mode='eval').body)
     # Änderung 2.049: Namen, Reihenfolge und Registerwechsel-Callback erhalten.
     vorher = aufrufe(alt, 'tab')
     nachher = aufrufe(neu, 'tab')

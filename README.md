@@ -1,6 +1,6 @@
-# ANA 2.05.01
+# ANA 2.06.00
 
-<!-- Änderung 2.05.01: Aktuellen Windows-Build kennzeichnen. -->
+<!-- Änderung 2.06.00: Aktuelles Release und vollständigen Ausführungsordner kennzeichnen. -->
 
 Automatische Nahwärme-Abrechnung für Windows.
 
@@ -44,9 +44,15 @@ python -m pip install -r requirements-build.txt
 python -m scripts.build_windows
 ```
 
-Ergebnis: `release/ANA-2.05.01-Windows-x64.zip`. Die Anwendung wird als Ordnerpaket
+Ergebnis: `release/ANA-2.06.00-Windows-x64.zip`. Die Anwendung wird als Ordnerpaket
 mit EXE und Laufzeitdateien erzeugt. Lokale INI-Dateien, Beispieldaten und Testausgaben
 werden nicht in das Paket übernommen.
+
+<!-- Änderung 2.06.00: Bereitgestellten Ordner mit allen notwendigen Dateien erläutern. -->
+Für Release 2.06.00 steht zusätzlich `release/ANA-2.06.00` als ausführbarer Ordner
+bereit. `ANA.exe`, `_internal`, `ressourcen`, `ana.ini` und die Dokumentation gemeinsam
+kopieren. Die Anwendung startet maximiert. Für den ersten Start ist eine neutrale
+INI enthalten; den eigenen Arbeitsordner anschließend in den Einstellungen wählen.
 
 ## Lokale Verifikation
 

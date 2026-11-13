@@ -140,9 +140,9 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.046: Gemeinsame CSV-Speicherhilfe auslagern.
 # Änderung 2.049: Geprüfte UI-Modernisierung und angepasste Startanzeige veröffentlichen.
 # Änderung 2.05.00: Neue Freigabe; sichtbare Version 2.05, Entwicklungsstand 00.
-version = 2.05
-# Änderung 2.05.01: Vollständige Buildnummer für Paketierung; Anzeige verwendet weiter 2.05.
-build_version = '2.05.01'
+# Änderung 2.06.00: Neue Freigabe mit maximiertem Start und vollständigem Windows-Paket.
+version = 2.06
+build_version = '2.06.00'
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -945,6 +945,8 @@ def main():
     db_sichern("Programmstart")
     # Änderung nach 2.05.00: Vollsicherung auch beim nativen Fensterschließen vollständig abwarten.
     app.on_shutdown(vollsicherung.beim_beenden)
+    # Änderung nach 2.05.01: Bei jedem Programmstart bildschirmfüllend mit Fenster-X öffnen.
+    app.on_startup(lambda: app.native.main_window.maximize())
 
 
 

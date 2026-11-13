@@ -1,35 +1,38 @@
-# Freigabeprüfung – Build 2.05.01 vom 13.11.2026
+# Freigabeprüfung – Release 2.06.00 vom 13.11.2026
 
-<!-- Änderung 2.05.01: Windows-Build und seine tatsächlichen Prüfungen dokumentieren. -->
-Alle 31 gebündelten Freigabeprüfungen und Syntax bestanden. Windows-Paket mit der
-vorgegebenen Python-3.13.5-Installation und PyInstaller erfolgreich kompiliert.
-Buildnummer 2.05.01, sichtbare Version 2.05. ZIP-Vollsicherung, neue Einstellungstabs,
-Dialoggrößen und Sicherungsanzeige beim Schließen in diesem Build enthalten.
+<!-- Änderung 2.06.00: Vollständigen Freigabestand einschließlich Windows-Ordner dokumentieren. -->
+Alle 31 Freigabeprüfungen und Syntax bestanden. Vollständiger regulärer Praxislauf
+mit isolierten lokalen Beispieldaten und normaler Word-Anbindung bestanden:
+maximierter Start mit Titelleiste/Fenster-X, Einstellungen und Navigation,
+Berechnung und CSV-Referenz, 73 neue Word-Dateien und 73 lesbare PDFs.
+Word-Paketinhalte sowie PDF-Texte/Seitenzahlen gegenüber vorherigem Stand identisch.
+Manuelle und automatische ZIP-Sicherung, sichtbare eigenständige Anzeige und
+reguläres Ende nach nativem Fenster-X bestanden. Originaldaten unverändert.
 
-Das Windows-ZIP wurde vollständig entpackt und auf neutrale INI, leere Nutzdatenordner
-und fehlende lokale Projekt-/Git-Daten geprüft. Anschließend wurde die entpackte EXE
-mit einer isolierten lokalen Beispieldatenkopie gestartet. Tatsächlich geprüft:
-- Erreichbare lokale Oberfläche und Versionsanzeige 2.05.
-- Sichtbares natives ANA-Fenster.
-- Schließen dieses Fensters über WM_CLOSE entsprechend dem Fenster-X.
-- Sichtbare, nicht minimierte Sicherungsanzeige im eigenen EXE-Prozess.
-- Genau eine vollständige ZIP-Sicherung, CRC-Lesbarkeit und Vergleich sämtlicher
-  gespeicherter Dateien sowie der Programm-INI gegen den lokalen Testbestand.
-- Reguläres Programmende und vollständige Beendigung der Testprozesse.
-- Original-Beispieldaten unverändert.
+Windows-EXE mit vorgegebener Python-3.13.5-Installation und PyInstaller kompiliert.
+Fertiges Windows-ZIP auf CRC-Lesbarkeit, neutrale INI, leere Nutzdatenordner und
+fehlende lokale Projekt-/Git-Daten geprüft, anschließend vollständig entpackt.
+Entpackte EXE mit lokaler Beispieldatenkopie tatsächlich geprüft:
+- Oberfläche und Versionsanzeige 2.06 erreichbar.
+- Maximierter Start per SW_SHOWMAXIMIZED, Titelleiste und Systemmenü vorhanden.
+- Gesamtes natives Hauptfenster über WM_CLOSE entsprechend Fenster-X geschlossen.
+- Sichtbares, nicht minimiertes Fortschrittsfenster im eigenen EXE-Prozess.
+- Genau eine vollständige ZIP-Sicherung einschließlich aller Dateien und Programm-INI.
+- ZIP-CRC und vollständiger Hashvergleich gegen den gespeicherten Testbestand bestanden.
+- Reguläres Programmende, Testprozesse beendet, Originaldaten unverändert.
 
-Die vollständige reguläre Python-Praxisprüfung mit normaler Word-Anbindung wurde
-vor dieser Paketierung erfolgreich durchgeführt. 73 Word-Paketinhalte und
-PDF-Texte/Seitenzahlen waren gegenüber dem vorherigen Stand identisch. Für den
-vorliegenden Build wurden alle 31 Referenz-/Fachprüfungen erneut bestanden.
-Der EXE-Praxisnachweis umfasst Start, Oberfläche und Beendigungssicherung;
-ein neuer Word-/PDF-Export aus der kompilierten EXE wurde nicht durchgeführt.
-Keine visuelle Dokumentprüfung. Datenprüfungen ausschließlich lokal.
+RELEASE_NOTES.md auf genau sieben kurze Versionsabschnitte 2.00 bis 2.06 geprüft.
+Ältere technische Zwischenstände im Änderungsprotokoll erhalten.
+Ausführungsordner release/ANA-2.06.00 enthält ANA.exe, _internal, ressourcen,
+neutrale ana.ini, RELEASE_NOTES.md, README.md und Dokumentation. Sämtliche Dateien
+werden bytegleich gegen das Windows-ZIP bestätigt. Die finale Dokumentation wird
+in ZIP und Ordner ergänzt, die übrigen Programmdateien werden bytegleich gegen das
+bereits tatsächlich geprüfte Paket bestätigt.
 
-Nach Ergänzung des finalen Berichts wird das Windows-ZIP mit der endgültigen
-Dokumentation paketiert. Alle übrigen Paketdateien werden gegen das tatsächlich
-geprüfte Paket bytegleich bestätigt. Quellarchiv, Prüfbericht und SHA256-Prüfsummen
-werden mit bereitgestellt. Nachfolgend Einzelstatus und historische Nachweise.
+Prüfungen ausschließlich lokal. Word-/PDF-Erzeugung im regulären Python-Praxislauf
+geprüft; kein erneuter Word-/PDF-Export aus der kompilierten EXE. Keine visuelle
+Dokumentprüfung. Quellarchiv, Prüfbericht und SHA256-Prüfsummen gehören zur Freigabe.
+Nachfolgend Einzelstatus und historische Nachweise.
 # Prüfbericht ANA – aktueller Arbeitsstand
 
 <!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->

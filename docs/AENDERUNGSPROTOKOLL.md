@@ -11,6 +11,23 @@ beschreiben den jeweiligen damaligen Stand. Aktuelle Prüfungen stehen im
 Für Endbenutzer bestimmte Features, Verbesserungen und Fehlerkorrekturen stehen
 in den [Release Notes](../RELEASE_NOTES.md).
 
+## Version 2.06.00 – 13.11.2026
+
+<!-- Änderung 2.06.00: Maximierten Start freigeben und Endbenutzerhistorie zusammenfassen. -->
+Versionsanzeige 2.06, vollständige Releasekennung 2.06.00. Maximierter Start mit
+nativer Titelleiste und Fenster-X. RELEASE_NOTES.md auf kurze Abschnitte 2.00 bis
+2.06 verdichtet; frühere technische Zwischenstände bleiben hier dokumentiert.
+Windows-EXE und ZIP sowie zusätzlicher versionierter Ausführungsordner mit
+Laufzeitdateien, Ressourcen, neutraler INI und Dokumentation werden bereitgestellt.
+
+## Änderungen nach 2.05.01 – maximierter Start
+
+<!-- Änderung nach 2.05.01: Native Maximierung beim Programmstart. -->
+Startup-Hook ruft die unterstützte native WindowProxy-Maximierung auf. Pywebview
+wartet vor der Ausführung auf das sichtbare Fenster. Native Windows-Titelleiste
+mit Fenster-X verfügbar. Praxisprüfung kontrolliert SW_SHOWMAXIMIZED sowie die
+Fensterstile WS_CAPTION und WS_SYSMENU, Strukturvergleich den exakten Startup-Hook.
+
 ## Build 2.05.01 – 13.11.2026
 
 <!-- Änderung 2.05.01: Sicherungsfunktion und Oberflächenpflege als Windows-Build freigeben. -->
