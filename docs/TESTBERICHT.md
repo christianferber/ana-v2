@@ -1,3 +1,26 @@
+# Aktuelle Prüfung – Datenordner anhand des INI-Arbeitsordners
+
+<!-- Änderung nach 2.06.00: Bedingte Ordneranlage am konfigurierten Ziel prüfen. -->
+Gezielter Einstellungs-/Ordneranlagetest mit lokaler Beispieldatenkopie bestanden.
+Vollständig vorhandener externer Arbeitsordner ohne mkdir-Aufrufe, ohne zusätzliche
+Datenordner im Programmordner und mit identischen Dateihashes bestätigt.
+Teilweise vorhandene Ziele ergänzen nur fehlende Standardordner; bestehende
+Dateien und Verzeichniszeitstempel erhalten. Fehlender konfigurierter Basispfad
+wird am eingetragenen Ort erstellt, die INI bleibt dabei bytegleich. Relative
+INI-Pfade beziehen sich auf den Programmordner. Leerer oder fehlender INI-Pfad
+verwendet den Programmordner; wiederholter Aufruf legt vorhandene Ordner nicht neu an.
+
+Regulärer Datei-/INI-/Strukturtest und vollständiger regulärer Praxislauf mit
+normaler Word-Anbindung bestanden. Oberfläche, Einstellungen, CSV-Referenz,
+73 neue Word-/PDF-Paare, manuelle und automatische ZIP-Sicherung mit Fenster-X
+und sichtbarer Beendigungsanzeige bestanden. Word-Paketinhalte sowie PDF-Texte/
+Seitenzahlen gegenüber dem vorherigen erfolgreichen Stand identisch.
+Original-Beispieldaten unverändert und Testprozesse beendet. Daten ausschließlich lokal.
+
+Quelländerung nach der Paketierungskorrektur 2.06.00. Bestehende EXE/Release-Dateien
+wurden für diesen Änderungsauftrag nicht neu erstellt. Neue EXE benötigt einen
+weiteren ausdrücklich beauftragten Build. Keine visuelle Dokumentprüfung.
+Nachfolgend frühere Prüfnachweise der veröffentlichten Pakete.
 # Aktuelle Paketierungsprüfung – 2.06.00 gemäß Freigabeprozess 7
 
 <!-- Änderung 2.06.00: Erneute Auslieferung als minimale Onefile-EXE dokumentieren. -->

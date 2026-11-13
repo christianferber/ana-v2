@@ -4,6 +4,10 @@ import copy
 
 
 def hauptfenster_vergleichen(alt, neu):
+    # Änderung nach 2.06.00: Nur den expliziten INI-basierten Startaufruf ausnehmen.
+    neu = copy.deepcopy(neu)
+    assert ast.unparse(neu.body[0]) == 'datenordner_anlegen(ini, Path.cwd())'
+    del neu.body[0]
     # Änderung 2.049: Nur Darstellung darf abweichen, Start und Panelinhalte nicht.
     def aufrufe(knoten, name):
         return [k for k in ast.walk(knoten) if isinstance(k, ast.Call)

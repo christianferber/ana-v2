@@ -7,10 +7,70 @@ import copy
 import io
 from pathlib import Path
 import tempfile
+import hashlib
+import shutil
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, patch
 import anwendung.einstellungen_ui as modul
-from anwendung.einstellungen import ini_datei_lesen
+from anwendung.einstellungen import ini_datei_lesen, ini_datei_schreiben, datenordner_anlegen, pfade_erstellen
+
+
+def ordneranlage_pruefen(basis, beispieldaten):
+    # Änderung nach 2.06.00: Externe, relative und leere INI-Pfade mit lokalen Daten prüfen.
+    with tempfile.TemporaryDirectory(dir=basis / '.lokal') as tmp:
+        wurzel = Path(tmp)
+        programm = wurzel / 'programm'
+        programm.mkdir()
+        ini = programm / 'ana.ini'
+        daten = wurzel / 'vorhandene-daten'
+        shutil.copytree(beispieldaten, daten)
+        namen = [Path(p).name for k, p in pfade_erstellen(str(daten)).items() if k != 'arbeitsordner']
+        for name in namen:
+            (daten / name).mkdir(exist_ok=True)
+        vorher = {p.relative_to(daten): hashlib.sha256(p.read_bytes()).digest()
+                  for p in daten.rglob('*') if p.is_file()}
+        config = configparser.ConfigParser()
+        def pfad_setzen(wert):
+            config['Anwendung'] = {'Arbeitsordner': wert}
+            ini_datei_schreiben(ini, config)
+        pfad_setzen(str(daten))
+        # Änderung: Vorhandene Ordner dürfen keine mkdir-Aufrufe und keine Programmordner erzeugen.
+        with patch.object(Path, 'mkdir', side_effect=AssertionError('Vorhandener Ordner erneut angelegt')):
+            datenordner_anlegen(ini, programm)
+        assert not any((programm / name).exists() for name in namen)
+        assert vorher == {p.relative_to(daten): hashlib.sha256(p.read_bytes()).digest()
+                          for p in daten.rglob('*') if p.is_file()}
+        # Änderung: Bei teilweise vorhandenem Ziel nur die Lücken ergänzen.
+        teilweise = wurzel / 'teilweise'
+        (teilweise / 'Datenbank').mkdir(parents=True)
+        marker = teilweise / 'Datenbank/bestand.txt'
+        marker.write_text('Lokaler Testbestand', encoding='utf-8')
+        zeit = marker.parent.stat().st_mtime_ns
+        pfad_setzen(str(teilweise))
+        datenordner_anlegen(ini, programm)
+        assert all((teilweise / name).is_dir() for name in namen)
+        assert marker.read_text(encoding='utf-8') == 'Lokaler Testbestand'
+        assert marker.parent.stat().st_mtime_ns == zeit
+        assert not any((programm / name).exists() for name in namen)
+        # Änderung: Auch einen fehlenden konfigurierten Basispfad am richtigen Ort erstellen.
+        neu = wurzel / 'neuer-pfad/arbeitsdaten'
+        pfad_setzen(str(neu))
+        inhalt = ini.read_bytes()
+        datenordner_anlegen(ini, programm)
+        assert all((neu / name).is_dir() for name in namen)
+        assert ini.read_bytes() == inhalt
+        assert not any((programm / name).exists() for name in namen)
+        # Änderung: Relative INI-Pfade beziehen sich auf den Programmordner.
+        pfad_setzen('../teilweise')
+        with patch.object(Path, 'mkdir', side_effect=AssertionError('Relativer Bestand erneut angelegt')):
+            datenordner_anlegen(ini, programm)
+        # Änderung: Leerer oder fehlender INI-Pfad verwendet ausschließlich den Programmordner.
+        pfad_setzen('')
+        datenordner_anlegen(ini, programm)
+        assert all((programm / name).is_dir() for name in namen)
+        ini.unlink()
+        with patch.object(Path, 'mkdir', side_effect=AssertionError('Programmordner erneut angelegt')):
+            datenordner_anlegen(ini, programm)
 
 
 class Textfeld:
@@ -29,6 +89,7 @@ def pruefen():
     config = ini_datei_lesen(basis / 'ana.ini')
     daten = Path(config['Anwendung']['Arbeitsordner']).resolve()
     assert daten == (basis.parent / '_Vorlagen' / 'ana Beispieldaten').resolve()
+    ordneranlage_pruefen(basis, daten)
     original = {p: p.read_bytes() for p in (basis / 'ana.ini', daten / 'ana-betreiber.ini')}
     betreiber = ini_datei_lesen(daten / 'ana-betreiber.ini')['Betreiber']
     baum = ast.parse((basis.parent / '_Vorlagen' / 'ana' / 'ana.py').read_text(encoding='utf-8-sig'))

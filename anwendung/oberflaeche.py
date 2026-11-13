@@ -13,6 +13,8 @@ from anwendung.datenhaltung import (DatenbankZugriff, check_ordner_exists, datei
                          dictlist_to_csv, import_file, import_csv_inhalt)
 # Änderung für v2: Arbeitsordnerpfade unabhängig von der Oberfläche erzeugen.
 from anwendung.einstellungen import pfade_erstellen, ini_datei_lesen, ini_datei_schreiben
+# Änderung nach 2.06.00: Gemeinsame Ordneranlage für Python- und EXE-Start anhand der INI.
+from anwendung.einstellungen import datenordner_anlegen
 # Änderung 2.03: Abrechnungsansicht mit eigenem Bereichszustand einbinden.
 from anwendung.abrechnung_ui import AbrechnungOberflaeche
 # Änderung: Abschlagsbereich mit eigenem Bedienzustand einbinden.
@@ -937,6 +939,8 @@ def on_tab_change(e):
 
 def main():
 
+    # Änderung: Fehlende Datenordner vor dem Laden im INI-Arbeitsordner bzw. Programmordner ergänzen.
+    datenordner_anlegen(ini, Path.cwd())
     ### Initiale Checks
 
     ini_einlesen()

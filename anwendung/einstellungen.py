@@ -2,6 +2,26 @@
 """Änderung für v2: Arbeitsordnerpfade ohne Abhängigkeit von der Oberfläche bilden."""
 
 import configparser
+from pathlib import Path
+
+
+def datenordner_anlegen(ini_datei, programmordner):
+    # Änderung nach 2.06.00: Fehlende Datenordner ausschließlich am konfigurierten Ort anlegen.
+    arbeitsordner = ''
+    if Path(ini_datei).is_file():
+        config = ini_datei_lesen(ini_datei)
+        arbeitsordner = config.get('Anwendung', 'Arbeitsordner', fallback='')
+    basis = Path(programmordner).resolve()
+    ziel = Path(arbeitsordner) if arbeitsordner.strip() else basis
+    if not ziel.is_absolute():
+        ziel = basis / ziel
+    # Änderung: Bestehende Pfaddefinitionen wiederverwenden, vorhandene Verzeichnisse überspringen.
+    for name, pfad in pfade_erstellen(str(ziel)).items():
+        if name == 'arbeitsordner':
+            continue
+        ordner = Path(pfad)
+        if not ordner.is_dir():
+            ordner.mkdir(parents=True, exist_ok=True)
 
 
 def ini_datei_lesen(datei):

@@ -47,7 +47,8 @@ python -m scripts.build_windows
 Ergebnis: `release/ANA-2.06.00-Windows-x64.zip`. Das Paket enthält `ANA.exe`,
 `RELEASE_NOTES.md`, eine neutrale `ana.ini` und die benötigten Bilder und
 Oberflächenressourcen in `ressourcen`. Die EXE entpackt ihre eingebetteten
-Laufzeitdateien beim Start temporär. Datenordner werden beim ersten EXE-Start angelegt.
+Laufzeitdateien beim Start temporär. Fehlende Datenordner werden beim Start im
+INI-Arbeitsordner angelegt. Bei leerem INI-Pfad dient der Programmordner als Ziel.
 
 <!-- Änderung 2.06.00: Bereitgestellten Ordner mit allen notwendigen Dateien erläutern. -->
 Für Release 2.06.00 steht zusätzlich `release/ANA-2.06.00` als ausführbarer Ordner

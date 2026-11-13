@@ -13,6 +13,14 @@ in den [Release Notes](../RELEASE_NOTES.md).
 
 ## Version 2.06.00 – 13.11.2026
 
+<!-- Änderung nach 2.06.00: Ordneranlage am konfigurierten Ort korrigieren. -->
+Gemeinsame Starthilfe datenordner_anlegen liest Anwendung/Arbeitsordner aus der INI.
+Sie ergänzt nur fehlende Standarddatenordner am eingetragenen Ziel; ein leerer oder
+fehlender INI-Pfad verwendet den Programmordner. Relative Pfade beziehen sich auf
+den Programmordner. Der gemeinsame Start ruft die Hilfe vor dem Laden der Daten auf.
+Die bisherige unbedingte Ordneranlage im EXE-Einstieg entfällt. Gezielte Prüfungen
+decken vorhandene, teilweise vorhandene und neue Ziele sowie den INI-Fallback ab.
+
 <!-- Änderung 2.06.00: Paketierung gemäß nachträglich ergänztem Freigabeprozess 7 korrigieren. -->
 Erneute Paketierung derselben Anwendungsversion als Onefile-EXE. ZIP und
 Ausführungsordner enthalten EXE, Release Notes, neutrale INI und notwendige

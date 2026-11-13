@@ -5,6 +5,8 @@
 
 ## Version 2.06 – 13.11.2026
 
+<!-- Änderung nach 2.06.00: Fehlende Datenordner anhand des INI-Arbeitsordners ergänzen. -->
+- Bugfix: Fehlende Datenordner werden im eingestellten Arbeitsordner angelegt. Bei leerem INI-Pfad wird der Programmordner verwendet.
 - Verbesserung: ANA startet automatisch maximiert mit erreichbarem Fenster-X.
 - Verbesserung: Kompaktes Windows-Paket mit EXE, Bildern, INI und Release Notes. Die EXE enthält ihre Laufzeitdateien.
 - Verbesserung: Kompakte Release Notes nach Versionen 2.xx.
