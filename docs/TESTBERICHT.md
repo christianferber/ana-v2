@@ -1,18 +1,36 @@
-# Prüfbericht ANA – Version 2.05.00
+# Freigabeprüfung – Build 2.05.01 vom 13.11.2026
 
-<!-- Änderung 2.05.00: Aktuelle vollständige Freigabeprüfung dokumentieren. -->
-Stand: 13.11.2026. Alle 30 Freigabeprüfungen und Syntaxprüfung bestanden.
-Regulärer vollständiger Praxislauf mit normaler Word-Anbindung bestanden:
-Statistikbereiche, beide Verbraucherstatistiken, allgemeine Jahreskostenmatrix,
-Zellwerte, Farben, Sortierung, Verbraucherwechsel, Navigation und Einstellungen.
-Berechnung und gespeicherte CSV entsprechen der lokalen Referenz.
-73 neue Word-Dateien und 73 lesbare PDFs erstellt. Gegen den vorherigen
-Praxislauf sind alle Word-Paketinhalte und PDF-Texte/Seitenzahlen identisch.
-Original-Beispieldaten unverändert; Test-App, Fenster und Testbrowser beendet.
-Alle Datenprüfungen ausschließlich lokal. Keine visuelle Dokumentprüfung.
-Keine neue Windows-EXE erstellt oder geprüft. Quellfreigabe mit Prüfbericht
-und SHA256-Prüfsummen. Nachfolgend Einzelprüfungen und historische Nachweise.
+<!-- Änderung 2.05.01: Windows-Build und seine tatsächlichen Prüfungen dokumentieren. -->
+Alle 31 gebündelten Freigabeprüfungen und Syntax bestanden. Windows-Paket mit der
+vorgegebenen Python-3.13.5-Installation und PyInstaller erfolgreich kompiliert.
+Buildnummer 2.05.01, sichtbare Version 2.05. ZIP-Vollsicherung, neue Einstellungstabs,
+Dialoggrößen und Sicherungsanzeige beim Schließen in diesem Build enthalten.
 
+Das Windows-ZIP wurde vollständig entpackt und auf neutrale INI, leere Nutzdatenordner
+und fehlende lokale Projekt-/Git-Daten geprüft. Anschließend wurde die entpackte EXE
+mit einer isolierten lokalen Beispieldatenkopie gestartet. Tatsächlich geprüft:
+- Erreichbare lokale Oberfläche und Versionsanzeige 2.05.
+- Sichtbares natives ANA-Fenster.
+- Schließen dieses Fensters über WM_CLOSE entsprechend dem Fenster-X.
+- Sichtbare, nicht minimierte Sicherungsanzeige im eigenen EXE-Prozess.
+- Genau eine vollständige ZIP-Sicherung, CRC-Lesbarkeit und Vergleich sämtlicher
+  gespeicherter Dateien sowie der Programm-INI gegen den lokalen Testbestand.
+- Reguläres Programmende und vollständige Beendigung der Testprozesse.
+- Original-Beispieldaten unverändert.
+
+Die vollständige reguläre Python-Praxisprüfung mit normaler Word-Anbindung wurde
+vor dieser Paketierung erfolgreich durchgeführt. 73 Word-Paketinhalte und
+PDF-Texte/Seitenzahlen waren gegenüber dem vorherigen Stand identisch. Für den
+vorliegenden Build wurden alle 31 Referenz-/Fachprüfungen erneut bestanden.
+Der EXE-Praxisnachweis umfasst Start, Oberfläche und Beendigungssicherung;
+ein neuer Word-/PDF-Export aus der kompilierten EXE wurde nicht durchgeführt.
+Keine visuelle Dokumentprüfung. Datenprüfungen ausschließlich lokal.
+
+Nach Ergänzung des finalen Berichts wird das Windows-ZIP mit der endgültigen
+Dokumentation paketiert. Alle übrigen Paketdateien werden gegen das tatsächlich
+geprüfte Paket bytegleich bestätigt. Quellarchiv, Prüfbericht und SHA256-Prüfsummen
+werden mit bereitgestellt. Nachfolgend Einzelstatus und historische Nachweise.
+# Prüfbericht ANA – aktueller Arbeitsstand
 
 <!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
 
@@ -20,6 +38,7 @@ Stand: 13.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
+- Vollsicherung als ZIP: bestanden.
 - Verbrauchsstatistik aus Jahresabrechnungen: bestanden.
 - Serienbrief-Fettformatierung: bestanden.
 - PDF-Fortschritt im Button: bestanden.

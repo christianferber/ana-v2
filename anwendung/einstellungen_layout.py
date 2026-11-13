@@ -1,5 +1,7 @@
 """Änderung nach 2.049: Bestehende Einstellungen ohne neue Speicherlogik gestalten."""
 from nicegui import ui
+# Änderung nach 2.05.00: Vollsicherung im vorhandenen Einstellungsdialog verwalten.
+from anwendung.vollsicherung_ui import sicherungseinstellungen_aufbauen
 
 
 def einstellungen_gestalten(ansicht, karte, auswahl, standard, speichern, abbrechen):
@@ -16,22 +18,34 @@ def einstellungen_gestalten(ansicht, karte, auswahl, standard, speichern, abbrec
     with karte:
         with ui.column().classes('ana-settings-header'):
             ui.label('Einstellungen').classes('text-xl font-medium')
-            ui.label('Betreiber, Preise und Arbeitsumgebung').classes('ana-settings-note')
-        with ui.column().classes('ana-settings-body'):
-            ui.label('Betreiber und Bankverbindung').classes('ana-settings-section')
-            with ui.element('div').classes('ana-settings-grid') as betreiber:
+            ui.label('Änderungen in allen Tabs gemeinsam speichern.').classes('ana-settings-note')
+        # Änderung nach 2.05.00: Themen trennen; bestehende Felder und Aktionen weiterverwenden.
+        with ui.tabs().props('no-caps outside-arrows mobile-arrows').classes('ana-settings-tabs w-full') as tabs:
+            tab_betreiber = ui.tab('Betreiber und Preise')
+            tab_ordner = ui.tab('Arbeitsordner')
+            tab_sicherung = ui.tab('Datensicherung')
+            tab_darstellung = ui.tab('Darstellung')
+        # Änderung: Tabwechsel erhalten ungespeicherte Eingaben; nur der Inhalt scrollt.
+        with ui.tab_panels(tabs, value=tab_betreiber, keep_alive=True).classes('ana-settings-body ana-settings-panels w-full'):
+            with ui.tab_panel(tab_betreiber).classes('ana-settings-operator'):
+                ui.label('Betreiber und Bankverbindung').classes('ana-settings-section')
+                with ui.element('div').classes('ana-settings-grid') as betreiber:
+                    pass
+                ui.label('Wärmepreise').classes('ana-settings-section')
+                with ui.element('div').classes('ana-settings-grid') as preise:
+                    pass
+            with ui.tab_panel(tab_ordner).classes('ana-settings-workfolder'):
+                ui.label('Arbeitsordner').classes('ana-settings-section')
+                ui.label('Hier liegen Datenbanken, Vorlagen und Abrechnungen.').classes('ana-settings-note')
+                with ui.column().classes('ana-settings-folder') as ordner:
+                    pass
+                with ui.row().classes('ana-button-row') as ordner_aktionen:
+                    pass
+                ui.label('Ein Ordnerwechsel wird nach dem Speichern und einem Neustart wirksam. Standard ist der Programmordner.').classes('ana-settings-note')
+            with ui.tab_panel(tab_sicherung) as inhalt_sicherung:
                 pass
-            ui.label('Wärmepreise').classes('ana-settings-section')
-            with ui.element('div').classes('ana-settings-grid') as preise:
-                pass
-            ui.label('Arbeitsordner').classes('ana-settings-section')
-            ui.label('Hier liegen Datenbanken, Vorlagen und Abrechnungen.').classes('ana-settings-note')
-            with ui.column().classes('ana-settings-folder') as ordner:
-                pass
-            with ui.row().classes('ana-button-row') as ordner_aktionen:
-                pass
-            ui.label('Ein Ordnerwechsel wird nach dem Speichern und einem Neustart wirksam. Standard ist der Programmordner.').classes('ana-settings-note')
-            with ui.expansion('Darstellung und Tabellen', icon='tune').classes('w-full ana-settings-advanced'):
+            with ui.tab_panel(tab_darstellung).classes('ana-settings-appearance'):
+                ui.label('Darstellung und Tabellen').classes('ana-settings-section')
                 with ui.element('div').classes('ana-settings-grid') as darstellung:
                     pass
         with ui.row().classes('ana-settings-footer') as aktionen:
@@ -58,6 +72,9 @@ def einstellungen_gestalten(ansicht, karte, auswahl, standard, speichern, abbrec
     abbrechen.classes('ana-compact-button ana-secondary-button')
     speichern.move(aktionen)
     speichern.classes('ana-compact-button ana-settings-save')
+
+    # Änderung: Sicherung im eigenen Tab; Speichern/Abbrechen gelten weiterhin für alle Tabs.
+    sicherungseinstellungen_aufbauen(ansicht, inhalt_sicherung)
 
     # Änderung: Nur die alten Überschriften und nun leeren Layoutcontainer ausblenden.
     for element in bisher:

@@ -11,6 +11,83 @@ beschreiben den jeweiligen damaligen Stand. Aktuelle Prüfungen stehen im
 Für Endbenutzer bestimmte Features, Verbesserungen und Fehlerkorrekturen stehen
 in den [Release Notes](../RELEASE_NOTES.md).
 
+## Build 2.05.01 – 13.11.2026
+
+<!-- Änderung 2.05.01: Sicherungsfunktion und Oberflächenpflege als Windows-Build freigeben. -->
+Buildnummer `build_version = '2.05.01'`, Versionsanzeige weiterhin 2.05.
+Windows-Paketname verwendet die vollständige Buildnummer. Die bisherige numerische
+Versionskonstante bleibt für bestehende Aufrufer erhalten. Dieser Build bündelt die
+nachfolgend dokumentierte ZIP-Vollsicherung, Einstellungstabs, stabile Dialoggrößen,
+Gesamtfortschritt und eigenständige Anzeige beim nativen Schließen.
+
+Windows-EXE, Quellarchiv, Prüfbericht und SHA256-Prüfsummen gehören zur Bereitstellung.
+Aktuelle Prüfungen und Grenzen stehen im Prüfbericht.
+
+## Änderungen seit 2.05.00 – ZIP-Vollsicherung
+
+<!-- Änderung nach 2.05.00: Sichtbare Shutdown-Anzeige unabhängig vom NiceGUI-Prozess. -->
+`sicherungsanzeige.py` betreibt Tk im Hauptthread eines eigenen Spawn-Prozesses.
+Ein Event bestätigt das tatsächlich eingeblendete Fenster vor Sicherungsbeginn,
+eine Queue übermittelt Fortschritt und Abschluss. Der Elternprozess wartet die
+Sicherung und die Abschlussanzeige ab und bereinigt seinen Fensterprozess.
+Anzeigeausfälle werden nach erfolgter Sicherung ausdrücklich gemeldet.
+Der frühere stille TclError-Pfad entfällt. Praxisprüfung kontrolliert sichtbare,
+nicht minimierte Fenster samt Prozesszuordnung statt lediglich existierender Handles.
+
+<!-- Änderung nach 2.05.00: Native Beendigungsanzeige mit sichtbarem Abschluss. -->
+Native Sicherungsanzeige zentriert und angehoben. Nach erfolgreichem Abschluss
+100 % und feste Bestätigung für 1200 ms anzeigen, anschließend automatisch schließen.
+Fehler verwenden weiterhin die bestehende Fehlermeldung.
+
+<!-- Änderung nach 2.05.00: Zusätzlichen Beenden-Button entfernen. -->
+Beenden-Button aus der Anwendungskopfzeile entfernt, Callback-Erwartung im
+bestehenden Navigations-Strukturvergleich angepasst. Natives Fenster-X verwendet
+weiterhin den registrierten Shutdown-Hook für die Vollsicherung.
+
+<!-- Änderung nach 2.05.00: Rohwertbeschriftung, Dialogsprünge und Phasengewichte beheben. -->
+NiceGUI-LinearProgress ausdrücklich mit `show_value=False`, separate Prozentanzeige
+ohne vorzeitiges Aufrunden auf 100. Sicherungsdialog 560×340 px mit viewportbegrenzter
+Größe, reserviertem Meldungsbereich und von Anfang an sichtbarem deaktiviertem
+Schließen-Button. Dateipfad separat im scrollbaren Meldungsbereich.
+
+Fortschritt zählt geschriebene und CRC-geprüfte unkomprimierte Bytes gleichwertig,
+zusätzlich je ZIP-Eintrag eine Einheit und eine Einheit für den erfolgreichen
+Abschluss. Keine festen 90/7-Prozent-Phasengewichte mehr. ZIP-Verarbeitung,
+Prüfreihenfolge und Aufräumregeln unverändert. Die Anzeige ist nach Datenmenge
+linear; CPU-, Laufwerks- und Kompressionsgeschwindigkeit bestimmen die Laufzeit.
+
+<!-- Änderung nach 2.05.00: Inhaltsunabhängige Dialoghöhe und stabile Tabposition. -->
+Einstellungsdialog mit fester Höhe von 720 px, begrenzt auf 90 % der Fensterhöhe.
+Tabinhalt weiterhin flexibel und scrollbar; reservierter Scrollleistenplatz hält
+die Inhaltsbreite stabil. Bestehende Browserprüfung vergleicht Dialoghöhe und
+Positionen von Dialog, Tabzeile und Aktionsleiste über alle vier Tabs, auch bei
+600 px Fensterhöhe. Keine Änderung an Speicher- oder Sicherungslogik.
+
+<!-- Änderung nach 2.05.00: Tabstruktur und gemeinsamer Gesamtfortschritt ergänzen. -->
+Einstellungen in vier Tabs mit gemeinsamem Speichern/Abbrechen und `keep_alive`
+strukturiert. Bestehende Felder in ihre Themenbereiche verschoben. Aufbewahrungsfeld
+an den Wert der Aufräumen-Checkbox gebunden; Ausblenden löscht den Wochenwert nicht.
+Ein einziger Gesamtbalken mit einheitlichem Statustext für Komprimieren/Sichern,
+ZIP-Prüfung und Abschluss; nur Anzeige geändert, ZIP-Erstellung und Aufräumregeln
+unverändert. Browserprüfung um Tabwechsel, Werterhalt, bedingte Sichtbarkeit,
+schmale Ansichten und genau einen Gesamtbalken erweitert.
+
+<!-- Änderung nach 2.05.00: Neue lokale Vollsicherung getrennt von Fachlogik ergänzen. -->
+Arbeitsstand nach 2.05.00: `vollsicherung.py` erstellt komprimierte ZIPs des
+gespeicherten Arbeitsordners einschließlich leerer Ordner und separater Programm-INI.
+Blockweise Verarbeitung mit Fortschritt, Quelländerungserkennung, CRC-Leseprüfung,
+temporärer Datei und abschließendem Umbenennen. Herkunftskennung begrenzt Aufräumen
+auf eigene Archive desselben Arbeitsordners nach wählbarer Wochenfrist und erst
+nach Erfolg. Fremde Dateien und bisherige Datenbanksicherung bleiben erhalten.
+
+`vollsicherung_ui.py` ergänzt Einstellungen, native Ordnerwahl, manuelle Sicherung,
+gemeinsame Startsperre und nativen Fortschritt beim NiceGUI-Shutdown einschließlich
+Fenster-X. Optionen im neuen INI-Abschnitt `Sicherung`; alte INIs bleiben gültig.
+Automatik/Aufräumen aus, Vorgabe 12 Wochen. Fachberechnungen, Importe und vorhandene
+Speicherabläufe unverändert. Strukturvergleich nimmt nur die beiden expliziten
+Backup-Ergänzungen aus; neue Funktion separat mit lokalen Daten/Fehlerfällen geprüft.
+Keine Versionserhöhung, Veröffentlichung oder EXE für diesen Implementierungsauftrag.
+
 ## Pflege der Änderungsdokumentation
 
 - `RELEASE_NOTES.md`: Änderungen beschreiben, die Anwender bei Bedienung oder

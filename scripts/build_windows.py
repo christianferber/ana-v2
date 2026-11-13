@@ -19,6 +19,10 @@ def main():
     baum = ast.parse((basis / 'anwendung' / 'oberflaeche.py').read_text(encoding='utf-8'))
     version = next(k.value.value for k in baum.body if isinstance(k, ast.Assign)
                    and any(isinstance(ziel, ast.Name) and ziel.id == 'version' for ziel in k.targets))
+    # Änderung 2.05.01: Buildnummer im Paketnamen erhalten, ältere Quellen weiterhin unterstützen.
+    paket_version = next((k.value.value for k in baum.body if isinstance(k, ast.Assign)
+                          and any(isinstance(name, ast.Name) and name.id == 'build_version'
+                                  for name in k.targets)), format(version, '.2f'))
     # Änderung für v2: Nur Programm- und Bibliotheksressourcen einbinden, keine Fachdaten.
     befehl = [sys.executable, '-m', 'PyInstaller', '--noconfirm', '--onedir', '--windowed',
               '--name', 'ANA', '--distpath', str(ziel / 'dist'), '--workpath', str(ziel / 'build'),
@@ -42,7 +46,7 @@ def main():
         (ausgabe / name).mkdir(exist_ok=True)
     release = ziel / 'release'
     release.mkdir(exist_ok=True)
-    archiv = release / ('ANA-' + format(version, '.2f') + '-Windows-x64')
+    archiv = release / ('ANA-' + paket_version + '-Windows-x64')
     shutil.make_archive(str(archiv), 'zip', root_dir=ziel / 'dist', base_dir='ANA')
     print('Windows-Paket erstellt: ' + archiv.name + '.zip')
 

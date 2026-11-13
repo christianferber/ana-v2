@@ -71,7 +71,8 @@ body { background: #f4f7fa; color: #233747; font-family: "Segoe UI", Arial, sans
 @media (pointer: coarse) { .ana-compact-button { min-height: 44px; } }
 
 /* Änderung nach 2.049: Verständlicher Einstellungsdialog mit festen Kopf-/Fußbereichen. */
-.ana-settings-dialog { width: 760px; max-width: calc(100vw - 32px) !important; max-height: 90vh; padding: 0; gap: 0; overflow: hidden; }
+/* Änderung nach 2.05.00: Gleiche Dialoghöhe für alle Tabs verhindert ein Verschieben der Tabzeile. */
+.ana-settings-dialog { width: 760px; max-width: calc(100vw - 32px) !important; height: 720px; max-height: 90vh; padding: 0; gap: 0; overflow: hidden; }
 .ana-settings-header, .ana-settings-body { width: 100%; padding: 20px 24px; gap: 12px; }
 .ana-settings-header { flex-shrink: 0; border-bottom: 1px solid #dce5ec; gap: 4px; }
 .ana-settings-body { min-height: 0; flex: 1; overflow-y: auto; }
@@ -86,6 +87,15 @@ body { background: #f4f7fa; color: #233747; font-family: "Segoe UI", Arial, sans
 .ana-settings-advanced .ana-settings-grid { padding: 12px 0; }
 .ana-settings-footer { width: 100%; padding: 14px 24px; gap: 8px; justify-content: flex-end; border-top: 1px solid #dce5ec; flex-shrink: 0; background: #fff; }
 .ana-settings-save { background: #1761a0 !important; color: #fff !important; }
+/* Änderung nach 2.05.00: Sicherungsdialog bleibt von Start bis Abschluss gleich groß. */
+.ana-backup-progress { width: 560px; max-width: calc(100vw - 32px) !important; height: 340px; max-height: 90vh; padding: 20px; gap: 16px; overflow: hidden; }
+.ana-backup-message { width: 100%; flex: 1; min-height: 0; overflow-y: auto; overflow-wrap: anywhere; gap: 8px; scrollbar-gutter: stable; }
+/* Änderung nach 2.05.00: Tabzeile und Aktionen sichtbar halten; nur Tabinhalt scrollen. */
+.ana-settings-tabs { flex-shrink: 0; border-bottom: 1px solid #dce5ec; }
+/* Änderung: Platz für die Scrollleiste reservieren, damit auch die Inhaltsbreite stabil bleibt. */
+.ana-settings-body.ana-settings-panels { padding: 0; scrollbar-gutter: stable; }
+.ana-settings-panels .q-tab-panel { padding: 20px 24px; }
+@media (max-width: 600px) { .ana-settings-panels { padding: 0; } .ana-settings-panels .q-tab-panel { padding: 16px; } }
 @media (max-width: 600px) { .ana-settings-grid { grid-template-columns: minmax(0, 1fr); } .ana-settings-header, .ana-settings-body { padding: 16px; } .ana-settings-footer { padding: 12px 16px; } }
 
 @media (max-width: 900px) {

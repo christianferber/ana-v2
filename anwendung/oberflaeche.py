@@ -24,6 +24,8 @@ from anwendung.kontodaten_ui import KontodatenOberflaeche
 from anwendung.werkzeuge_ui import WerkzeugeOberflaeche
 # Änderung 2.038: Einstellungsansicht einbinden.
 from anwendung.einstellungen_ui import EinstellungenOberflaeche
+# Änderung nach 2.05.00: Gemeinsame Vollsicherung; Shutdown-Hook deckt auch Fenster-X ab.
+from anwendung.vollsicherung_ui import VollsicherungSteuerung
 # Änderung 2.039: Changelog-Ansicht einbinden.
 from anwendung.changelog_ui import ChangelogOberflaeche
 # Änderung 2.040: Statistikansicht einbinden; Register bleibt deaktiviert.
@@ -74,6 +76,8 @@ datenhaltung_hilfe = DatenbankZugriff(sys.modules[__name__])
 from anwendung.sicherung import Sicherung
 from anwendung.protokollierung import Protokollierung
 sicherung_hilfe = Sicherung(sys.modules[__name__])
+# Änderung: Ein gemeinsamer Sicherungszustand für Einstellungen und Programmende.
+vollsicherung = VollsicherungSteuerung(sys.modules[__name__])
 protokollierung_hilfe = Protokollierung(sys.modules[__name__])
 from pathlib import Path
 import shutil
@@ -137,6 +141,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.049: Geprüfte UI-Modernisierung und angepasste Startanzeige veröffentlichen.
 # Änderung 2.05.00: Neue Freigabe; sichtbare Version 2.05, Entwicklungsstand 00.
 version = 2.05
+# Änderung 2.05.01: Vollständige Buildnummer für Paketierung; Anzeige verwendet weiter 2.05.
+build_version = '2.05.01'
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []
@@ -937,6 +943,8 @@ def main():
 
     ### Sicherung bei Programmstart
     db_sichern("Programmstart")
+    # Änderung nach 2.05.00: Vollsicherung auch beim nativen Fensterschließen vollständig abwarten.
+    app.on_shutdown(vollsicherung.beim_beenden)
 
 
 
@@ -977,7 +985,7 @@ def main():
             ui.space()
             # Änderung 2.049: Rechtes Logo vergrößern; Einstellungen ausschließlich links anbieten.
             ui.image(str(RESSOURCEN / 'Logo NWS.JPG')).classes('ana-header-logo ana-header-partner-logo')
-            ui.button('', icon='close', on_click=app.shutdown).props('flat round aria-label="Programm beenden"').tooltip('Programm beenden')
+            # Änderung nach 2.05.00: Anwendung über das native Fenster-X schließen.
 
     # Änderung 2.049: Keep-alive, Startregister und alle Panel-/Funktionsbindungen ausdrücklich erhalten.
     with ui.tab_panels(tabs, value=tab1, keep_alive=True).classes('ana-workspace'):

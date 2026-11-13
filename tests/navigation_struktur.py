@@ -17,6 +17,11 @@ def hauptfenster_vergleichen(alt, neu):
     for vorher, nachher in zip(alt.body[:2], neu.body[:2]):
         gleich(vorher, nachher)
     gleich(alt.body[-1], neu.body[-1])
+    # Änderung nach 2.05.00: Den zusätzlichen Shutdown-Hook ausdrücklich prüfen.
+    hooks = [k for k in ast.walk(neu) if isinstance(k, ast.Call)
+             and ast.unparse(k.func) == 'app.on_shutdown']
+    assert len(hooks) == 1
+    gleich(hooks[0], ast.parse('app.on_shutdown(vollsicherung.beim_beenden)', mode='eval').body)
     # Änderung 2.049: Namen, Reihenfolge und Registerwechsel-Callback erhalten.
     vorher = aufrufe(alt, 'tab')
     nachher = aufrufe(neu, 'tab')
@@ -54,5 +59,5 @@ def hauptfenster_vergleichen(alt, neu):
     callbacks = [ast.unparse(k.value) for a in aufrufe(neu, 'button')
                  for k in a.keywords if k.arg == 'on_click']
     # Änderung 2.049: Einstellungen ausschließlich in der Seitenleiste anbieten.
-    assert sorted(callbacks) == sorted(['einstellungen_ui',
-                                      'app.shutdown', 'navigation.toggle'])
+    # Änderung nach 2.05.00: Zusätzlichen Beenden-Button aus der Kopfzeile entfernt.
+    assert sorted(callbacks) == sorted(['einstellungen_ui', 'navigation.toggle'])

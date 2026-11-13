@@ -8,6 +8,8 @@ import webview
 from anwendung.einstellungen import ini_datei_schreiben
 # Änderung nach 2.049: Bestehende Eingaben und Aktionen verständlicher anordnen.
 from anwendung.einstellungen_layout import einstellungen_gestalten
+# Änderung nach 2.05.00: Neue Sicherungsoptionen vor dem Speichern prüfen und in INI ergänzen.
+from anwendung.vollsicherung_ui import sicherungskonfiguration_ergaenzen, sicherungskonfiguration_pruefen
 
 
 class EinstellungenOberflaeche:
@@ -66,12 +68,17 @@ class EinstellungenOberflaeche:
             daten=lambda: {},
             dateien=lambda: (self.anwendung.ini, Path(self.anwendung.arbeitsordner) / self.anwendung.ini_betreiber),
         ):
+            # Änderung: Ungültige Sicherungsoptionen dürfen keine Einstellungsdatei verändern.
+            if not sicherungskonfiguration_pruefen(self):
+                return
             # Änderung 2.038: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
             config = configparser.ConfigParser()
             config['Anwendung'] = { 'FarbeSpezial' : self.ini_farbe_spezial.value,
                                     'FarbeTabelleEdit' : self.ini_farbe_tabelle_edit.value,
                                     'TabellenZeilenProSeite' : self.ini_tabelle_pagination.value,
                                     'Arbeitsordner' : self.ini_arbeitsordner.text}
+            # Änderung: Bestehende Programm- und Betreibereinstellungen bleiben unverändert.
+            sicherungskonfiguration_ergaenzen(self, config)
             # Änderung für v2: Nur der Dateizugriff ist ausgelagert; Dialogablauf bleibt bestehen.
             ini_datei_schreiben(self.anwendung.ini, config)
             if self.anwendung.arbeitsordner != self.ini_arbeitsordner.text:

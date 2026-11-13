@@ -133,6 +133,9 @@ def _testen(prozesse, rueckverguetung=False):
         fall['ergebnis'] = fall['ergebnis'][:1]
         erwartete_csv = dictlist_to_csv(copy.deepcopy(fall['ergebnis']))
     config['Anwendung']['Arbeitsordner'] = str(kopie)
+    # Änderung: Testkopie mit definierten Optionen starten, unabhängig von Benutzer-Sicherungszielen.
+    config['Sicherung'] = dict(Ordner='', BeiProgrammende='nein', Aufraeumen='nein',
+                              AufbewahrungWochen='12')
     ini_datei_schreiben(run / 'ana.ini', config)
     port = freier_port()
     (run / 'port.txt').write_text(str(port))
@@ -243,6 +246,14 @@ def _testen(prozesse, rueckverguetung=False):
                    + json.dumps(str(wert)) + ");e.dispatchEvent(new Event('input',{bubbles:true}));"
                    "e.dispatchEvent(new Event('change',{bubbles:true}));e.blur()})()")
                 time.sleep(1)
+            def einstellungstab(name):
+                # Änderung nach 2.05.00: Echte Tabklicks auch in schmaler Einstellungsansicht.
+                tab = ("Array.from(document.querySelectorAll('.ana-settings-tabs .q-tab')).find(e=>"
+                       "e.querySelector('.q-tab__label')?.textContent.trim()===" + json.dumps(name) + ')')
+                warten('Boolean(' + tab + ')')
+                klicken(tab)
+                warten('(' + tab + ").getAttribute('aria-selected')==='true'")
+                time.sleep(.4)
             def export_starten(text):
                 # Änderung nach 2.049: Fortschrittskomponente muss direkt im PDF-Button liegen.
                 assert js("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith("
@@ -364,26 +375,51 @@ def _testen(prozesse, rueckverguetung=False):
                 if not navigation_offen:
                     klicken(menue)
                     time.sleep(1)
+                ini_vorher = (run / 'ana.ini').read_bytes()
                 knopf('Einstellungen')
                 warten("Boolean(document.querySelector('.ana-settings-dialog'))")
-                assert js("document.querySelectorAll('.ana-settings-dialog .q-field').length === 8")
-                assert js("document.querySelector('.ana-settings-advanced').classList.contains('q-expansion-item--collapsed')")
-                klicken("document.querySelector('.ana-settings-advanced .q-expansion-item__container > .q-item')")
-                warten("document.querySelector('.ana-settings-advanced').classList.contains('q-expansion-item--expanded')")
-                assert js("document.querySelector('.ana-settings-advanced .q-field').getClientRects().length > 0")
-                for breite in (1440, 800, 400):
-                    cdp('Emulation.setDeviceMetricsOverride', {'width': breite, 'height': 900,
+                # Änderung: Vier getrennte Tabs, bestehende Eingaben und gemeinsame Aktionsleiste.
+                einstellungstabs = ['Betreiber und Preise', 'Arbeitsordner', 'Datensicherung', 'Darstellung']
+                assert json.loads(js("JSON.stringify(Array.from(document.querySelectorAll('.ana-settings-tabs .q-tab__label')).map(e=>e.textContent.trim()))")) == einstellungstabs
+                assert js("document.querySelectorAll('.ana-settings-operator .q-field').length === 5")
+                einstellungstab('Datensicherung')
+                assert js("document.querySelector('.ana-backup-settings').innerText.includes('Jetzt sichern')")
+                assert js("document.querySelector('.ana-backup-settings').innerText.includes('Bei Programmbeendigung sichern')")
+                assert js("document.querySelector('.ana-backup-retention').getClientRects().length === 0")
+                klicken("document.querySelectorAll('.ana-backup-settings .q-checkbox')[1]")
+                warten("document.querySelector('.ana-backup-retention').getClientRects().length > 0")
+                eingabe('Aufbewahrung in Wochen', 6)
+                klicken("document.querySelectorAll('.ana-backup-settings .q-checkbox')[1]")
+                warten("document.querySelector('.ana-backup-retention').getClientRects().length === 0")
+                klicken("document.querySelectorAll('.ana-backup-settings .q-checkbox')[1]")
+                warten("document.querySelector('.ana-backup-retention').getClientRects().length > 0")
+                assert js("document.querySelector('.ana-backup-retention input').value") == '6'
+                einstellungstab('Darstellung')
+                assert js("document.querySelectorAll('.ana-settings-appearance .q-field').length === 3")
+                eingabe('Hervorhebungsfarbe', 'teal')
+                # Änderung: Dialog, Tabs und Aktionsleiste dürfen beim Tabwechsel nicht wandern.
+                for breite, hoehe in ((1440, 900), (800, 900), (400, 900), (800, 600)):
+                    cdp('Emulation.setDeviceMetricsOverride', {'width': breite, 'height': hoehe,
                         'deviceScaleFactor': 1, 'mobile': False})
                     time.sleep(1)
-                    assert js("(()=>{const r=document.querySelector('.ana-settings-dialog').getBoundingClientRect();const f=document.querySelector('.ana-settings-footer').getBoundingClientRect();return r.left>=0 && r.right<=window.innerWidth+1 && f.bottom<=window.innerHeight+1})()")
+                    vorher = None
+                    for name in einstellungstabs:
+                        einstellungstab(name)
+                        assert js("(()=>{const r=document.querySelector('.ana-settings-dialog').getBoundingClientRect();const f=document.querySelector('.ana-settings-footer').getBoundingClientRect();const t=document.querySelector('.ana-settings-tabs').getBoundingClientRect();return r.left>=0 && r.right<=window.innerWidth+1 && f.bottom<=window.innerHeight+1 && t.top>=r.top && t.bottom<f.top})()")
+                        position = js("(()=>{const r=document.querySelector('.ana-settings-dialog').getBoundingClientRect();const t=document.querySelector('.ana-settings-tabs').getBoundingClientRect();const f=document.querySelector('.ana-settings-footer').getBoundingClientRect();return [r.top,r.height,t.top,f.top]})()")
+                        if vorher is not None:
+                            assert all(abs(a - b) <= 1 for a, b in zip(position, vorher))
+                        vorher = position
+                assert js("document.querySelector('.ana-settings-appearance input').value") == 'teal'
                 cdp('Emulation.clearDeviceMetricsOverride', {})
                 time.sleep(1)
                 knopf('Abbrechen', "document.querySelector('.ana-settings-dialog')")
                 warten("!document.querySelector('.ana-settings-dialog')")
+                assert (run / 'ana.ini').read_bytes() == ini_vorher
                 if not navigation_offen:
                     klicken(menue)
                     time.sleep(1)
-                print('Einstellungen: acht Felder, erweiterte Darstellung, Abbrechen und Layout 1440/800/400 bestanden.', flush=True)
+                print('Einstellungen: vier Tabs, Werterhalt, bedingte Aufbewahrung, Abbrechen und stabile Dialog-/Tabposition bei 1440/800/400 sowie 600 Pixel Höhe bestanden.', flush=True)
             # Änderung 2.049: Register anhand ihrer Beschriftung finden; Navigationsicons nicht mitlesen.
             if rueckverguetung:
                 # Änderung für v2: Rückvergütung vollständig über die echte Oberfläche prüfen.
@@ -514,6 +550,116 @@ def _testen(prozesse, rueckverguetung=False):
             assert js("Array.from(document.querySelectorAll('button')).some(e=>{const p=e.querySelector('.ana-button-progress');return e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith('Word/PDF erstellen') && p && Number(p.getAttribute('aria-valuemax'))>0 && Number(p.getAttribute('aria-valuenow'))===Number(p.getAttribute('aria-valuemax'))})")
             # Änderung nach 2.049: Prozentzahl muss im sichtbaren Exportbutton erscheinen.
             assert js("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && e.querySelector('.ana-button-percent')?.textContent.trim()==='100 %' && !e.querySelector('.ana-button-percent').classList.contains('invisible'))")
+            if not rueckverguetung:
+                # Änderung nach 2.05.00: Echte Backup-Bedienung nach vollständigem Dokumentlauf prüfen.
+                SCHRITT = 'Vollsicherung über Einstellungen'
+                if not js("document.querySelector('.q-drawer').getBoundingClientRect().right > 0"):
+                    klicken("document.querySelector('button[aria-label=\"Navigation ein-/ausblenden\"]')")
+                    time.sleep(1)
+                knopf('Einstellungen')
+                einstellungstab('Datensicherung')
+                warten("Boolean(document.querySelector('.ana-backup-settings input'))")
+                assert js("document.querySelector('.ana-backup-retention').getClientRects().length === 0")
+                sicherungsziel = run / 'vollsicherungen'
+                js("(()=>{const e=document.querySelector('.ana-backup-settings input');e.value="
+                   + json.dumps(str(sicherungsziel)) + ";e.dispatchEvent(new Event('input',{bubbles:true}))})()")
+                time.sleep(1)
+                # Änderung: Beide Optionen sowie Wochen einstellen und tatsächlich in INI speichern.
+                klicken("document.querySelectorAll('.ana-backup-settings .q-checkbox')[0]")
+                klicken("document.querySelectorAll('.ana-backup-settings .q-checkbox')[1]")
+                warten("document.querySelector('.ana-backup-retention').getClientRects().length > 0")
+                js("(()=>{const e=document.querySelector('.ana-backup-settings input[type=number]');e.value='8';e.dispatchEvent(new Event('input',{bubbles:true}))})()")
+                time.sleep(1)
+                knopf('Speichern', "document.querySelector('.ana-settings-dialog')")
+                warten("!document.querySelector('.ana-settings-dialog')")
+                sicherungsconfig = ini_datei_lesen(run / 'ana.ini')['Sicherung']
+                assert sicherungsconfig['Ordner'] == str(sicherungsziel)
+                assert sicherungsconfig['BeiProgrammende'] == sicherungsconfig['Aufraeumen'] == 'ja'
+                assert sicherungsconfig['AufbewahrungWochen'] == '8'
+                knopf('Einstellungen')
+                einstellungstab('Datensicherung')
+                warten("Boolean(document.querySelector('.ana-backup-settings input'))")
+                assert js("document.querySelector('.ana-backup-settings input').value") == str(sicherungsziel)
+                assert js("Array.from(document.querySelectorAll('.ana-backup-settings .q-checkbox')).every(e=>e.getAttribute('aria-checked')==='true')")
+                assert js("document.querySelector('.ana-backup-settings input[type=number]').value") == '8'
+                assert js("document.querySelector('.ana-backup-retention').getClientRects().length > 0")
+                # Änderung: Nach der normalen Öffnungsanimation Größe/Position und Balkeninhalt
+                # während des Laufs lokal messen; der Dialogeffekt ist keine Inhaltsänderung.
+                js("window.anaBackupMessung=[];window.anaBackupStart=null;window.anaBackupTimer=setInterval(()=>{const d=document.querySelector('.ana-backup-progress');if(!d)return;if(window.anaBackupStart===null)window.anaBackupStart=performance.now();if(performance.now()-window.anaBackupStart<400)return;const b=d.querySelector('.ana-backup-total');const k=d.querySelector('button');const r=d.getBoundingClientRect();const br=b.getBoundingClientRect();window.anaBackupMessung.push({rahmen:[r.x,r.y,r.width,r.height,br.y,k.getBoundingClientRect().y],wert:Number(b.getAttribute('aria-valuenow')),text:b.textContent.trim(),gesperrt:k.disabled})},50)")
+                knopf('Jetzt sichern')
+                warten("Boolean(document.querySelector('.ana-backup-progress .q-linear-progress'))")
+                # Änderung: Genau ein Gesamtbalken für Komprimieren und Sichern.
+                assert js("document.querySelectorAll('.ana-backup-progress .q-linear-progress').length === 1")
+                assert js("document.querySelector('.ana-backup-progress .ana-backup-total').getAttribute('aria-label')") == 'Gesamtfortschritt Komprimieren und Sichern'
+                warten("document.querySelector('.ana-backup-progress')?.innerText.includes('Sicherung gespeichert:')", 120)
+                assert js("document.querySelector('.ana-backup-progress').innerText.includes('100 %')")
+                time.sleep(.2)
+                messungen = js('clearInterval(window.anaBackupTimer);window.anaBackupMessung')
+                assert len(messungen) >= 2 and any(m['gesperrt'] for m in messungen)
+                assert not messungen[-1]['gesperrt'] and messungen[-1]['wert'] == 1
+                assert all(m['text'] == '' for m in messungen)
+                assert all(all(abs(a - b) <= 1 for a, b in zip(m['rahmen'], messungen[0]['rahmen'])) for m in messungen)
+                assert [m['wert'] for m in messungen] == sorted(m['wert'] for m in messungen)
+                # Änderung: Auch lange Abschlusspfade dürfen auf schmalen Fenstern nichts verschieben.
+                for breite in (400, 800, 1440):
+                    cdp('Emulation.setDeviceMetricsOverride', {'width': breite, 'height': 900,
+                        'deviceScaleFactor': 1, 'mobile': False})
+                    time.sleep(.5)
+                    assert js("(()=>{const d=document.querySelector('.ana-backup-progress');const r=d.getBoundingClientRect();const b=d.querySelector('button').getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1 && r.bottom<=innerHeight+1 && b.bottom<=r.bottom && d.scrollHeight<=d.clientHeight+1})()")
+                cdp('Emulation.clearDeviceMetricsOverride', {})
+                time.sleep(.5)
+                knopf('Schließen', "document.querySelector('.ana-backup-progress')")
+                warten("!document.querySelector('.ana-backup-progress')")
+                knopf('Abbrechen', "document.querySelector('.ana-settings-dialog')")
+                warten("!document.querySelector('.ana-settings-dialog')")
+                assert len(list(sicherungsziel.glob('ANA-Vollsicherung-*.zip'))) == 1
+                print('Vollsicherung: gespeicherte Optionen, ZIP-Lauf, stabiler Dialog, textfreier Balken und monotoner Gesamtfortschritt bestanden.', flush=True)
+
+                # Änderung: Natives Fenster-X auslösen; reale automatische Sicherung abwarten.
+                SCHRITT = 'Vollsicherung bei nativem Fenster-X'
+                import win32con
+                import win32gui
+                import win32process
+                from tests.testprozesse import prozessliste
+                pids = {p['ProcessId'] for p in prozessliste() if p['ParentProcessId'] == app.pid}
+                fenster = []
+                def suchen(hwnd, _):
+                    if win32process.GetWindowThreadProcessId(hwnd)[1] in pids and win32gui.GetWindowText(hwnd) == 'ANA':
+                        fenster.append(hwnd)
+                win32gui.EnumWindows(suchen, None)
+                assert len(fenster) == 1
+                win32gui.PostMessage(fenster[0], win32con.WM_CLOSE, 0, 0)
+                anzeige_gesehen = False
+                anzeige_pids = {app.pid}
+                for _ in range(600):
+                    # Änderung: Eigenständigen Anzeigeprozess einbeziehen und echte Sichtbarkeit prüfen.
+                    if not anzeige_gesehen:
+                        anzeige_pids.update(p['ProcessId'] for p in prozessliste() if p['ParentProcessId'] == app.pid)
+                    sichtbar = []
+                    def anzeige_suchen(hwnd, _):
+                        if (win32process.GetWindowThreadProcessId(hwnd)[1] in anzeige_pids
+                                and win32gui.GetWindowText(hwnd) == 'ANA – Sicherung beim Beenden'
+                                and win32gui.IsWindowVisible(hwnd) and not win32gui.IsIconic(hwnd)):
+                            sichtbar.append(hwnd)
+                    win32gui.EnumWindows(anzeige_suchen, None)
+                    anzeige_gesehen = anzeige_gesehen or bool(sichtbar)
+                    if app.poll() is not None:
+                        break
+                    time.sleep(.1)
+                else:
+                    raise TimeoutError('Automatische Sicherung oder Programmende nicht abgeschlossen')
+                assert anzeige_gesehen
+                assert len(list(sicherungsziel.glob('ANA-Vollsicherung-*.zip'))) == 2
+                from zipfile import ZipFile
+                jetzt = bestand(kopie)
+                for archiv in sicherungsziel.glob('ANA-Vollsicherung-*.zip'):
+                    with ZipFile(archiv) as zipdatei:
+                        assert zipdatei.testzip() is None
+                        gesichert = {n.removeprefix('Arbeitsordner/').replace('/', '\\'): hashlib.sha256(zipdatei.read(n)).digest()
+                                     for n in zipdatei.namelist() if n.startswith('Arbeitsordner/') and not n.endswith('/')}
+                        assert gesichert == jetzt
+                        assert zipdatei.read('Programmeinstellungen/ana.ini') == (run / 'ana.ini').read_bytes()
+                print('Fenster-X: native Fortschrittsanzeige, automatische ZIP-Sicherung und vollständige Daten/INI bestanden.', flush=True)
         assert bestand(daten) == originalbestand
         # Änderung: Das Startfenster muss sich nach Verbindung selbständig geschlossen haben.
         assert (run / 'startanzeige-geschlossen.txt').is_file()

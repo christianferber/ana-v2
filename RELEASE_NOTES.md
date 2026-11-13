@@ -5,6 +5,58 @@ ANA RELEASE NOTES
 Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
+<!-- Änderung nach 2.05.00: Vollsicherung aus Anwendersicht beschreiben. -->
+Build 2.05.01 – 13.11.2026
+-------------------------
+
+<!-- Änderung nach 2.05.00: Doppelten Beenden-Knopf aus der Kopfzeile entfernen. -->
+Verbesserung: Die Anwendung wird über das Fenster-X geschlossen. Der zusätzliche
+Schließen-Knopf in der Kopfzeile entfällt. Die aktivierte Sicherung wird beim Beenden ausgeführt.
+
+<!-- Änderung nach 2.05.00: Einstellungen mit Tabs und gemeinsame Sicherungsanzeige beschreiben. -->
+Verbesserung: Die Einstellungen sind in „Betreiber und Preise“, „Arbeitsordner“,
+„Datensicherung“ und „Darstellung“ gegliedert. Speichern und Abbrechen gelten für
+alle Tabs; Eingaben bleiben beim Wechsel erhalten. Die Aufbewahrung in Wochen
+erscheint nur bei eingeschaltetem Aufräumen.
+
+<!-- Änderung nach 2.05.00: Stabile Dialogposition beim Tabwechsel beschreiben. -->
+Verbesserung: Der Einstellungsdialog behält beim Tabwechsel dieselbe Größe und
+Position. Tabzeile und Aktionsleiste bleiben stehen; längere Inhalte scrollen im Tab.
+
+Verbesserung: Komprimieren und Sichern verwenden einen gemeinsamen Fortschrittsbalken
+von 0 bis 100 Prozent, einschließlich der ZIP-Prüfung und des Sicherungsabschlusses.
+
+<!-- Änderung nach 2.05.00: Fehler der Sicherungsfortschrittsanzeige korrigieren. -->
+Bugfix: Im Sicherungsbalken erscheint kein interner Zahlenwert mehr. Der Dialog
+behält beim Abschluss mit längerem Dateipfad seine Größe; die Schließen-Schaltfläche
+bleibt an derselben Position. Komprimierung und ZIP-Prüfung zählen den Fortschritt
+blockweise nach verarbeiteter Datenmenge statt nach festen Phasenanteilen.
+
+Feature: In den Einstellungen lässt sich eine ZIP-Vollsicherung mit frei wählbarem
+Zielordner erstellen. Sie enthält die gespeicherten Daten des Arbeitsordners,
+einschließlich Datenbanken, Vorlagen, Abrechnungen und Rückvergütungen, sowie die
+Programmeinstellungen. „Jetzt sichern“ startet eine manuelle Sicherung mit
+Fortschrittsbalken. Nicht gespeicherte Eingaben werden nicht übernommen.
+
+Feature: Wahlweise erstellt ANA beim Beenden automatisch eine Sicherung, auch
+beim Schließen über das Fenster-X. Währenddessen zeigt ein eigenes Fenster den
+Fortschritt. Sicherungsordner und Optionen werden mit den Einstellungen gespeichert.
+
+<!-- Änderung nach 2.05.00: Erfolg der Sicherung beim Beenden sichtbar bestätigen. -->
+Verbesserung: Das Sicherungsfenster beim Beenden erscheint mittig im Vordergrund.
+Nach erfolgreicher Sicherung zeigt es kurz „Sicherung abgeschlossen“ und 100 Prozent,
+bevor die Anwendung vollständig beendet wird.
+
+<!-- Änderung nach 2.05.00: Fortschrittsfenster beim Schließen unabhängig betreiben. -->
+Bugfix: Die Anzeige der Beendigungssicherung läuft in einem eigenen Fensterprozess.
+Vor Beginn wird geprüft, ob das Fenster sichtbar ist. Falls die Anzeige ausfällt,
+wird dies nach der Sicherung ausdrücklich gemeldet.
+
+Verbesserung: Optional werden nach erfolgreicher Sicherung ältere Vollsicherungen
+aufgeräumt. Die Aufbewahrung ist in ganzen Wochen wählbar; Vorgabe sind 12 Wochen.
+Fremde Dateien und Sicherungen anderer Arbeitsordner bleiben erhalten. Automatische
+Sicherung und Aufräumen sind zunächst ausgeschaltet.
+
 <!-- Änderung nach 2.049: Neue Serienbriefformatierung im lokalen Arbeitsstand. -->
 Version 2.05.00 – 13.11.2026
 --------------------------

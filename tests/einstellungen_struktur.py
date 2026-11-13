@@ -46,6 +46,13 @@ def methoden_als_funktionen(basis, originalfunktionen):
             continue
         assert methode.args.args[0].arg == 'self'
         funktion = NamenZurueckfuehren().visit(copy.deepcopy(methode))
+        if methode.name == 'ini_speichern':
+            # Änderung nach 2.05.00: Nur die zwei expliziten Backup-Ergänzungen ausnehmen;
+            # alle bisherigen Speicherabläufe weiterhin exakt gegen Original prüfen.
+            assert ast.unparse(funktion.body[0]) == 'if not sicherungskonfiguration_pruefen(self):\n    return'
+            del funktion.body[0]
+            assert ast.unparse(funktion.body[2]) == 'sicherungskonfiguration_ergaenzen(self, config)'
+            del funktion.body[2]
         # Änderung nach 2.049: Nur zusätzliche Darstellung und lokale Buttonreferenzen ausnehmen.
         if methode.name == 'einstellungen_ui':
             assert ast.unparse(funktion.body[-2]) == 'einstellungen_gestalten(self, karte, auswahl, standard, speichern, abbrechen)'

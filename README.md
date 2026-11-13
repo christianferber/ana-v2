@@ -1,6 +1,6 @@
-# ANA 2.049
+# ANA 2.05.01
 
-<!-- Änderung 2.049: Aktuelle Quellversion mit modernisierter Oberfläche kennzeichnen. -->
+<!-- Änderung 2.05.01: Aktuellen Windows-Build kennzeichnen. -->
 
 Automatische Nahwärme-Abrechnung für Windows.
 
@@ -32,6 +32,11 @@ den Programmordner als Arbeitsordner. In einer leeren Datenumgebung vor dem
 ersten Start `Datenbank`, `Sicherungen`, `Logs`, `Downloads`, `Abrechnungen`,
 `Rückvergütungen` und `Vorlagen` als Ordner anlegen.
 
+## Datensicherung
+
+<!-- Änderung nach 2.05.00: Bedienung der neuen ZIP-Vollsicherung verlinken. -->
+Hinweise zur Datensicherung stehen unter [ZIP-Vollsicherung](docs/DATENSICHERUNG.md).
+
 ## Windows-EXE erstellen
 
 ```powershell
@@ -39,7 +44,7 @@ python -m pip install -r requirements-build.txt
 python -m scripts.build_windows
 ```
 
-Ergebnis: `release/ANA-2.00-Windows-x64.zip`. Die Anwendung wird als Ordnerpaket
+Ergebnis: `release/ANA-2.05.01-Windows-x64.zip`. Die Anwendung wird als Ordnerpaket
 mit EXE und Laufzeitdateien erzeugt. Lokale INI-Dateien, Beispieldaten und Testausgaben
 werden nicht in das Paket übernommen.
 
