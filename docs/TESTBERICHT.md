@@ -1,8 +1,22 @@
-# Prüfbericht ANA – aktueller Arbeitsstand
+# Prüfbericht ANA – Version 2.05.00
+
+<!-- Änderung 2.05.00: Aktuelle vollständige Freigabeprüfung dokumentieren. -->
+Stand: 13.11.2026. Alle 30 Freigabeprüfungen und Syntaxprüfung bestanden.
+Regulärer vollständiger Praxislauf mit normaler Word-Anbindung bestanden:
+Statistikbereiche, beide Verbraucherstatistiken, allgemeine Jahreskostenmatrix,
+Zellwerte, Farben, Sortierung, Verbraucherwechsel, Navigation und Einstellungen.
+Berechnung und gespeicherte CSV entsprechen der lokalen Referenz.
+73 neue Word-Dateien und 73 lesbare PDFs erstellt. Gegen den vorherigen
+Praxislauf sind alle Word-Paketinhalte und PDF-Texte/Seitenzahlen identisch.
+Original-Beispieldaten unverändert; Test-App, Fenster und Testbrowser beendet.
+Alle Datenprüfungen ausschließlich lokal. Keine visuelle Dokumentprüfung.
+Keine neue Windows-EXE erstellt oder geprüft. Quellfreigabe mit Prüfbericht
+und SHA256-Prüfsummen. Nachfolgend Einzelprüfungen und historische Nachweise.
+
 
 <!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
 
-Stand: 11.11.2026
+Stand: 13.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
@@ -309,110 +323,6 @@ unabhängige Prozessabfrage bestätigt null ANA-, Word- und Testbrowserprozesse.
 Keine neue EXE, keine visuelle Dokumentprüfung. Bekannter Versionsanzeigefehler
 mit zwei Nachkommastellen bleibt unverändert.
 
-Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
-Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.
-
-<!-- Änderung: Abschlussprüfung der Word-Fehlerbereinigung vom 10.11.2026. -->
-## Word-Fehlerbereinigung – 10.11.2026
-
-- Alle 24 Freigabeprüfungen einschließlich 20 simulierter Word-Fehlerpfade und
-  Syntaxprüfung erfolgreich. Der erste Strukturvergleich erwartete noch den alten
-  Ressourcenablauf; nach gezielter Anpassung gesamte Freigabeprüfung bestanden.
-- Echtes Word mit synthetischem lokalem Dokument: gezielter SaveAs-Abbruch,
-  erfolgreiches Close/Quit und anschließender erneuter PDF-Export bestanden.
-- Vollständiger regulärer Abrechnungs-Praxislauf mit normaler Word-Anbindung und
-  isolierten lokalen Beispieldaten erfolgreich. 73 neue Word-/PDF-Paare;
-  CSV-Referenz und Originalbestand unverändert. Gegen vorherigen Praxislauf:
-  Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch.
-- App, Fenster und Testbrowser beendet. Unabhängige Prozessabfrage ohne passende
-  ANA-, Word- oder Testbrowserprozesse. Keine visuelle Dokumentprüfung.
-- Keine Simulation physischer Word-Hänger, keine Garantie bei fehlschlagendem Quit.
-  Close-/Quit-Fehler können den ursprünglichen Fehler weiterhin überdecken.
-  UI-Fehlermeldungen, Parallelexportsperre und Mitgliederlisten nicht geändert.
-- Version/Anzeige 2.047 unverändert; keine neue EXE oder neuer Versionsrelease.
-
-<!-- Änderung: Prüfung der Exportoberfläche vom 10.11.2026. -->
-## Exportoberfläche – 10.11.2026
-
-- Alle 25 Freigabeprüfungen und Syntaxprüfung bestanden. Ergänzte tatsächliche
-  Mitgliederlisten-Fehlertests nachträglich ebenfalls erfolgreich: jeweils Fehler
-  beim Erstellen und Speichern, Fehleranzeige und erneute Knopffreigabe.
-- Gezielte Tests aller drei Ansichten: Doppelstart während laufender Arbeit
-  verhindert; Vorbereitungs-/Hintergrund-/Threadstartfehler berücksichtigt;
-  Freigabe erst nach Threadende, erneuter Versuch möglich, keine internen
-  Fehlermeldungen oder Dateninhalte im Meldungstext.
-- Regulärer vollständiger Abrechnungslauf mit normaler Word-Anbindung und lokalen
-  Beispieldaten bestanden: 73 neue Word-/PDF-Paare, CSV-Referenz und Originalbestand
-  unverändert. Gegen vorherigen Stand Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch.
-- Rückvergütung im echten Testbrowser: gezielter erster PDF-Fehler sichtbar,
-  Exportknopf wieder verfügbar, nächster Versuch mit normaler Word-Anbindung
-  erfolgreich. Ein vorhandener Datensatz wie im regulären Rückvergütungs-Smoke-Test;
-  CSV-Referenz, lesbares PDF und unveränderter Originalbestand geprüft.
-- Test-App, Fenster und Browser beendet; unabhängige Prozessprüfung anschließend.
-- Mitgliederlistenfehler mit tatsächlichen Methoden und Ersatz-UI geprüft;
-  kein zusätzlicher Browserlauf für diese Listen. Keine visuelle Dokumentprüfung.
-- Sperre gilt für erneute Starts derselben Ansicht. Unterschiedliche Exportbereiche
-  sind nicht gegenseitig gesperrt. Ein tatsächlich hängender Hintergrundprozess
-  bleibt gesperrt; kein automatischer Abbruch oder Wiederanlauf.
-- Version/Anzeige 2.047 unverändert, keine neue EXE und kein neuer Versionsrelease.
-
-<!-- Änderung: Vollständigerer Änderungsnachweis für Daten und Einstellungen. -->
-## Änderungsprotokoll – 10.11.2026
-
-- Alle 26 Freigabeprüfungen und Syntaxprüfung bestanden. Nach Ergänzung der drei
-  Filter und Fehlerbehandlung gezielt Protokollierung, Changelog und gesamten
-  Strukturvergleich nochmals erfolgreich geprüft; abschließende Syntax bestanden.
-- 22 Protokollrahmen werden mit exakten Aufrufen geprüft; danach vollständiger
-  Vergleich der bisherigen Fachkörper. Fachreferenztests isolieren ausschließlich
-  die neue zusätzliche Protokollausgabe. Vorhandene Detailprotokolle unverändert.
-- Eigene Protokolltests mit tatsächlichen lokalen Logdateien: Datenänderung,
-  identische Bestände, neue/geänderte/identische Datenbankdatei, sofortige
-  Mitgliederanlage, beide Einstellungsdateien, teilweise fehlgeschlagener
-  Kontoimport, unlesbarer Ausgangsstand und Protokollfehler. Ursprüngliche
-  Ausnahmen bleiben erhalten. Lokale Beispieldatenkopie verwendet, Quelle unverändert.
-- Regulärer vollständiger Abrechnungs-Praxislauf mit normaler Word-Anbindung
-  erfolgreich. 73 neue Word-/PDF-Paare, CSV-Referenz und Originalbestand unverändert.
-  Gegen vorherigen Stand Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch.
-- Praxisprotokolle: tatsächliche Mindestabnahme-/Datenbankänderungen erfasst;
-  unveränderte Jahresabrechnungsdatei ohne zusätzlichen Dateieintrag.
-  Rückvergütungs-Speichereintrag im echten Praxisprotokoll bestätigt.
-- Rückvergütung mit regulärer Word-Anbindung über die Oberfläche erfolgreich,
-  ein Datensatz wie im vorhandenen Smoke-Test; CSV und Originalbestand geprüft.
-- App, Fenster und Browser beendet; unabhängige Abfrage ohne ANA-, Word- und
-  Testbrowserprozesse. Keine visuelle Dokumentprüfung.
-- Grenze: Bei fehlenden Schreibrechten, Protokolldatenträgerfehlern oder unlesbarem
-  Ausgangsstand ist keine lückenlose Protokollierung garantiert; feste RuntimeWarning,
-  Fachablauf bleibt erhalten. Zusammenfassungen nennen Aktion/Bestände/Dateien;
-  vorhandene detaillierte Feldprotokolle bleiben ergänzend bestehen.
-- Exporte und Sicherungen gemäß Benutzerentscheidung nicht zusätzlich erfasst;
-  keine Änderung der Importlogik. Version/Anzeige 2.047 unverändert, keine neue EXE.
-
-<!-- Änderung: Native Startanzeige im Python-Startweg geprüft. -->
-## Startanzeige – 10.11.2026
-
-- Alle 27 Freigabeprüfungen und Syntaxprüfung bestanden. Nach Umstellung auf
-  einen laufenden Aktivitätsbalken den Startanzeigentest erneut erfolgreich geprüft;
-  abschließende Syntaxprüfung ebenfalls bestanden.
-- Echte native Tk-Fenster wiederholt geöffnet/geschlossen: automatische Fertigmeldung,
-  Kontextabschluss, Freigabe der Fensterthreads und anschließende Speicherbereinigung.
-  Ausfall ohne Tk und Startfehler geprüft; Fachstart darf dadurch nicht verhindert werden.
-- Ladefolge: ana importiert die Fachoberfläche erst innerhalb der geöffneten Startanzeige.
-- Regulärer vollständiger Praxislauf mit echter Startanzeige und normaler Word-
-  Anbindung bestanden. Das Startfenster schließt nach tatsächlicher Verbindung
-  selbständig; Abschlussmarker vorhanden, kein Ausfallhinweis im lokalen App-Protokoll.
-- 73 neue Word-/PDF-Paare, CSV-Referenz und Originalbestand unverändert. Gegen
-  vorherigen Praxislauf Word-Paketinhalte, PDF-Texte und Seitenzahlen identisch.
-- Test-App, Fenster und Browser beendet; unabhängige Abfrage ohne ANA-, Word-,
-  Testbrowser- oder Startvorschauprozesse. Keine visuelle Dokumentprüfung.
-- Optische Kontrolle der reinen Startanzeige versucht; Computer-Use-Werkzeug meldet
-  fehlende Node-Laufzeit. Keine Screenshotprüfung durchgeführt, Vorschau beendet.
-  Funktionale Prüfung der nativen Fenster einschließlich echter App-Verbindung bestanden.
-- Kein EXE-Build und kein Test eines neuen Windows-Pakets. Python313 enthält Tk 8.6.
-  Version/Anzeige 2.047 unverändert, keine neue EXE und kein neuer Versionsrelease.
-
-<!-- Änderung 2.048: Abschließende Quellfreigabeprüfung. -->
-## Freigabe Version 2.048 – 10.11.2026
-
 Version 2.048 bündelt die Startanzeige, erweiterte Änderungsprotokolle,
 Exportfehlerbehandlung und sichere CSV-/Datenbankspeicherung und Sicherungen.
 Am 10.11.2026 alle 27 Freigabeprüfungen und Syntaxprüfung bestanden.
@@ -422,42 +332,5 @@ Originalbestand unverändert. Die Startanzeige schließt selbständig.
 Keine neue EXE kompiliert oder geprüft. Bekannte zweistellige Formatierung
 der Versionsanzeige bleibt erhalten; die Versionskonstante lautet 2.048.
 
-Gegen den vorherigen Praxislauf Word-Paketinhalte, PDF-Texte und Seitenzahlen
-identisch. Test-App/Fenster/Browser beendet, unabhängige Abfrage ohne ANA-,
-Word- oder Testbrowserprozesse. Keine visuelle Dokumentprüfung. Optische Prüfung
-der Startanzeige durch fehlende Node-Laufzeit des Computer-Use-Werkzeugs blockiert;
-native Fenster und vollständiger App-Start funktional erfolgreich geprüft.
-
-## Arbeitsstand nach 2.049 – Serienbrief-Fettdruck, 11.11.2026
-
-<!-- Änderung nach 2.049: Lokale Serienbriefprüfung dokumentieren. -->
-
-- Tatsächliche Serienbrieferstellung mit lokaler Vorlage und Mitgliederdaten:
-  lesbare Word-Dateien, Fettformat, Platzhalter und mehrzeilige Bereiche bestanden.
-- Aufgeteilte und unvollständige Markierungen geprüft; ohne Markierung bleiben
-  sämtliche Word-XML-Teile unverändert. Originaldatenbank unverändert.
-- Im aktuellen Lauf erneut bestanden. Keine visuelle Dokumentprüfung.
-
-## Arbeitsstand nach 2.049 – Verbrauchsstatistik, 11.11.2026
-
-<!-- Änderung nach 2.049: Jahreswerte und neue echte Browserbedienung dokumentieren. -->
-
-- Alle 30 Freigabeprüfungen einschließlich Syntax bestanden.
-- Verbrauch und Mindestabnahme sämtlicher vorhandener lokaler Jahresdateien
-  unabhängig aus den CSV-Dateien gelesen und gegen die neue Aufbereitung geprüft.
-- Text-Ident mit führenden Nullen, chronologische Reihenfolge, echte Nullwerte,
-  fehlende Jahre/Abnehmer, ungültige Zahlen, falsche Spalten und doppelte Treffer
-  geprüft. Echte NiceGUI-Elemente und beide Plotly-Datenreihen bestanden.
-- Vollständiger regulärer Praxislauf mit normaler Word-Anbindung bestanden:
-  .lokal/oberflaechentest-20261111-232012-517799. Statistik im echten Browser:
-  zwei Dropdowns, zwei Abnehmer nacheinander ausgewählt, beide Jahresreihen exakt
-  mit lokaler Aufbereitung verglichen, Layout bei 1440/800 Pixeln bestanden.
-- Danach Einstellungen, Berechnung, Speichern/CSV-Referenz und 73 neue Word-/PDF-
-  Paare erfolgreich. Original-Beispieldaten vollständig per Prüfsummen unverändert.
-- Test-App, Fenster und Testbrowser beendet. Keine visuelle Screenshot- oder
-  Dokumentprüfung; keine EXE, keine Veröffentlichung. Version bleibt 2.049.
-
-<!-- Änderung nach 2.049: Abschließenden lokalen Dokumentvergleich ergänzen. -->
-Die 73 neuen Word-Paketinhalte und die Texte/Seitenzahlen der 73 PDFs sind
-gegenüber dem vorherigen Praxislauf vom 11.11.2026 unverändert. Lokale Vergleichshilfe:
-.lokal/statistik_dokumentvergleich_20261111.py.
+Vorhandene Release-Archive werden nicht als Nachweis für nachträgliche Quelländerungen verwendet.
+Separate Prüfungen der Verzeichnisumstellung sind in docs/STRUKTUR.md dokumentiert.

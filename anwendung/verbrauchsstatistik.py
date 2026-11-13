@@ -6,6 +6,8 @@ import re
 
 import plotly.graph_objects as go
 from nicegui import ui
+# Änderung nach 2.049: Kostenvergleich allgemein und verbraucherspezifisch anbieten.
+from anwendung.kostenstatistik import Kostenstatistik
 
 
 def verbrauchswerte_lesen(ordner, ident):
@@ -67,16 +69,32 @@ class Verbrauchsstatistik:
                     for z in self.anwendung.abnehmer_db}
         bisher = self.dropdown_abnehmer.value
         self.dropdown_abnehmer.set_options(optionen, value=bisher if bisher in optionen else None)
+        # Änderung: Allgemeine Übersicht unabhängig von der Verbraucherauswahl aktualisieren.
+        self.allgemeine_kostenstatistik.aktualisieren()
         self.lade_diagramm()
 
     def lade_diagramm(self):
+        # Änderung: Beide Einzelstatistiken stets mit derselben Verbraucherauswahl aktualisieren.
+        self.kostenstatistik.aktualisieren(self.dropdown_abnehmer.value)
         # Änderung: Beide Größen aus derselben Jahresdatei gemeinsam in kWh darstellen.
         ident = self.dropdown_abnehmer.value
         fig = go.Figure()
-        hinweis = 'Bitte einen Abnehmer auswählen.'
+        # Änderung nach 2.049: Jahrestabelle aus denselben unveränderten Diagrammwerten aufbauen.
+        zeilen = []
+        # Änderung: Jahre auch für die verbraucherspezifische Tabelle als Spalten verwenden.
+        jahre = []
+        hinweis = 'Bitte oben einen Verbraucher auswählen.'
         if ident is not None:
             jahre, verbrauch, minimum, fehler = verbrauchswerte_lesen(
                 self.anwendung.ordner_abrechnungen, ident)
+            for jahr, wert, mindestwert in zip(jahre, verbrauch, minimum):
+                abweichung = wert - mindestwert if wert is not None and mindestwert is not None else None
+                prozent = abweichung / mindestwert * 100 if abweichung is not None and mindestwert != 0 else None
+                def anzeigen(zahl, nachkommastellen=0):
+                    # Änderung: kWh ohne Nachkommastellen anzeigen; nur Prozent behält zwei Stellen.
+                    return '–' if zahl is None else f'{zahl:,.{nachkommastellen}f}'.replace(',', '_').replace('.', ',').replace('_', '.')
+                zeilen.append({'jahr': jahr, 'verbrauch': anzeigen(wert), 'minimum': anzeigen(mindestwert),
+                               'abweichung': anzeigen(abweichung), 'prozent': anzeigen(prozent, 2)})
             for name, werte, farbe in (('Tatsächlicher Verbrauch', verbrauch, '#1761a0'),
                                        ('Mindestabnahme', minimum, '#d97706')):
                 fig.add_trace(go.Scatter(x=jahre, y=werte, name=name, mode='lines+markers',
@@ -89,23 +107,61 @@ class Verbrauchsstatistik:
                 hinweis += ' Einige Jahreswerte konnten nicht gelesen werden.'
             fig.update_xaxes(tickmode='array', tickvals=jahre)
         fig.update_layout(title='Verbrauchsübersicht', xaxis_title='Abrechnungsjahr',
-                          yaxis_title='Verbrauch / Mindestabnahme (kWh)', template='plotly_white',
+                          yaxis_title='Verbrauch / Mindestabnahme', template='plotly_white',
                           margin={'l': 65, 'r': 20, 't': 60, 'b': 95},
                           legend={'orientation': 'h', 'y': -0.25}, separators=',.')
+        # Änderung nach 2.049: Null als festen unteren Achsenwert verwenden.
+        # Änderung: Einheit direkt an den Achsenwerten statt im Achsentitel anzeigen.
+        # Änderung: Auch die kWh-Achsenwerte stets ohne Nachkommastellen darstellen.
+        fig.update_yaxes(rangemode='tozero', autorange=True, autorangeoptions={'minallowed': 0}, ticksuffix=' kWh', tickformat=',.0f')
+        # Änderung: Unveränderte Jahreswerte drehen: Kennzahlen als Zeilen, Jahre als Spalten.
+        self.tabelle.columns = [{'name': 'kennzahl', 'label': 'Kennzahl', 'field': 'kennzahl', 'align': 'left'}]
+        self.tabelle.columns += [
+            {'name': f'jahr_{jahr}', 'label': str(jahr), 'field': f'jahr_{jahr}', 'align': 'right'}
+            for jahr in jahre]
+        self.tabelle.rows = [
+            # Änderung: Einheiten an vorhandene Werte anhängen; fehlende Werte bleiben ein Strich.
+            {'kennzahl': titel, **{f"jahr_{z['jahr']}": z[feld] + einheit if z[feld] != '–' else '–' for z in zeilen}}
+            for feld, titel, einheit in [('verbrauch', 'Tatsächlicher Verbrauch', ' kWh'),
+                                         ('minimum', 'Mindestabnahme', ' kWh'),
+                                         ('abweichung', 'Abweichung absolut', ' kWh'),
+                                         ('prozent', 'Abweichung prozentual', ' %')]
+        ] if zeilen else []
+        self.tabelle.update()
         self.plot.figure = fig
         self.plot.update()
         self.hinweis.set_text(hinweis)
 
     def aufbauen(self):
-        # Änderung: Zwei Dropdowns oben; Diagramm passt sich an verfügbare Breite an.
+        # Änderung: Zwei Bereiche; Verbraucherauswahl über beiden zugehörigen Statistiken.
         with ui.column().classes('w-full ana-statistik'):
             ui.label('Statistik').classes('text-h5')
-            with ui.row().classes('w-full gap-4 items-end'):
-                self.dropdown_statistik = ui.select(['Verbrauchsübersicht'], value='Verbrauchsübersicht',
-                                                   label='Statistik', on_change=lambda _: self.lade_diagramm()).classes('w-72 max-w-full')
-                self.dropdown_abnehmer = ui.select({}, label='Abnehmer (Ident | Name Vorname)',
+            with ui.tabs().classes('w-full') as self.bereichsauswahl:
+                allgemein = ui.tab('Allgemein')
+                verbraucher = ui.tab('Verbraucherspezifisch')
+            with ui.tab_panels(self.bereichsauswahl, value=allgemein).classes('w-full'):
+                with ui.tab_panel(allgemein).classes('ana-allgemeine-statistik'):
+                    self.allgemeine_kostenstatistik = Kostenstatistik(self.anwendung)
+                    self.allgemeine_kostenstatistik.aufbauen()
+                with ui.tab_panel(verbraucher).classes('ana-verbraucherstatistik'):
+                    self.verbraucherbereich_aufbauen()
+        self.aktualisieren()
+
+    def verbraucherbereich_aufbauen(self):
+        # Änderung: Gemeinsamer Verbraucherfilter vor Verbrauchsübersicht und Kostenvergleich.
+        with ui.column().classes('w-full'):
+            self.dropdown_abnehmer = ui.select({}, label='Verbraucher (Ident | Name Vorname)',
                                                   on_change=lambda _: self.lade_diagramm(),
                                                   with_input=True).classes('w-96 max-w-full')
+            ui.label('Verbrauchsübersicht').classes('text-h6')
             self.hinweis = ui.label('').classes('text-sm text-slate-600')
             self.plot = ui.plotly(go.Figure()).classes('w-full').style('height: 480px')
-        self.aktualisieren()
+            # Änderung nach 2.049: Alle Jahreswerte unter dem Graphen ohne Seitenwechsel anzeigen.
+            # Änderung: Spalten werden aus den vorhandenen Jahren erstellt; Zeilenschlüssel ist die Kennzahl.
+            self.tabelle = ui.table(columns=[], rows=[], row_key='kennzahl',
+                                    pagination={'rowsPerPage': 0}).classes('w-full ana-statistik-tabelle')
+            self.erklaerung = ui.label('Abweichung = Verbrauch − Mindestabnahme; Prozent bezogen auf die Mindestabnahme. '
+                     '„–“ bedeutet fehlender Wert oder Prozentwert bei Mindestabnahme 0.').classes('text-sm text-slate-600')
+            # Änderung: Zweite Statistik unter demselben Verbraucherfilter anzeigen.
+            self.kostenstatistik = Kostenstatistik(self.anwendung, verbraucherspezifisch=True)
+            self.kostenstatistik.aufbauen()

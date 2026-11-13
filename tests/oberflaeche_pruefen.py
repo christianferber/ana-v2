@@ -195,6 +195,9 @@ def _testen(prozesse, rueckverguetung=False):
                 return ergebnis.get('result', {}).get('value')
             def klicken(code):
                 # Änderung für v2: Echte Mausereignisse auslösen, auch für Quasar-Auswahlfelder.
+                # Änderung: Nach Scrollen erst das stabile Layout für Mauskoordinaten verwenden.
+                js('(' + code + ").scrollIntoView({block:'center',behavior:'instant'})")
+                time.sleep(.2)
                 punkt = js("(()=>{const e=(" + code + ");e.scrollIntoView({block:'center'});const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()")
                 cdp('Input.dispatchMouseEvent', {'type': 'mousePressed', 'button': 'left',
                                                 'clickCount': 1, **punkt})
@@ -261,10 +264,22 @@ def _testen(prozesse, rueckverguetung=False):
                 warten('Boolean(' + statistik_tab + ')')
                 js('(' + statistik_tab + ').click()')
                 warten("Boolean(document.querySelector('.ana-statistik'))")
-                assert js("document.querySelectorAll('.ana-statistik .q-select').length===2")
+                # Änderung: Getrennte Bereiche bedienen; Verbraucherfilter steht vor beiden Einzelstatistiken.
+                def statistikbereich(name):
+                    js("Array.from(document.querySelectorAll('.ana-statistik .q-tab')).find(e=>e.querySelector('.q-tab__label')?.textContent.trim()===" + json.dumps(name) + ").click()")
+                    time.sleep(.6)
+                statistikbereich('Verbraucherspezifisch')
+                warten("Boolean(document.querySelector('.ana-verbraucherstatistik')?.getClientRects().length)")
+                assert js("document.querySelector('.ana-verbraucherstatistik .q-select').getBoundingClientRect().top < document.querySelector('.ana-verbraucherstatistik .js-plotly-plot').getBoundingClientRect().top")
                 from anwendung.verbrauchsstatistik import verbrauchswerte_lesen
+                from anwendung.kostenstatistik import kostenmatrix_lesen
+                dateien = sorted((kopie / 'Abrechnungen').glob('Abrechnung-*/Abrechnung-*.csv'))
+                jahresdateien = {int(p.stem.removeprefix('Abrechnung-')): p for p in dateien}
+                kostenmatrix, fehler = kostenmatrix_lesen(jahresdateien)
+                assert fehler == 0
+                einzelkosten = "document.querySelector('.ana-verbraucherstatistik .ana-kostenstatistik .q-table tbody')"
                 for abnehmer in datei_oeffnen(kopie / 'Datenbank/db_abnehmer.csv')[:2]:
-                    auswahl('Abnehmer (Ident | Name Vorname)',
+                    auswahl('Verbraucher (Ident | Name Vorname)',
                             abnehmer['Ident'] + ' | ' + abnehmer['Name'] + ' ' + abnehmer['Vorname'])
                     jahre, verbrauch, minimum, fehler = verbrauchswerte_lesen(kopie / 'Abrechnungen', abnehmer['Ident'])
                     plot = "document.querySelector('.ana-statistik .js-plotly-plot')"
@@ -272,12 +287,74 @@ def _testen(prozesse, rueckverguetung=False):
                     assert json.loads(js('JSON.stringify(' + plot + '.data.map(s=>s.y))')) == [verbrauch, minimum]
                     assert json.loads(js('JSON.stringify(' + plot + '.data[0].x)')) == jahre
                     assert fehler == 0
+                    # Änderung: Tatsächlichen Nullbeginn und sichtbare Jahrestabelle im Browser prüfen.
+                    assert js(plot + '._fullLayout.yaxis.range[0]===0')
+                    # Änderung: Vier Kennzahlzeilen und eine Spalte je Jahr statt Jahreszeilen prüfen.
+                    assert js("document.querySelectorAll('.ana-statistik-tabelle tbody tr').length") == 4
+                    assert json.loads(js("JSON.stringify(Array.from(document.querySelectorAll('.ana-statistik-tabelle thead th')).slice(1).map(e=>e.innerText.trim()))")) == [str(j) for j in jahre]
+                    for spalte, (wert, mindestwert) in enumerate(zip(verbrauch, minimum), start=1):
+                        differenz = wert - mindestwert if wert is not None and mindestwert is not None else None
+                        prozent = differenz / mindestwert * 100 if differenz is not None and mindestwert != 0 else None
+                        for zeilennummer, zahl in enumerate((wert, mindestwert, differenz, prozent)):
+                            # Änderung: Einheiten in jeder gültigen Tabellenzelle mitprüfen.
+                            # Änderung: kWh ohne Nachkommastellen, Prozent mit zwei Stellen prüfen.
+                            stellen = 2 if zeilennummer == 3 else 0
+                            textwert = '–' if zahl is None else f'{zahl:,.{stellen}f}'.replace(',', '_').replace('.', ',').replace('_', '.') + (' %' if zeilennummer == 3 else ' kWh')
+                            assert js(f"document.querySelectorAll('.ana-statistik-tabelle tbody tr')[{zeilennummer}].querySelectorAll('td')[{spalte}].innerText.trim()") == textwert
+                    assert js("document.querySelector('.ana-statistik-tabelle').innerText.includes('Abweichung prozentual')")
+                    # Änderung: Die zweite Einzelstatistik zeigt zeitgleich nur diesen Verbraucher.
+                    erwartet_einzel = [z for z in kostenmatrix if z['ident'] == abnehmer['Ident']]
+                    assert js(einzelkosten + '.querySelectorAll("tr").length') == len(erwartet_einzel)
+                    if erwartet_einzel:
+                        zellen = einzelkosten + '.querySelectorAll("tr")[0].querySelectorAll("td")'
+                        assert js(zellen + '.length') == len(jahresdateien)
+                        for spalte, spaltenjahr in enumerate(sorted(jahresdateien)):
+                            werttext = erwartet_einzel[0][f'jahr_{spaltenjahr}']
+                            assert js(zellen + f'[{spalte}].innerText.trim()') == (werttext + ' €' if werttext != '–' else '–')
                 for breite in (1440, 800):
                     cdp('Emulation.setDeviceMetricsOverride', {'width': breite, 'height': 1000,
                         'deviceScaleFactor': 1, 'mobile': False})
                     time.sleep(1)
                     assert js("document.querySelector('.ana-statistik').getBoundingClientRect().width <= window.innerWidth")
-                print('Statistik: zwei Dropdowns, Abnehmerwechsel, beide Jahresreihen und Layout 1440/800 bestanden.', flush=True)
+                print('Verbraucherspezifisch: gemeinsamer Filter, beide Statistiken, Verbraucherwechsel und Layout bestanden.', flush=True)
+                # Änderung: Zweite Statistik als Jahresmatrix mit Beträgen, Reihenfolge und Farben prüfen.
+                cdp('Emulation.setDeviceMetricsOverride', {'width': 1440, 'height': 1000,
+                    'deviceScaleFactor': 1, 'mobile': False})
+                time.sleep(1)
+                statistikbereich('Allgemein')
+                # Änderung: Asynchronen Statistikwechsel vor der Matrixprüfung abwarten.
+                warten("Boolean(document.querySelector('.ana-allgemeine-statistik .ana-kostenstatistik')?.getClientRects().length)")
+                from anwendung.kostenstatistik import kostenmatrix_lesen
+                dateien = sorted((kopie / 'Abrechnungen').glob('Abrechnung-*/Abrechnung-*.csv'))
+                jahresdateien = {int(p.stem.removeprefix('Abrechnung-')): p for p in dateien}
+                erwartet, fehler = kostenmatrix_lesen(jahresdateien)
+                assert fehler == 0
+                # Änderung: Die Tabellen-Seitenlängenauswahl ist keine Jahresauswahl.
+                assert js("!Array.from(document.querySelectorAll('.ana-kostenstatistik .q-select')).some(e=>!e.closest('.q-table__container'))")
+                tabelle = "document.querySelector('.ana-allgemeine-statistik .q-table tbody')"
+                warten('Boolean(' + tabelle + ')')
+                assert js(tabelle + '.querySelectorAll("tr").length') == len(erwartet)
+                # Änderung: Sortierpfeile dürfen zusätzlich zum Jahr in den Spaltenköpfen stehen.
+                koepfe = json.loads(js("JSON.stringify(Array.from(document.querySelectorAll('.ana-allgemeine-statistik thead th')).slice(3).map(e=>e.innerText.trim()))"))
+                assert len(koepfe) == len(jahresdateien)
+                assert all(str(jahr) in kopf and '€' not in kopf for kopf, jahr in zip(koepfe, sorted(jahresdateien)))
+                for index, zeile in enumerate(erwartet):
+                    zelle = tabelle + '.querySelectorAll("tr")[' + str(index) + '].querySelectorAll("td")'
+                    assert js(zelle + '[0].innerText.trim()') == zeile['ident']
+                    # Änderung: Das Abrechnungsjahr des folgenden Praxislaufs nicht überschreiben.
+                    for spalte, spaltenjahr in enumerate(sorted(jahresdateien), start=3):
+                        feld = f'jahr_{spaltenjahr}'
+                        assert js(zelle + f'[{spalte}].innerText.trim()') == (zeile[feld] + ' €' if zeile[feld] != '–' else '–')
+                        assert js(zelle + f'[{spalte}].className.includes("bg-green-50")') == ('bg-green-50' in zeile['farben'].get(feld, ''))
+                        assert js(zelle + f'[{spalte}].className.includes("bg-red-50")') == ('bg-red-50' in zeile['farben'].get(feld, ''))
+                # Änderung: Eine andere Jahresspalte muss numerisch sortieren, fehlende Werte zuletzt.
+                klicken("document.querySelectorAll('.ana-allgemeine-statistik thead th')[3]")
+                time.sleep(.6)
+                feld = f'sort_{min(jahresdateien)}'
+                sortiert = sorted(erwartet, key=lambda z: (z[feld] is None, z[feld] or 0))
+                assert json.loads(js('JSON.stringify(Array.from(' + tabelle + '.querySelectorAll("tr")).map(e=>e.querySelector("td").innerText.trim()))')) == [z['ident'] for z in sortiert]
+                statistikbereich('Verbraucherspezifisch')
+                print('Kostenvergleich: Jahresmatrix, alle Abnehmer, Spaltensortierung und Farben bestanden.', flush=True)
             # Änderung nach 2.049: Einstellungen mit echten Dialogelementen prüfen, ohne zu speichern.
             if not rueckverguetung:
                 SCHRITT = 'Einstellungsdialog prüfen'
@@ -455,6 +532,9 @@ if __name__ == '__main__':
         try:
             testen('--rueckverguetung' in sys.argv[1:])
         except Exception as fehler:
+            # Änderung: Fehlerstelle ausschließlich lokal sichern, ohne Beispieldaten auszugeben.
+            (BASIS / '.lokal/oberflaechentest-fehler.txt').write_text(
+                __import__('traceback').format_exc(), encoding='utf-8')
             print('Oberflächentest nicht abgeschlossen. Schritt: ' + SCHRITT
                   + '. Fehlertyp: ' + type(fehler).__name__, flush=True)
             raise SystemExit(1)

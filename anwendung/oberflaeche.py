@@ -135,7 +135,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.045: Datenbankzugriffe auslagern.
 # Änderung 2.046: Gemeinsame CSV-Speicherhilfe auslagern.
 # Änderung 2.049: Geprüfte UI-Modernisierung und angepasste Startanzeige veröffentlichen.
-version = 2.049
+# Änderung 2.05.00: Neue Freigabe; sichtbare Version 2.05, Entwicklungsstand 00.
+version = 2.05
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []

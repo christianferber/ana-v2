@@ -20,13 +20,91 @@ in den [Release Notes](../RELEASE_NOTES.md).
   Bereitstellung mit der zugehörigen Version dokumentieren.
 - `docs/TESTBERICHT.md`: Durchgeführte Prüfungen und deren Grenzen festhalten.
 
+## Version 2.05.00 – 13.11.2026
+
+<!-- Änderung 2.05.00: Geprüften Statistikstand und Serienbriefformatierung freigeben. -->
+Neue Quellfreigabe mit Verbrauchsübersicht, allgemeiner und verbraucherspezifischer
+Kostenmatrix, Jahrestabellen und Einheiten direkt an den Werten. kWh werden
+ohne Nachkommastellen angezeigt. Serienbriefe unterstützen Fettmarkierungen.
+Die Fachberechnungen und Importabläufe bleiben unverändert.
+
+Versionskonstante 2.05 für die Anzeige, Freigabestand und Tag 2.05.00.
+Bereitstellung als Quellarchiv mit Prüfbericht und SHA256-Prüfsummen;
+keine neue Windows-EXE. Prüfungen siehe aktuellen Prüfbericht.
 ## Arbeitsstand nach 2.049 – Verbrauchsstatistik
+
+<!-- Änderung 12.11.2026: Ausschließlich kWh-Anzeige auf ganze Zahlen umstellen. -->
+
+- Verbrauch, Mindestabnahme und absolute Abweichung in der Statistik ohne
+  Nachkommastellen formatieren, ebenso die Y-Achsenwerte. Hover bereits ganzzahlig.
+  Nur Anzeige gerundet; gelesene Werte, Diagrammdaten und Berechnungen unverändert.
+  Euro und Prozent weiterhin mit zwei Nachkommastellen, Lücken als Strich.
+- Lokale Komponentenprüfung gegen Beispieldaten und unveränderte gebrochene
+  Diagrammwerte ergänzt; Browser-Sollformat angepasst.
+
+<!-- Änderung 12.11.2026: Einheitenanzeige der Statistikwerte vereinheitlichen. -->
+
+- Verbrauchszellen mit kWh bzw. Prozent, Kennzahlüberschriften ohne Einheit.
+  Absolute/prozentuale Abweichung durch Text unterschieden. Diagramm mit kWh
+  an Y-Achsenwerten statt im Achsentitel; Hoverwerte weiterhin mit kWh.
+- Allgemeine und verbraucherspezifische Kostenzellen mit Eurozeichen, Jahresköpfe
+  ohne Einheit. Eurozeichen nur in der Darstellung ergänzt, numerische Sortierung
+  und Kostenmatrixwerte unverändert. Fehlende Werte weiterhin nur als Strich.
+- Lokale Komponentenprüfung und Browser-Zellvergleiche auf Einheiten angepasst.
+
+<!-- Änderung 12.11.2026: Verbrauchertabellen auf Jahresspalten angleichen. -->
+
+- Verbrauchstabelle gedreht: Kennzahlen als Zeilen, gespeicherte Jahre als
+  chronologische Spalten. Bestehende Werte, Abweichungsformeln und Lücken erhalten.
+- Verbraucherspezifische Kostenmatrix zeigt ausschließlich Jahresspalten;
+  Ident, Name und Vorname sind nur in der allgemeinen Kostenmatrix sichtbar.
+- Komponenten- und Browserprüfung auf neue Spalten/Zellen angepasst;
+  unveränderte Jahreswerte, Auswahlwechsel und allgemeine Tabelle geprüft.
+
+<!-- Änderung 12.11.2026: Allgemeine und verbraucherspezifische Bereiche dokumentieren. -->
+
+- Zwei Register „Allgemein“ (Kostenmatrix aller Verbraucher) und
+  „Verbraucherspezifisch“ mit gemeinsamer Verbraucherauswahl oben.
+  Verbrauchsübersicht samt Jahrestabelle und gefilterte Kostenmatrix darunter
+  gleichzeitig sichtbar. Kein Statistik-Dropdown mehr.
+- Dieselbe Kostenmatrixklasse mit optionalem Verbraucherfilter; Text-Ident
+  bestimmt die sichtbare Zeile. Ohne Auswahl oder bei entfernter Auswahl bleiben
+  beide Einzelstatistiken leer. Allgemeine Kostenmatrix bleibt ungefiltert.
+- Lokale Komponentenprüfung aller wählbaren Verbraucher, Leeren der Auswahl und
+  unveränderter allgemeiner Werte. Browser prüft beide Bereiche, Verbraucherwechsel,
+  gemeinsame Filterwirkung und die unveränderte allgemeine Jahresmatrix.
+
+<!-- Änderung 12.11.2026: Kostenvergleich als zweite Statistik dokumentieren. -->
+
+- „Kostenvergleich zu Mindestabnahme“ als gemeinsame Jahresmatrix
+  ohne Jahresauswahl. `kostenstatistik.py` verbindet alle gespeicherten Abnehmer
+  über Text-Ident, einschließlich historischer Abnehmer. Je Jahr eine Spalte,
+  ausschließlich Differenzen; Namen aus dem neuesten vorhandenen Datensatz.
+- Differenz der gespeicherten Felder `Wärmekosten tats Verbrauch` und
+  `Mindestvertragssumme` in Euro mit Decimal; keine neue Abrechnungsberechnung.
+  Numerisch aufsteigend nach neuestem Jahr, Jahresspalten per Klick sortierbar,
+  Sortierung anhand numerischer Centwerte. Positive Zellen grün, negative rot,
+  Null neutral. Fehlende/mehrdeutige Jahreswerte als Strich, beim aufsteigenden
+  Sortieren zuletzt; Lesefehler/mehrdeutige Identen mit Hinweis.
+- Lokaler Referenztest aller Jahresdateien und Matrixzellen, Centbeträge/Null/
+  fehlende Jahre, Namenswechsel, doppelte Identen und echte Komponenten;
+  Browserprüfung für Jahresmatrix, Reihenfolge, Spaltensortierung und Farben.
+
+<!-- Änderung 12.11.2026: Statistikdarstellung ergänzen, Fachberechnung unverändert lassen. -->
+
+- Y-Achse mit festem unteren Grenzwert 0. Tabelle unter dem Diagramm aus
+  denselben gelesenen Jahreswerten, alle Jahre ohne Paginierung sichtbar.
+- Abweichung = Verbrauch minus Mindestabnahme, prozentual geteilt durch die
+  Mindestabnahme. Fehlende Werte und Prozent bei Nullbasis als „–“; deutsche
+  Zahlen mit zwei Nachkommastellen. Keine Änderung an Abrechnungsberechnungen.
+- Komponentenprüfung um Tabellenwerte, Nullbasis, Lücken und Auswahlwechsel
+  erweitert; Browserprüfung kontrolliert tatsächliche Achsengrenze und Tabelle.
 
 <!-- Änderung nach 2.049: Neuen ausschließlich lesenden Statistikbereich dokumentieren. -->
 
 - Neuer Menüpunkt „Statistik“ und eigenes Panel mit `Verbrauchsstatistik`.
-  Zwei obere Dropdowns: Statistik (zunächst Verbrauchsübersicht) und durchsuchbare
-  Abnehmerauswahl mit Ident, Name und Vorname. Beim Öffnen Daten erneut einlesen.
+  Zwei Bereiche und durchsuchbare Verbraucherauswahl mit Ident, Name und Vorname.
+  Beim Öffnen Daten erneut einlesen.
 - `verbrauchsstatistik.py` liest ausschließlich gespeicherte
   `Abrechnung-JJJJ/Abrechnung-JJJJ.csv`. Ident bleibt Text, Jahre sind aufsteigend.
   Die zwei Linien verwenden `verbrauchte kWh` und `Mindestvertragsleistung` aus

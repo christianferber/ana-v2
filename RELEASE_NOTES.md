@@ -6,11 +6,27 @@ Features, Verbesserungen und Fehlerkorrekturen für Anwender.
 Technische Einzelheiten stehen im [Änderungsprotokoll](docs/AENDERUNGSPROTOKOLL.md).
 
 <!-- Änderung nach 2.049: Neue Serienbriefformatierung im lokalen Arbeitsstand. -->
-Noch nicht veröffentlicht
-------------------------
+Version 2.05.00 – 13.11.2026
+--------------------------
+
+<!-- Änderung nach 2.049: kWh-Darstellung ohne Nachkommastellen. -->
+Verbesserung: kWh-Werte erscheinen in den Statistiken ohne Nachkommastellen. Eurobeträge und Prozentwerte behalten zwei Nachkommastellen.
+
+<!-- Änderung nach 2.049: Einheiten direkt an Statistikwerten anzeigen. -->
+Verbesserung: In den Statistiken stehen Euro, kWh und Prozent direkt bei den Werten statt in den Tabellenüberschriften. Fehlende Werte bleiben als „–“ erkennbar. Auch im Verbrauchsdiagramm steht kWh direkt an den Achsenwerten.
+
+<!-- Änderung nach 2.049: Einheitliche Jahresspalten im Verbraucherbereich beschreiben. -->
+Verbesserung: Beide Tabellen unter „Verbraucherspezifisch“ zeigen die Jahre als Spalten. Die Verbrauchstabelle enthält Verbrauch, Mindestabnahme sowie absolute und prozentuale Abweichung als Zeilen. Der Kostenvergleich zeigt dort nur die jährlichen Differenzen ohne erneute Angaben zu Ident, Name und Vorname.
+
+<!-- Änderung nach 2.049: Zweiten Statistikvergleich aus Anwendersicht beschreiben. -->
+Feature: „Kostenvergleich zu Mindestabnahme“ zeigt alle Abnehmer in einer gemeinsamen Tabelle mit einer Spalte je Jahr. Jede Jahreszelle enthält die Differenz aus tatsächlichen Wärmekosten und Mindestabnahme in Euro. Positive Differenzen erscheinen grün, negative rot; Null bleibt neutral und fehlende Werte erscheinen als „–“. Die Tabelle ist zunächst nach dem neuesten Jahr aufsteigend sortiert; durch Klick auf eine Jahresspalte lässt sich die Sortierung ändern.
+
+<!-- Änderung nach 2.049: Nullbeginn und Jahrestabelle der Verbrauchsübersicht beschreiben. -->
+Verbesserung: Der Verbrauchsgraph beginnt bei 0 kWh. Unter dem Graphen zeigt eine Jahrestabelle Verbrauch, Mindestabnahme und die Abweichung in kWh und Prozent. Die Abweichung ist Verbrauch minus Mindestabnahme; die Prozentangabe bezieht sich auf die Mindestabnahme. Bei Mindestabnahme 0 wird kein Prozentwert angezeigt.
 
 <!-- Änderung nach 2.049: Verbrauchsstatistik aus Sicht der Anwender beschreiben. -->
-Feature: Neuer Bereich „Statistik“ mit Auswahl der Statistik und des Abnehmers über Ident, Name und Vorname. Die „Verbrauchsübersicht“ zeigt tatsächlichen Verbrauch und Mindestabnahme aller gespeicherten Jahresabrechnungen als zwei Linien in kWh. Fehlende Jahreswerte erscheinen als Lücken.
+<!-- Änderung nach 2.049: Allgemeine und verbraucherspezifische Statistiken trennen. -->
+Feature: Der Bereich „Statistik“ enthält die Bereiche „Allgemein“ und „Verbraucherspezifisch“. Allgemein zeigt den Kostenvergleich aller Verbraucher. Verbraucherspezifisch steht oben die Verbraucherauswahl über Ident, Name und Vorname; darunter zeigen Verbrauchsübersicht und Kostenvergleich gemeinsam nur die Daten dieses Verbrauchers. Die Verbrauchsübersicht zeigt tatsächlichen Verbrauch und Mindestabnahme aller gespeicherten Jahresabrechnungen als zwei Linien in kWh. Fehlende Jahreswerte erscheinen als Lücken.
 
 Feature: In Serienbriefen lässt sich Text in Betreff und Brieftext mit `<bold>TEXT</bold>` fett darstellen. Das funktioniert auch mit Platzhaltern und Zeilenumbrüchen. Ein Hinweis im Dialog erklärt die Schreibweise.
 
