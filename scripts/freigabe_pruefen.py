@@ -11,6 +11,8 @@ import sys
 def main():
     basis = Path(__file__).resolve().parents[1]
     pruefungen = [
+        # Änderung nach 2.06.00: PDF-Kontomanagement nur gegen lokale Vorlagen prüfen.
+        ('Buchungsmanagement aus PDF-Kontoauszügen', ['-m', 'tests.buchungsmanagement_pruefen']),
         # Änderung nach 2.05.00: ZIP-Vollsicherung mit lokalen Beispieldaten und Fehlerfällen prüfen.
         ('Vollsicherung als ZIP', ['-m', 'tests.vollsicherung_pruefen']),
         # Änderung nach 2.049: Neue Verbrauchsübersicht gegen lokale Jahresdateien prüfen.

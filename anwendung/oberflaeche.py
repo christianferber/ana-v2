@@ -793,7 +793,8 @@ def pdfjoin(progress):
 def tools_ui():
     global werkzeuge_ansicht
     werkzeuge_ansicht = WerkzeugeOberflaeche(sys.modules[__name__])
-    return werkzeuge_ansicht.tools_ui()
+    # Änderung nach 2.06.00: Tools über die erweiterbare Unterbereichsnavigation öffnen.
+    return werkzeuge_ansicht.aufbauen()
 
 
 ###########################################################################################################################

@@ -1,5 +1,49 @@
 # Projektstruktur
 
+<!-- Änderung nach 2.06.00: Erweiterbare Tools und lokales Buchungsmanagement dokumentieren. -->
+`WerkzeugeOberflaeche.aufbauen` erstellt die Tools-Tabs PDF-Zusammenführung und
+Buchungsmanagement. Die bestehende PDF-Verarbeitung bleibt unverändert.
+`anwendung/buchungsmanagement.py` liest textbasierte Kontoauszugs-PDFs des
+verifizierten Banklayouts und prüft Rechnungsdateinamen nach KONTOMANAGER.md.
+`anwendung/buchungsmanagement_ui.py` stellt Ordnerwahl, Verwaltung und Prüfdialog
+bereit. `buchungsmanagement.json` im Arbeitsordner enthält die Ordnerpfade.
+<!-- Änderung: Separate CSV-Datenbank gemäß ergänzter Vorgabe. -->
+Betreff- und Empfänger-/Zweck-Regeln werden in `Datenbank/db_buchungsmanagement.csv`
+gespeichert (Spalten `Betreff;Empfaenger;Zweck`, Semikolon-Trenner, UTF-8 mit BOM).
+Alte einspaltige CSVs in bisheriger Standardkodierung werden verlustfrei erweitert.
+Vorhandene JSON-Ausschlüsse werden einmalig verlustfrei übernommen;
+eine vorhandene CSV hat Vorrang. Auch ohne Ausschlüsse bleibt eine gültige Kopfzeile.
+Kontoauszüge und Rechnungen werden nur gelesen.
+<!-- Änderung: Vollständige Empfänger-/Zweck-Paare und bestehende Betreff-Regeln gemeinsam berücksichtigen. -->
+Die Buchungsdetails liefern Gegenpartei und Zweck; beide erscheinen in eigenen
+Tabellenspalten und im vereinfachten Betreff. Bankmetadaten gehören nicht zum Zweck.
+Ausblenden erfasst unmittelbar alle passenden Betreffe oder vollständigen Paare;
+spätere Importe gleichen sich mit denselben gespeicherten Regeln ab. Aktivieren hebt
+die zusammengehörigen Regeln auf. Alte reine Gegenpartei-Regeln bleiben wirksam,
+bis der Benutzer sie aktiviert. Unvollständige Paare werden nicht automatisch gruppiert.
+<!-- Änderung: Vollständige Prüftabelle mit aktiver Tagesnummer und getrennten Statuswerten. -->
+Die Oberfläche fordert mit `vollstaendig=True` auch erfolgreich geprüfte Buchungen
+an. `buchungs_pruef_ids` berechnet den Dateianfang aus aktiven Tagesbuchungen; die
+ursprüngliche ID bleibt für Auswahl und Regeln erhalten. Rechnung und Betrag haben
+eigene Statusspalten. Zwei reine Anzeigefilter blenden zugeordnete bzw. vollständig
+erfolgreiche Zeilen aus. Betreff wird nicht zusätzlich zu Empfänger/Zweck angezeigt;
+Datum und Beträge bleiben wie vom Benutzer bestätigt sichtbar.
+Klebende Tabellenköpfe und eigene Scrollbereiche werden zentral in ana-ui.css
+für Quasar-Tabellen und AutoHeight-AG-Grids definiert.
+<!-- Änderung: Betragsprüfung und lokale Texterkennung gescannter Rechnungen ergänzen. -->
+Nach der Zuordnung wird der PDF-Endbetrag mit der Buchung verglichen.
+<!-- Änderung: Neue optionale Rechnungsangaben und phasenweise Anzeige erläutern. -->
+Dateinamen benötigen Buchungsdatum mit gegebenenfalls Tagesnummer und einen Empfänger
+oder Zweck. Rechnungsnummer, „vom“ und Rechnungsdatum sind optional. Die Oberfläche
+zeigt reale Dateizähler/Prozentwerte je Phase in einem eigenen Fortschrittsdialog.
+Eine Queue überträgt Meldungen vom Worker zum UI-Timer; Dialog und Timer werden
+auch bei Lesefehlern bereinigt. Die bestehende Fortschrittsdarstellung anderer
+Arbeitsbereiche wird nicht verändert.
+`anwendung/pdf_texterkennung.py` liest gescannte Rechnungen bei Bedarf mit lokaler
+Windows-OCR über einen ausgeblendeten PowerShell-Prozess. Erkannte Texte und
+Seitenbilder bleiben im RAM. Kein Cloud-Dienst und keine zusätzliche OCR-Installation.
+Ohne verfügbare OCR-Sprache oder eindeutigen Endbetrag bleibt ein manueller Prüffall.
+
 <!-- Änderung: Frühe Startanzeige und verzögertes Laden der Oberfläche dokumentieren. -->
 `ana.py` öffnet die Startanzeige aus `anwendung/startanzeige.py` vor dem Laden der
 Oberflächenbibliotheken. Ein eigener Fensterthread betreibt die native Tk-Anzeige;

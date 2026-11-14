@@ -4,6 +4,11 @@ __pycache__/
 # Änderung für v2: Lokale Einstellungen, Projekthinweise und Buildausgaben nicht veröffentlichen.
 ana.ini
 ana-betreiber.ini
+# Änderung nach 2.06.00: Lokale Konto-Pfade und Betreff-Ausschlüsse niemals versionieren.
+buchungsmanagement.json
+buchungsmanagement.tmp
+# Änderung: Die neue lokale Ausschlussdatenbank nicht veröffentlichen.
+db_buchungsmanagement.csv
 AGENTS.md
 build/
 dist/

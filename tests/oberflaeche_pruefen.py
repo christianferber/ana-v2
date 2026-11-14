@@ -119,6 +119,9 @@ def _testen(prozesse, rueckverguetung=False):
         (run / 'exportfehler.txt').write_text('1')
     kopie = run / 'daten'
     shutil.copytree(daten, kopie)
+    # Änderung nach 2.06.00: Neue Tools mit eigenen Einstellungen in der Testkopie prüfen.
+    from tests.buchungsmanagement_oberflaeche import vorbereiten
+    vorbereiten(BASIS, kopie)
     if rueckverguetung:
         # Änderung für v2: Praxistest auf einen vorhandenen Datensatz begrenzen.
         # Vollständige Berechnung und Neuberechnung werden separat für alle Beispiele verglichen.
@@ -276,6 +279,9 @@ def _testen(prozesse, rueckverguetung=False):
                 warten('(' + tab + ").getAttribute('aria-selected')==='true'")
                 time.sleep(.4)
             def export_starten(text):
+                # Änderung: Exportzustand über stabile Element-ID verfolgen, unabhängig von Prozenttext/anderen Tabs.
+                js("window.anaExportButtonId=Array.from(document.querySelectorAll('button')).find(e=>e.getClientRects().length && e.textContent.includes("
+                   + json.dumps(text) + ") && e.querySelector('.ana-button-progress')).id")
                 # Änderung nach 2.049: Fortschrittskomponente muss direkt im PDF-Button liegen.
                 assert js("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith("
                           + json.dumps(text) + ") && e.querySelector('.ana-button-progress'))")
@@ -289,6 +295,21 @@ def _testen(prozesse, rueckverguetung=False):
                     knopf(text)
             SCHRITT = 'Testseite laden'
             cdp('Page.navigate', {'url': url})
+            # Änderung: Kurzer lokaler Layoutlauf vermeidet Word-/OCR-Arbeit bei gezielter Kopfzeilenprüfung.
+            if '--tabellenkoepfe' in sys.argv:
+                warten("Boolean(document.querySelector('.ag-root-wrapper .ag-row'))")
+                from tests.buchungsmanagement_oberflaeche import tabellenkopf_pruefen
+                wurzel = "Array.from(document.querySelectorAll('.ag-root-wrapper')).find(e=>e.getClientRects().length && e.querySelector('.ag-row'))"
+                print('AG-Grid-Geometrie: ' + json.dumps(js("(()=>{let e=(" + wurzel + ").querySelector('.ag-header');const r=[];while(e && !e.classList.contains('nicegui-content')){const s=getComputedStyle(e);r.push({klasse:e.className,position:s.position,overflow:s.overflow,height:e.clientHeight,scroll:e.scrollHeight});e=e.parentElement}return r})()")), flush=True)
+                tabellenkopf_pruefen(js, warten, wurzel, '(' + wurzel + ").querySelector('.ag-header')")
+                assert bestand(daten) == originalbestand
+                print('Kurzer Tabellenkopf-Praxislauf bestanden. Originaldaten unverändert.', flush=True)
+                return
+            # Änderung nach 2.06.00: Vor dem bestehenden Praxislauf echte neue Tools bedienen.
+            SCHRITT = 'Buchungsmanagement und einzeilige Navigation'
+            from tests.buchungsmanagement_oberflaeche import pruefen as tools_pruefen
+            warten("Boolean(document.querySelector('.ana-nav'))")
+            tools_pruefen(kopie, js, klicken, warten, knopf, cdp, auswahl)
             # Änderung nach 2.049: Neue Statistik mit zwei lokalen Abnehmern im Browser bedienen.
             if not rueckverguetung:
                 SCHRITT = 'Statistikregister laden'
@@ -529,6 +550,10 @@ def _testen(prozesse, rueckverguetung=False):
                 warten("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith('Speichern') && !e.disabled)")
                 assert js("document.querySelectorAll('.ag-center-cols-container .ag-row').length > 0")
                 print('Berechnung, Tabellenanzeige und Speichern-Schaltfläche: bestanden.', flush=True)
+                # Änderung: Auch die nativen AG-Grid-Überschriften bleiben beim vertikalen Scrollen stehen.
+                from tests.buchungsmanagement_oberflaeche import tabellenkopf_pruefen
+                wurzel = "Array.from(document.querySelectorAll('.ag-root-wrapper')).find(e=>e.getClientRects().length && e.querySelector('.ag-row'))"
+                tabellenkopf_pruefen(js, warten, wurzel, '(' + wurzel + ").querySelector('.ag-header')")
                 SCHRITT = 'Speicherdialog bestätigen'
                 knopf('Speichern')
                 warten("Array.from(document.querySelectorAll('.q-dialog')).some(e=>e.innerText.includes('Abrechnungsdaten wirklich speichern'))")
@@ -549,7 +574,7 @@ def _testen(prozesse, rueckverguetung=False):
                 SCHRITT = 'Word und PDF aus Oberfläche erzeugen'
                 export_starten('Word/PDF erstellen')
                 # Änderung: Während des tatsächlichen Stapels muss der Knopf gesperrt sein.
-                warten("Array.from(document.querySelectorAll('button')).some(e=>(e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith('Word/PDF erstellen') && e.disabled)")
+                warten("Boolean(document.getElementById(window.anaExportButtonId)?.disabled)", 60)
                 zielordner = gespeichert.parent
                 for _ in range(240):
                     docs = list((zielordner / 'word').glob('*.docx'))
@@ -565,10 +590,9 @@ def _testen(prozesse, rueckverguetung=False):
             # Änderung: Abschluss des Threads und UI-Timers vor Testende abwarten.
             # Änderung nach 2.049: Gemeinsame kompakte Beschriftung in beiden Ansichten.
             exporttext = 'Word/PDF erstellen'
-            warten("Array.from(document.querySelectorAll('button')).some(e=>(e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith("
-                   + json.dumps(exporttext) + ") && !e.disabled)")
+            warten("Boolean(document.getElementById(window.anaExportButtonId) && !document.getElementById(window.anaExportButtonId).disabled)")
             # Änderung nach 2.049: Quasar meldet den Balkenmaßstab über aria-valuemax (0 bis 1).
-            assert js("Array.from(document.querySelectorAll('button')).some(e=>{const p=e.querySelector('.ana-button-progress');return e.getClientRects().length && (e.querySelector('.q-btn__content > .block')?.textContent || e.textContent).trim().endsWith('Word/PDF erstellen') && p && Number(p.getAttribute('aria-valuemax'))>0 && Number(p.getAttribute('aria-valuenow'))===Number(p.getAttribute('aria-valuemax'))})")
+            assert js("(()=>{const e=document.getElementById(window.anaExportButtonId);const p=e?.querySelector('.ana-button-progress');return e?.getClientRects().length && p && Number(p.getAttribute('aria-valuemax'))>0 && Number(p.getAttribute('aria-valuenow'))===Number(p.getAttribute('aria-valuemax'))})()")
             # Änderung nach 2.049: Prozentzahl muss im sichtbaren Exportbutton erscheinen.
             assert js("Array.from(document.querySelectorAll('button')).some(e=>e.getClientRects().length && e.querySelector('.ana-button-percent')?.textContent.trim()==='100 %' && !e.querySelector('.ana-button-percent').classList.contains('invisible'))")
             if not rueckverguetung:

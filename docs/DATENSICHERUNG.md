@@ -21,6 +21,13 @@ offenen Eingaben und löst keine Berechnungen oder Datenbankänderungen aus.
 Das ZIP enthält unter `Arbeitsordner/` alle gespeicherten Dateien und leeren Ordner
 des Arbeitsordners: insbesondere Datenbank, Vorlagen, Abrechnungen, Rückvergütungen,
 Downloads, Protokolle, Betreiber-INI und vorhandene herkömmliche Datenbanksicherungen.
+<!-- Änderung nach 2.06.00: Lokale Buchungsmanagement-Einstellungen gehören zum Arbeitsordner. -->
+<!-- Änderung: Betreff-Regeln sind jetzt Teil der CSV-Datenbanken. -->
+Auch `buchungsmanagement.json` mit Ordnerpfaden und
+`Datenbank/db_buchungsmanagement.csv` mit ausgeblendeten Betreffen werden
+mitgesichert. Die CSV wird ebenfalls von den herkömmlichen Datenbanksicherungen
+erfasst. Externe Kontoauszugs- und Rechnungsordner werden durch ihre Auswahl
+im Buchungsmanagement nicht automatisch Bestandteil der ANA-Vollsicherung.
 Unter `Programmeinstellungen/ana.ini` liegt zusätzlich die Programmkonfiguration,
 auch wenn sie außerhalb des Arbeitsordners gespeichert ist.
 

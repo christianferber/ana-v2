@@ -9,6 +9,19 @@ import webview
 
 
 class WerkzeugeOberflaeche:
+    def aufbauen(self):
+        # Änderung nach 2.06.00: Erweiterbare Tools-Tabs; bisherigen PDF-Bereich unverändert einbetten.
+        from anwendung.buchungsmanagement_ui import BuchungsmanagementOberflaeche
+        with ui.tabs().classes('w-full') as tabs:
+            pdf = ui.tab('PDF-Zusammenführung', icon='picture_as_pdf')
+            konto = ui.tab('Buchungsmanagement', icon='account_balance')
+        with ui.tab_panels(tabs, value=pdf, keep_alive=True).classes('w-full'):
+            with ui.tab_panel(pdf):
+                self.tools_ui()
+            with ui.tab_panel(konto):
+                self.buchungsmanagement = BuchungsmanagementOberflaeche(self.anwendung)
+                self.buchungsmanagement.aufbauen()
+
     # Änderung: Bisherige gemeinsame Pfade über die Anwendung lesen.
     def __init__(self, anwendung):
         self.anwendung = anwendung

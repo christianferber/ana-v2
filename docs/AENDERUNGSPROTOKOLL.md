@@ -11,6 +11,107 @@ beschreiben den jeweiligen damaligen Stand. Aktuelle Prüfungen stehen im
 Für Endbenutzer bestimmte Features, Verbesserungen und Fehlerkorrekturen stehen
 in den [Release Notes](../RELEASE_NOTES.md).
 
+## Arbeitsstand nach 2.06.00 – 14.11.2026
+
+<!-- Änderung: Tools-Unterbereiche und eigenständiges PDF-Buchungsmanagement ergänzen. -->
+WerkzeugeOberflaeche.aufbauen bettet den bisherigen, unveränderten PDF-Bereich in
+den ersten Tab PDF-Zusammenführung ein. Zweiter Tab Buchungsmanagement mit eigenem
+Zustand, nativen Ordnerdialogen und separaten tabellarischen Verwaltungsdialogen.
+Seitennavigation: einzeilige Beschriftung und kompaktere Icon-/Textabstände.
+
+buchungsmanagement.py liest das lokal verifizierte textbasierte PDF-Auszugsformat.
+Jahr/Auszugsnummer, Zeitraum, Soll/Haben und Anfangs-/Endsaldo werden geprüft;
+ein Fehler verhindert ein scheinbar vollständiges Ergebnis. Jahreswechsel werden
+aus dem Zeitraum abgeleitet. Bytegleiche Auszugskopien werden nur einmal gelesen;
+unterschiedliche Dateien derselben Auszugsnummer/Jahr werden abgelehnt.
+Interne Buchungs-IDs folgen unverändert der ursprünglichen Auszugsreihenfolge.
+<!-- Änderung: Rechnungsdateinamen gemäß neuer Vorgabe aus den aktiven Tagesbuchungen berechnen. -->
+Für die Rechnungsprüfung werden Tagesnummern in Auszugsreihenfolge ohne ausgeblendete
+Buchungen berechnet. Bleibt nur eine Buchung eines Tages übrig, entfällt der Anhang;
+deren vorheriger nummerierter Dateiname bleibt ebenfalls gültig. Die interne ID
+bleibt bei Neuberechnung und Auswahl stabil. Nicht zugeordnete Rechnungen haben
+keine auswählbare Buchungs-ID, damit keine fremde Buchung versehentlich ausgeblendet wird.
+<!-- Änderung: Gegenpartei und Zweck aus den Buchungsdetails ableiten und zusammengehörige Buchungen erfassen. -->
+Empfänger/Auftraggeber ist die erste Detailzeile; weitere Detailzeilen bis zur
+nächsten Buchung bzw. zum Seitenabschluss liefern den Zweck. Technische SEPA-Felder
+(IBAN, BIC, EREF, MREF, CRED usw.) werden entfernt; ein explizites SVWZ wird bevorzugt.
+Der vereinfachte Betreff kombiniert Gegenpartei und Geschäftszweck. Inhaltliche
+Nummern, Datumsangaben und Zeiträume im Zweck werden nicht pauschal entfernt.
+
+Neue Ausschlüsse passen bei gleichem Betreff oder vollständigem gleichem Empfänger-
+Zweck-Paar, jeweils ohne Groß-/Kleinschreibung und mit einheitlichen Leerzeichen.
+Unvollständige Paare erzeugen keine Paarregel. Passende vorhandene Buchungen werden
+sofort gemeinsam erfasst; beim späteren Import werden passende Paare ergänzt und
+gespeichert. Aktivieren entfernt die verantwortlichen zusammengehörigen Regeln.
+Historische Betreff-Regeln aus der Zeit mit reiner Gegenparteianzeige behalten
+ihre bisherige Wirkung; sie können ausdrücklich gemeinsam reaktiviert werden.
+
+Rechnungszuordnung erfolgt ausschließlich über Buchungsdatum und Tagesnummer im
+Dateinamen. Empfänger oder Zweck müssen vorhanden sein. Rechnungsnummer, „vom“ und
+Rechnungsdatum sind gemäß erneuter Ergänzung optional. Vorhandene Datumsangaben
+werden geprüft; achtstellige Rechnungsnummern ohne „vom“ werden nicht als ungültiges
+Datum verworfen. Rechnungsnummern werden nicht aus mehrteiligen Zwecktexten erraten. b-Zusatzdateien
+ersetzen keine Hauptrechnung. Fehlende, mehrfache, falsch benannte, datumsfehlerhafte
+und nicht zuordenbare Rechnungen erscheinen als textlich und farblich markierte Fälle.
+<!-- Änderung: Zuordnung und Betrag als unabhängige Statuswerte, auch erfolgreiche Zeilen sichtbar. -->
+Die vollständige Prüftabelle enthält jetzt auch erfolgreiche Zuordnungen. Eine
+vorhandene zugeordnete Hauptrechnung erhält Rechnung=OK/grün; die unabhängige Spalte
+Betrag OK enthält OK/grün, Abweichung oder nicht prüfbar. Mehrere zugeordnete Rechnungen
+geben keine positive Betragsbestätigung. Die Filter Status OK ausblenden bzw.
+Status OK und Betrag OK ausblenden ändern ausschließlich die Anzeige, keine Regeln
+oder Dateien. Die doppelte Betreff-Spalte entfällt; Datum, Betrag, Empfänger und Zweck
+bleiben erhalten. In der Verwaltung werden leere Rechnungsspalten nicht dargestellt.
+<!-- Änderung: Ergänzte Betragsprüfung und lokale Windows-OCR dokumentieren. -->
+Nach eindeutiger Zuordnung wird der PDF-Endbetrag centgenau im Absolutwert mit der
+Buchung verglichen. Layout-Text, gekennzeichnete Rechnungs-/Zahlbeträge und deutsche
+Dezimalbeträge werden ausgewertet; Einzelpreise, Nettowerte und Steuersummen dienen
+nicht als Ersatz für den Endbetrag. Mehrdeutige oder unlesbare Beträge bleiben offene
+Prüffälle; abweichende Beträge werden nebeneinander angezeigt. XML ohne b gilt als
+fehlerhaft. Der tatsächliche Rechnungsempfänger und andere Inhalte werden nicht geprüft.
+
+pdf_texterkennung.py nutzt bei gescannten Rechnungen Windows.Data.Pdf und
+Windows.Media.Ocr über einen ausgeblendeten PowerShell-Prozess. Seitenbilder und
+erkannte Texte bleiben im Arbeitsspeicher; begrenzter RAM-Cache mit Inhaltsprüfsumme,
+Prozesszeitlimit und Fehlerrückmeldung. Keine Cloud, keine zusätzliche Installation.
+Voraussetzung: verfügbare lokale Windows-OCR-Sprache. Fehlende OCR wird ausdrücklich
+als nicht prüfbarer Betrag angezeigt. Kontoauszüge benötigen weiterhin lesbaren Text
+im verifizierten Banklayout. PDFs/XML werden nicht geändert.
+
+<!-- Änderung: Ausschlüsse gemäß ergänzter Vorgabe in eigener CSV-Datenbank speichern. -->
+Pfade bleiben in buchungsmanagement.json im aktuellen ANA-Arbeitsordner. Betreff-
+Ausschlüsse stehen jetzt im konfigurierten Datenbankverzeichnis in
+db_buchungsmanagement.csv: Spalten Betreff, Empfaenger und Zweck mit Semikolon als
+Trenner. Neue Dateien verwenden UTF-8 mit BOM, weil die erkannten Zwecke auch Zeichen
+außerhalb der alten Windows-Kodierung enthalten. Alte einspaltige CSVs werden in
+ihrer bisherigen Standardkodierung gelesen und erst nach Prüfung verlustfrei erweitert.
+Anführungszeichen/Semikola werden CSV-gerecht maskiert. Atomare temporäre Speicherung
+mit fsync und Austausch schützt bestehende Daten bei Schreibfehlern. Die anderen
+Datenbankleser/-schreiber bleiben unverändert. Eine leere
+Auswahl ergibt eine gültige Datei mit Kopfzeile. Beim Laden wird eine beschädigte
+CSV abgelehnt, statt sie durch einen leeren Bestand zu ersetzen.
+
+Beim ersten Laden wird die CSV angelegt. Bisherige JSON-Ausschlüsse werden dabei
+übernommen und erst nach erfolgreicher CSV-Anlage/-Prüfung aus JSON entfernt.
+Eine vorhandene CSV ist maßgeblich; veraltete JSON-Regeln können bereits reaktivierte
+Buchungen nicht erneut ausblenden. Arbeitsordnerwechsel lesen die jeweils zugehörige
+CSV. Speicherung und Übernahme nutzen das bestehende Änderungslog (DATENBANK bzw.
+EINSTELLUNGEN). Die bestehenden Datenbank- und ZIP-Sicherungen nehmen die Datei mit auf.
+Bestehende ANA-Kontodaten, Berechnungen und Exporte bleiben unverändert. Neue lokale
+Beispiel-/Fehlerfallprüfung im Freigabeskript; echte Tools-Bedienung im Praxislauf.
+<!-- Änderung: Fortschritt bei Import, Prüfung und erneuter Prüfung nach Auswahl anzeigen. -->
+Ein persistentes Fortschrittsfenster zeigt die jeweilige Phase, erledigte Einheiten,
+Prozentwert und Aktivitätsanzeige. Gezählt werden Auszüge, Rechnungsdateien und
+Buchungen. Worker übergeben Meldungen über eine Queue an einen UI-Timer; die Anzeige
+wird nicht aus dem Hintergrundthread bedient. Bei langsamer OCR bleibt der echte
+Dateizähler stehen. Abschluss oder Fehler räumt Timer und Dialog auf. Erneute
+Prüfungen nach Ausschluss/Reaktivierung laufen ebenfalls im Hintergrund mit Anzeige.
+Version bleibt 2.06/2.06.00; kein neuer EXE-Build oder Release beauftragt.
+<!-- Änderung: Tabellenköpfe für Quasar-Tabellen und AG-Grids beim Scrollen sichtbar halten. -->
+Quasar-Tabellen erhalten einen begrenzten eigenen Scrollbereich mit klebenden
+Spaltenüberschriften. AutoHeight-AG-Grids scrollen im äußeren Rahmen; ihre Kopfzeile
+bleibt darin stehen. Normale AG-Grids behalten ihre native feste Kopfzeile. Nur CSS,
+keine Änderungen an Daten, Sortierung, Auswahl oder vorhandenen Grid-Konfigurationen.
+
 ## Version 2.06.00 – 13.11.2026
 
 <!-- Änderung nach 2.06.00: Ordneranlage am konfigurierten Ort korrigieren. -->

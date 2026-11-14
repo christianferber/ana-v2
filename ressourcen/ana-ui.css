@@ -20,6 +20,26 @@ body { background: #f4f7fa; color: #233747; font-family: "Segoe UI", Arial, sans
 .ana-nav .q-tab__content { flex-direction: row; justify-content: flex-start; gap: 10px; }
 .ana-nav .q-tab__icon { font-size: 19px; width: 22px; }
 .ana-nav .q-tab__label { font-size: 14px; font-weight: 500; text-align: left; }
+/* Änderung nach 2.06.00: Navigation bleibt einzeilig, einschließlich Buchungsvorlagen. */
+.ana-nav .q-tab__label, .ana-settings .block { white-space: nowrap; }
+.ana-nav .q-tab { padding: 0 8px; }
+.ana-nav .q-tab__content { gap: 6px; min-width: 0; flex-wrap: nowrap; }
+.ana-nav .q-tab__icon { flex-shrink: 0; }
+/* Änderung nach 2.06.00: Großes, eigenständig scrollbar bedienbares Verwaltungsfenster. */
+.ana-kontomanager-dialog { width: 1400px; max-width: 96vw !important; height: 88vh; flex-wrap: nowrap; }
+.ana-kontomanager-dialog .q-table td { white-space: normal; overflow-wrap: anywhere; }
+/* Änderung nach 2.06.00: Fortschrittsfenster mit festem, auch schmal gut lesbarem Rahmen. */
+.ana-kontomanager-fortschritt { width: 560px; max-width: 94vw !important; gap: 16px; }
+/* Änderung: Alle Quasar-Tabellen bekommen einen eigenen Scrollbereich mit stehenden Spaltenüberschriften. */
+.q-table__middle { max-height: 65vh; overflow: auto; min-height: 0; }
+.q-table thead th { position: sticky; top: 0; z-index: 2; background: #fff; }
+.ana-kontomanager-tabelle .q-table__middle { max-height: none; flex: 1; }
+.ana-kontomanager-tabelle .q-table__bottom { flex-shrink: 0; }
+/* Änderung: AutoHeight-AG-Grids ebenfalls im eigenen Rahmen scrollen; normale AG-Grids behalten ihre native Kopfzeile. */
+.nicegui-aggrid .ag-root-wrapper.ag-layout-auto-height { max-height: 65vh; overflow-y: auto !important; }
+/* Änderung: Die später geladene AG-Grid-Theme-Regel darf keinen inneren, nicht scrollenden Clip-Rahmen erzeugen. */
+.nicegui-aggrid .ag-root-wrapper-body.ag-layout-auto-height, .nicegui-aggrid .ag-root.ag-layout-auto-height { overflow: visible !important; }
+.ag-root.ag-layout-auto-height > .ag-header { position: sticky; top: 0; z-index: 3; }
 .ana-nav .q-tab--active { background: #eaf2f8; color: #1761a0; }
 .ana-nav .q-tab__indicator { display: none; }
 /* Änderung 2.049: Dieselbe Einrückung, Iconbreite und Textlücke wie bei den Registern. */

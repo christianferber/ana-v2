@@ -39,7 +39,8 @@ def methoden_als_funktionen(basis, originalfunktionen):
     adapter = {k.name: k for k in haupt.body if isinstance(k, (ast.FunctionDef, ast.AsyncFunctionDef))}
     funktionen = {}
     for methode in klasse.body:
-        if not isinstance(methode, (ast.FunctionDef, ast.AsyncFunctionDef)) or methode.name == '__init__':
+        # Änderung nach 2.06.00: Neuer Tab-Rahmen separat geprüft; alle bisherigen PDF-Methoden exakt vergleichen.
+        if not isinstance(methode, (ast.FunctionDef, ast.AsyncFunctionDef)) or methode.name in ('__init__', 'aufbauen'):
             continue
         assert methode.args.args[0].arg == 'self'
         funktion = NamenZurueckfuehren().visit(copy.deepcopy(methode))
@@ -65,6 +66,8 @@ def methoden_als_funktionen(basis, originalfunktionen):
         erwartet.body = ast.parse(quelle).body[0].body
         if methode.name == 'tools_ui':
             erwartet.body = ast.parse('global werkzeuge_ansicht\nwerkzeuge_ansicht = WerkzeugeOberflaeche(sys.modules[__name__])\n' + aufruf).body
+            # Änderung nach 2.06.00: Nur der Einstieg führt jetzt über den neuen Tab-Rahmen.
+            erwartet.body[-1].value.func.attr = 'aufbauen'
         assert ast.dump(adapter[methode.name]) == ast.dump(erwartet)
         if isinstance(funktion, ast.FunctionDef):
             funktionen[funktion.name] = funktion

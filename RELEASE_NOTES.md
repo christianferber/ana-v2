@@ -5,6 +5,20 @@
 
 ## Version 2.06 – 13.11.2026
 
+<!-- Änderung nach 2.06.00: Neue Tools und einzeilige Navigation im aktuellen Quellstand. -->
+- Feature: Tools mit den Unterbereichen PDF-Zusammenführung und Buchungsmanagement. PDF-Kontoauszüge lokal einlesen, Buchungen nach Betreff ausblenden oder reaktivieren und fehlende bzw. fehlerhaft benannte Rechnungen erkennen.
+<!-- Änderung nach 2.06.00: Ergänzte Rechnungsbetragsprüfung mit lokaler Texterkennung. -->
+- Verbesserung: Rechnungsendbeträge werden mit den Buchungen verglichen, bei gescannten Rechnungen mit lokaler Windows-Texterkennung. Abweichende und nicht eindeutig lesbare Beträge werden zur Prüfung angezeigt.
+<!-- Änderung nach 2.06.00: Gelockerte Dateinamen und sichtbarer Prüffortschritt gemäß ergänzter Vorgabe. -->
+- Verbesserung: Rechnungsdateinamen dürfen statt eines Empfängers auch einen Zweck enthalten. Rechnungsnummer, „vom“ und Rechnungsdatum sind optional. Die Prüfung zeigt ihren Fortschritt an.
+<!-- Änderung nach 2.06.00: Ausschlüsse in eigener CSV-Datenbank ablegen. -->
+- Verbesserung: Ausgeblendete Buchungen werden in einer eigenen CSV-Datei im Datenbankverzeichnis gespeichert. Die bisherige Auswahl wird automatisch übernommen.
+<!-- Änderung nach 2.06.00: Empfänger/Zweck anzeigen und passende Buchungen automatisch ausblenden. -->
+- Verbesserung: Empfänger und Zweck werden aus den Buchungsdetails ermittelt und angezeigt. Ausblenden erfasst sofort und bei späteren Importen auch Buchungen mit demselben Empfänger und Zweck. Bestehende Ausschlüsse bleiben erhalten.
+<!-- Änderung nach 2.06.00: Getrennte Status, reine Anzeigefilter und feste Tabellenüberschriften. -->
+- Verbesserung: Rechnungszuordnung und Betrag erhalten getrennte Prüfstatus. Erfolgreiche Ergebnisse lassen sich gezielt ausblenden. Tagesnummern berücksichtigen ausgeblendete Buchungen; die doppelte Betreff-Spalte entfällt.
+- Verbesserung: Tabellenüberschriften bleiben beim Scrollen sichtbar.
+- Verbesserung: Alle Einträge der Seitennavigation bleiben einzeilig.
 <!-- Änderung nach 2.06.00: Fehlende Datenordner anhand des INI-Arbeitsordners ergänzen. -->
 - Bugfix: Fehlende Datenordner werden im eingestellten Arbeitsordner angelegt. Bei leerem INI-Pfad wird der Programmordner verwendet.
 - Verbesserung: ANA startet automatisch maximiert mit erreichbarem Fenster-X.
