@@ -11,6 +11,25 @@ beschreiben den jeweiligen damaligen Stand. Aktuelle Prüfungen stehen im
 Für Endbenutzer bestimmte Features, Verbesserungen und Fehlerkorrekturen stehen
 in den [Release Notes](../RELEASE_NOTES.md).
 
+## Arbeitsstand nach 2.06.01 – 14.11.2026
+
+<!-- Änderung: Buchungstag gegenüber Wertstellung eindeutig benennen und absichern. -->
+Die erste Datumsspalte „Bu-Tag“ bleibt maßgeblich für Datum, Tagesnummer und
+Rechnungsbewertung. Die zweite Spalte „Wert“ wird dafür nicht verwendet.
+Die Parservariablen benennen diese Rollen ausdrücklich. Ein gezielter Test mit
+abweichender Wertstellung über den Jahreswechsel und außerhalb des Auszugszeitraums
+prüft unveränderte Buchungsdaten und damit dieselbe Rechnungszuordnung.
+
+<!-- Änderung: Sichtbare Buchungs-ID nach Ausschlüssen in beiden Dialogen sofort neu berechnen. -->
+Die Umsatzverwaltung zeigte bisher die ursprüngliche ID, während die Rechnungsprüfung
+bereits aktive Tagesnummern berechnete. Beide Tabellen verwenden nun dieselbe aktive
+ID-Berechnung bei jeder Aktualisierung, auch nach Ausblenden und Reaktivieren.
+Bleibt nur eine Tagesbuchung aktiv, entfällt ihr Anhang. Ausgeblendete Buchungen
+erhalten bei ihrer Anzeige „—“, weil sie keine aktive Tagesnummer belegen.
+Ein unveränderlicher interner Schlüssel bleibt ausschließlich für Auswahl und
+Zuordnung erhalten. Rechnungsdateien, Buchungsdaten und gespeicherte Regeln werden
+durch die Neunummerierung nicht geändert; reine Anzeigefilter beeinflussen sie nicht.
+
 ## Build 2.06.01 – 14.11.2026
 
 <!-- Änderung 2.06.01: Explizit beauftragter Quellbuild ohne EXE; keine neue Fachänderung. -->

@@ -236,11 +236,13 @@ def kontoauszuege_lesen(ordner, fortschritt=None):
                     if re.match(r'^\d{2}\.\d{2}\.\s+\d{2}\.\d{2}\.', line.strip()):
                         raise ValueError(f'Buchungszeile nicht lesbar: {datei.name}, Seite {seite}')
                     continue
-                tag, valuta, art, betrag, richtung = treffer.groups()
+                # Änderung: Die erste Datumsspalte ist der Buchungstag. Die zweite
+                # Spalte (Wertstellung) bestimmt weder Datum noch Rechnungszuordnung.
+                buchungstag, _wertstellung, art, betrag, richtung = treffer.groups()
                 kandidaten = []
                 for jahr_kandidat in range(salden['alter'][0].year, salden['neuer'][0].year + 1):
                     try:
-                        datum = datetime.strptime(tag + str(jahr_kandidat), '%d.%m.%Y').date()
+                        datum = datetime.strptime(buchungstag + str(jahr_kandidat), '%d.%m.%Y').date()
                     except ValueError:
                         continue
                     if salden['alter'][0] <= datum <= salden['neuer'][0]:

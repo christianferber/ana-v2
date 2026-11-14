@@ -12,7 +12,7 @@ from anwendung.buchungsmanagement import (
     kontoauszuege_lesen, rechnungen_pruefen, AUSBLENDUNGEN_DATEINAME,
     ausblendungen_laden, ausblendungen_speichern,
     ausblendungen_format_alt, regel_normalisieren, regeln_ergaenzen,
-    ist_ausgeblendet, auswahl_regeln_aendern,
+    ist_ausgeblendet, auswahl_regeln_aendern, buchungs_pruef_ids,
 )
 
 
@@ -178,8 +178,8 @@ class BuchungsmanagementOberflaeche:
             spalten = [{'name': name, 'label': label, 'field': name, 'align': 'left', 'sortable': True}
                        for name, label in [('status', 'Rechnung' if pruefen else 'Status'),
                                            ('betrag_status', 'Betrag OK'), ('datum', 'Datum'),
-                                           # Änderung: Original-ID und aktuell berechneten Dateianfang begrifflich trennen.
-                                           ('pruef_id' if pruefen else 'id', 'Dateianfang' if pruefen else 'Buchungs-ID'), ('betrag_anzeige', 'Betrag (EUR)'),
+                                           # Änderung: Beide Ansichten zeigen die nach Ausschlüssen neu berechnete Buchungs-ID.
+                                           ('pruef_id', 'Dateianfang' if pruefen else 'Buchungs-ID'), ('betrag_anzeige', 'Betrag (EUR)'),
                                            ('empfaenger', 'Empfänger / Auftraggeber'), ('zweck', 'Zweck'),
                                            ('rechnungsbetrag_anzeige', 'PDF-Endbetrag (EUR)'),
                                            ('datei', 'Rechnungsdatei'), ('hinweis', 'Hinweis')]]
@@ -196,12 +196,17 @@ class BuchungsmanagementOberflaeche:
             tabelle.add_slot('body-cell-betrag_status', '''
                 <q-td :props="props"><q-badge :color="props.value === 'OK' ? 'green' : props.value === 'Nicht geprüft' ? 'grey' : 'red'"
                 :label="props.value || 'Nicht geprüft'" /></q-td>''')
+            # Änderung: Sichtbare ID und unveränderlicher Auswahlschlüssel bleiben getrennt zuordenbar.
+            tabelle.add_slot('body-cell-pruef_id', '''
+                <q-td :props="props" class="ana-buchungs-id" :data-ursprung="props.row.id">{{ props.value }}</q-td>''')
             suche.bind_value(tabelle, 'filter')
             zusammenfassung = ui.label()
 
             def aktualisieren():
                 # Änderung: Jede Ansicht aus dem vollständigen Bestand und aktuellen Regeln erzeugen.
                 ausgeschlossen = set(self.daten['ausgeblendet'])
+                # Änderung: Bei jedem Aktualisieren alle aktiven Tages-IDs neu erzeugen, auch in der Umsatzverwaltung.
+                aktive_ids = buchungs_pruef_ids(self.buchungen, ausgeschlossen)
                 zeilen = []
                 quelle = probleme if pruefen else self.buchungen
                 for index, eintrag in enumerate(quelle):
@@ -223,6 +228,8 @@ class BuchungsmanagementOberflaeche:
                         if ist_ausgeblendet(b, ausgeschlossen) and not any(z.get('id') == b['id'] for z in zeilen):
                             zeilen.append({**b, 'zeile': 'aus-' + b['id'], 'status': 'Ausgeblendet'})
                 for z in zeilen:
+                    if z.get('id') in bestand:
+                        z['pruef_id'] = aktive_ids.get(z['id'], '—')
                     z['betrag_anzeige'] = z.get('betrag', '').replace('.', ',')
                     # Änderung: Abweichenden Rechnungsbetrag neben dem Buchungsbetrag anzeigen.
                     z['rechnungsbetrag_anzeige'] = z.get('rechnungsbetrag', '').replace('.', ',')

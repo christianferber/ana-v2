@@ -1,3 +1,89 @@
+# Ergänzende Prüfung: Buchungstag statt Wertstellung – 14.11.2026
+
+<!-- Änderung: Datumsgrundlage ausdrücklich mit abweichender Wertstellung prüfen. -->
+Die PDF-Spaltenpositionen bestätigen „Bu-Tag“ als erste Datumsspalte.
+Der Parser verwendete diese bereits; Variablen und Kommentar benennen dies nun
+explizit. Keine Änderung der Datums- oder Rechnungslogik.
+`tests.buchungsmanagement_pruefen` erneut vollständig erfolgreich mit lokalen
+Beispielen, PDF-Endbeträgen, OCR, Zuordnung, Persistenz und Fehlerfällen.
+Neuer Test: Wertstellung abweichend vom Buchungstag, über den Jahreswechsel
+und außerhalb des Auszugszeitraums; eingelesene Datensätze bleiben identisch.
+Originaldateien unverändert. Kein erneuter vollständiger Oberflächenlauf;
+der zuvor dokumentierte Praxislauf bleibt der letzte vollständige Lauf.
+
+# Arbeitsstand nach 2.06.01 – 14.11.2026
+
+Die sichtbaren Buchungs-IDs werden in beiden Buchungsmanagement-Dialogen nach
+Ausblenden und Reaktivieren aus den aktiven Tagesbuchungen neu berechnet.
+Der Praxislauf prüft das Entfallen des Suffixes bei einer verbleibenden Buchung,
+die Wiederherstellung nach Reaktivierung sowie die IDs in der Rechnungsprüfung.
+Ausgeblendete Zeilen zeigen keine aktive ID. Interne Auswahlschlüssel bleiben stabil.
+
+Vollständiger regulärer Praxislauf erfolgreich, ausschließlich lokale Beispieldaten:
+`.lokal/oberflaechentest-20261114-230617-516092`. 73 neu erzeugte Word-Paketinhalte
+sowie 73 PDF-Texte und Seitenzahlen stimmen mit dem letzten erfolgreichen Lauf
+überein. Original-Beispieldateien unverändert, Testprozesse vollständig beendet.
+Export-, Sicherungs- und Oberflächenprüfungen erfolgreich; keine neue visuelle
+Dokumentprüfung. Keine Änderung der Buchungsexportlogik.
+
+Ein erster Lauf stoppte vor den neuen ID-Fällen an der Scrollprüfung. Der Test
+misst die Kopfposition nun relativ zum Scrollbereich, damit Dialogbewegungen
+die Prüfung nicht verfälschen. Der vollständige erneute Lauf bestand.
+
+Die erste gebündelte Prüfung scheiterte an veralteten festen Statussummen für
+den aktuellen lokalen Rechnungsbestand. Aktualisierte Erwartung: eine Rechnung
+ohne Buchung, 26 fehlende Rechnungen, elf nicht prüfbare und ein abweichender
+Betrag. PDF-Zuordnung und OCR sind gegenüber HEAD unverändert. Die gezielten
+synthetischen Zuordnungs-/Fehlerfälle bleiben erhalten. Erneute Gesamtprüfung
+vollständig erfolgreich.
+
+Alle 32 gebündelten Prüfungen und die abschließende Syntaxprüfung erfolgreich:
+
+# Prüfbericht ANA – aktueller Arbeitsstand
+
+<!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
+
+Stand: 14.11.2026
+
+Umgebung: Windows, Python 3.13.5.
+
+- Buchungsmanagement aus PDF-Kontoauszügen: bestanden.
+- Vollsicherung als ZIP: bestanden.
+- Verbrauchsstatistik aus Jahresabrechnungen: bestanden.
+- Serienbrief-Fettformatierung: bestanden.
+- PDF-Fortschritt im Button: bestanden.
+- Startanzeige und Ladefolge: bestanden.
+- Änderungsprotokoll für Daten und Einstellungen: bestanden.
+- Exportoberfläche bei Fehlern: bestanden.
+- Word-Fehlerbereinigung: bestanden.
+- Ausfallsicherheit von CSV und Sicherungen: bestanden.
+- Mitgliederaktualisierung gegen Original: bestanden.
+- CSV-Speicherhilfe gegen Original: bestanden.
+- Datenbankzugriffe gegen Original: bestanden.
+- Datenaufbereitung gegen Original: bestanden.
+- Sicherung gegen Original: bestanden.
+- Buchungsexport-Bedienung gegen Original: bestanden.
+- Statistik gegen Original: bestanden.
+- Changelog-Anzeige gegen Original: bestanden.
+- Einstellungsansicht gegen Original: bestanden.
+- Werkzeuge gegen Original: bestanden.
+- Kontodatenansicht gegen Original: bestanden.
+- Mitgliederansicht gegen Original: bestanden.
+- Abnehmeransicht gegen Original: bestanden.
+- Zähleransicht gegen Original: bestanden.
+- Testprozesse und Startsperre: bestanden.
+- Abschlagsansicht gegen Original: bestanden.
+- Jahresabrechnung gegen Referenz: bestanden.
+- Berechnung und Abbruchbedingungen: bestanden.
+- Rückvergütung gegen Referenz: bestanden.
+- Buchungs-CSV und freigegebene Fehlerkorrekturen: bestanden.
+- Dateien, INI, Pfade und Strukturvergleich: bestanden.
+- Dokumentfelder und simulierte Dokumentaufrufe: bestanden.
+- Syntax aller Python-Dateien: bestanden.
+
+
+## Bisheriger Prüfstand
+
 # Quellbuild 2.06.01 – 14.11.2026
 
 <!-- Änderung 2.06.01: Aktueller AGENTS.md folgen; Build ohne EXE. -->

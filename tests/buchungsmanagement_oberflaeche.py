@@ -6,7 +6,7 @@ from pathlib import Path
 from anwendung.buchungsmanagement import (
     kontoauszuege_lesen, betreff_schluessel, rechnungen_pruefen,
     ausblendungen_laden, AUSBLENDUNGEN_DATEINAME,
-    ist_ausgeblendet,
+    ist_ausgeblendet, auswahl_regeln_aendern, buchungs_pruef_ids,
 )
 
 
@@ -50,6 +50,37 @@ def pruefen(kopie, js, klicken, warten, knopf, cdp, auswahl):
     config = json.loads(configdatei.read_text(encoding='utf-8'))
     assert 'ausgeblendet' not in config
     buchungen = kontoauszuege_lesen(config['kontoordner'])
+    # Änderung: Reale Tagesgruppe auf eine Buchung reduzieren: sichtbarer Anhang muss sofort entfallen.
+    fall = None
+    for kandidat in buchungen:
+        andere = [b for b in buchungen if b['datum'] == kandidat['datum'] and b['id'] != kandidat['id']]
+        if not andere or len(andere) > 15:
+            continue
+        regeln = auswahl_regeln_aendern(buchungen, [], andere, True)
+        aktiv = [b for b in buchungen if b['datum'] == kandidat['datum'] and not ist_ausgeblendet(b, regeln)]
+        if len(aktiv) == 1 and aktiv[0]['id'] == kandidat['id']:
+            fall = kandidat, andere
+            break
+    assert fall is not None
+    kandidat, andere = fall
+    def id_zelle(ident):
+        return 'Array.from((' + dialog + ").querySelectorAll('.ana-buchungs-id')).find(e=>e.dataset.ursprung===" + json.dumps(ident) + ')'
+    suchen(kandidat['datum'])
+    warten('Boolean(' + id_zelle(kandidat['id']) + ')')
+    for b in andere:
+        klicken('(' + id_zelle(b['id']) + ").closest('tr').querySelector('.q-checkbox')")
+    knopf('Auswahl ausblenden', dialog)
+    warten('(' + id_zelle(kandidat['id']) + ')?.textContent.trim()===' + json.dumps(kandidat['datum'].replace('-', '')))
+    klicken(dialog + ".querySelector('.q-toggle')")
+    for b in andere:
+        warten('Boolean(' + id_zelle(b['id']) + ')')
+        assert js('(' + id_zelle(b['id']) + ').textContent.trim()') == '—'
+        klicken('(' + id_zelle(b['id']) + ").closest('tr').querySelector('.q-checkbox')")
+    knopf('Auswahl aktivieren', dialog)
+    warten('(' + id_zelle(kandidat['id']) + ')?.textContent.trim()===' + json.dumps(kandidat['id']))
+    assert ausblendungen_laden(db_datei) == []
+    klicken(dialog + ".querySelector('.q-toggle')")
+    suchen('')
     # Änderung: Reales wiederholtes Paar auswählen und die sofortige Gruppenausblendung prüfen.
     paare = Counter((betreff_schluessel(b['empfaenger']), betreff_schluessel(b['zweck'])) for b in buchungen)
     ziel = next(b for b in buchungen if paare[(betreff_schluessel(b['empfaenger']), betreff_schluessel(b['zweck']))] > 1)
@@ -66,6 +97,7 @@ def pruefen(kopie, js, klicken, warten, knopf, cdp, auswahl):
     erwartete = sum(not ist_ausgeblendet(b, ausgeblendet) for b in buchungen)
     assert erwartete <= len(buchungen) - 2
     assert js(dialog + '.innerText.includes(' + json.dumps(str(erwartete) + ' Einträge angezeigt.') + ')')
+    suchen('')
     # Änderung: Ausgeblendete sichtbar machen und Betreff-Regel wieder aufheben.
     klicken(dialog + ".querySelector('.q-toggle')")
     warten(dialog + ".innerText.includes('62 Einträge angezeigt.')")
@@ -121,6 +153,11 @@ def pruefen(kopie, js, klicken, warten, knopf, cdp, auswahl):
     knopf('Auswahl ausblenden', dialog)
     warten("!document.querySelector('.ana-kontomanager-fortschritt')", 120)
     assert ausblendungen_laden(db_datei)
+    # Änderung: Auch nach Ausblenden im Rechnungsfenster zeigt jede sichtbare aktive Zeile ihre neue ID.
+    regeln = ausblendungen_laden(db_datei)
+    neue_ids = buchungs_pruef_ids(buchungen, regeln)
+    id_zeilen = js('Array.from((' + dialog + ").querySelectorAll('.ana-buchungs-id[data-ursprung]')).map(e=>({ursprung:e.dataset.ursprung,wert:e.textContent.trim()}))")
+    assert id_zeilen and all(z['wert'] == neue_ids[z['ursprung']] for z in id_zeilen if z['ursprung'] in neue_ids)
     knopf('Schließen', dialog)
     warten('!(' + dialog + ')')
     knopf('Kontoumsätze verwalten')
@@ -162,10 +199,11 @@ def tabellenkopf_pruefen(js, warten, scroller, kopf):
     # Änderung: Einen echten vertikalen Scrollvorgang ausführen und die Kopfposition vergleichen.
     alt = js('(' + scroller + ").getAttribute('style')")
     js('(' + scroller + ").style.setProperty('max-height','160px','important');(" + scroller + ").style.setProperty('height','160px','important')")
-    vorher = js('(' + kopf + ').getBoundingClientRect().top')
+    # Änderung: Dialogbewegungen ausklammern; der Kopf muss relativ zu seinem Scrollbereich stehen bleiben.
+    vorher = js('(' + kopf + ').getBoundingClientRect().top - (' + scroller + ').getBoundingClientRect().top')
     js('(' + scroller + ').scrollTop=120')
     warten('(' + scroller + ').scrollTop>0')
-    nachher = js('(' + kopf + ').getBoundingClientRect().top')
+    nachher = js('(' + kopf + ').getBoundingClientRect().top - (' + scroller + ').getBoundingClientRect().top')
     assert abs(nachher - vorher) <= 1
     js('(' + scroller + ').scrollTop=0')
     if alt is None:

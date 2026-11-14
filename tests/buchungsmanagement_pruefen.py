@@ -267,11 +267,12 @@ def pruefen():
         assert werte[0][0] == 0 and werte[-1][0] == werte[-1][1]
         assert all(0 <= m[0] <= m[1] for m in werte)
         assert [m[0] for m in werte] == sorted(m[0] for m in werte)
-    # Änderung: Namens-/Zuordnungsfälle erhalten; neue Betragsfälle separat prüfen.
+    # Änderung: Erwartungszahlen an den aktuellen lokalen Rechnungsbestand anpassen;
+    # Namens-/Zuordnungsfälle und Betragsfälle weiterhin getrennt prüfen.
     assert Counter(p['status'] for p in probleme if not p['status'].startswith('Betrag')) == {
-        'Rechnung ohne Buchung': 2, 'Zusatz ohne Hauptrechnung': 1, 'Rechnung fehlt': 27}
+        'Rechnung ohne Buchung': 1, 'Rechnung fehlt': 26}
     assert Counter(p['status'] for p in probleme if p['status'].startswith('Betrag')) == {
-        'Betrag nicht prüfbar': 10, 'Betrag abweichend': 1}
+        'Betrag nicht prüfbar': 11, 'Betrag abweichend': 1}
     ausgeschlossen = {betreff_schluessel(b['betreff']) for b in buchungen}
     assert not any(p['status'] == 'Rechnung fehlt' for p in rechnungen_pruefen(buchungen, rechnungen, ausgeschlossen))
     assert {**bestand(konto), **bestand(rechnungen)} == vorher
@@ -296,6 +297,11 @@ def pruefen():
         daten = lesen(text)
         assert [b['id'] for b in daten] == ['20251231', '20260102-1', '20260102-2']
         assert [b['betrag'] for b in daten] == ['-20.00', '50.00', '-10.00']
+        # Änderung: Abweichende Wertstellung (auch außerhalb des Auszugszeitraums)
+        # darf Buchungstag, Tagesnummer und spätere Rechnungszuordnung nicht ändern.
+        anderer_wert = text.replace('31.12. 31.12.', '31.12. 01.01.').replace(
+            '02.01. 02.01.', '02.01. 02.02.')
+        assert lesen(anderer_wert) == daten
         # Änderung: Bytegleiche Auszugskopie importiert keine Buchung doppelt.
         (kontoziel / 'kopie.PDF').write_bytes((kontoziel / 'auszug.pdf').read_bytes())
         assert lesen(text) == daten

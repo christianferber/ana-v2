@@ -28,6 +28,11 @@ ursprüngliche ID bleibt für Auswahl und Regeln erhalten. Rechnung und Betrag h
 eigene Statusspalten. Zwei reine Anzeigefilter blenden zugeordnete bzw. vollständig
 erfolgreiche Zeilen aus. Betreff wird nicht zusätzlich zu Empfänger/Zweck angezeigt;
 Datum und Beträge bleiben wie vom Benutzer bestätigt sichtbar.
+<!-- Änderung: Aktive ID in beiden Tabellen bei jedem Aktualisieren neu bestimmen. -->
+Die sichtbare Buchungs-ID der Umsatzverwaltung verwendet ebenfalls `buchungs_pruef_ids`.
+Nach Ausblenden und Reaktivieren werden alle aktiven Tagesnummern sofort neu angezeigt;
+ausgeblendete Zeilen zeigen „—“. Der interne ursprüngliche Schlüssel wird nicht als
+aktive ID angezeigt und bleibt für die sichere Auswahl unverändert.
 Klebende Tabellenköpfe und eigene Scrollbereiche werden zentral in ana-ui.css
 für Quasar-Tabellen und AutoHeight-AG-Grids definiert.
 <!-- Änderung: Betragsprüfung und lokale Texterkennung gescannter Rechnungen ergänzen. -->

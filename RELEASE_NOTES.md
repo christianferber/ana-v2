@@ -19,6 +19,10 @@
 <!-- Änderung nach 2.06.00: Getrennte Status, reine Anzeigefilter und feste Tabellenüberschriften. -->
 - Verbesserung: Rechnungszuordnung und Betrag erhalten getrennte Prüfstatus. Erfolgreiche Ergebnisse lassen sich gezielt ausblenden. Tagesnummern berücksichtigen ausgeblendete Buchungen; die doppelte Betreff-Spalte entfällt.
 - Verbesserung: Tabellenüberschriften bleiben beim Scrollen sichtbar.
+<!-- Änderung nach 2.06.01: Buchungs-IDs nach Ausblenden und Aktivieren in beiden Ansichten aktualisieren. -->
+- Verbesserung: Buchungs-IDs werden nach Ausblenden und Reaktivieren in Umsatzverwaltung und Rechnungsprüfung sofort neu berechnet. Ist nur noch eine Tagesbuchung aktiv, entfällt ihr Nummernanhang.
+<!-- Änderung: Maßgeblichen Tag für die Rechnungsbewertung ausdrücklich festhalten. -->
+- Hinweis: Für Buchungs-ID und Rechnungszuordnung gilt der Buchungstag des Kontoauszugs, auch bei abweichender Wertstellung.
 - Verbesserung: Alle Einträge der Seitennavigation bleiben einzeilig.
 <!-- Änderung nach 2.06.00: Fehlende Datenordner anhand des INI-Arbeitsordners ergänzen. -->
 - Bugfix: Fehlende Datenordner werden im eingestellten Arbeitsordner angelegt. Bei leerem INI-Pfad wird der Programmordner verwendet.
