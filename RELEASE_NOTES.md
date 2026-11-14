@@ -3,7 +3,8 @@
 <!-- Änderung 2.06.00: Nur Versionen 2.xx aufführen und Zwischenstände knapp zusammenfassen. -->
 <!-- Änderung 2.06.00: Technische Dokumentation wird gemäß Freigabeprozess 7 separat geführt. -->
 
-## Version 2.06 – 13.11.2026
+<!-- Änderung 2.06.01: Geprüften Quellstand bereitstellen; sichtbare Version bleibt 2.06. -->
+## Version 2.06 – 14.11.2026
 
 <!-- Änderung nach 2.06.00: Neue Tools und einzeilige Navigation im aktuellen Quellstand. -->
 - Feature: Tools mit den Unterbereichen PDF-Zusammenführung und Buchungsmanagement. PDF-Kontoauszüge lokal einlesen, Buchungen nach Betreff ausblenden oder reaktivieren und fehlende bzw. fehlerhaft benannte Rechnungen erkennen.

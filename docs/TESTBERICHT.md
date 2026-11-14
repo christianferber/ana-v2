@@ -1,3 +1,66 @@
+# Quellbuild 2.06.01 – 14.11.2026
+
+<!-- Änderung 2.06.01: Aktueller AGENTS.md folgen; Build ohne EXE. -->
+Alle 32 gebündelten Prüfungen erfolgreich. Abschließende Syntaxprüfung aller
+Python-Quellen erfolgreich. Gegenüber dem zuletzt geprüften Commit b4dd946 ist
+im Anwendungscode ausschließlich build_version auf 2.06.01 geändert; der
+AST-Vergleich bestätigt unveränderte Fachlogik. Sichtbare Version bleibt 2.06.
+
+Der vollständige reguläre Praxislauf des enthaltenen Anwendungsstands ist im
+folgenden Bericht dokumentiert: normale Word-Anbindung, 73 identische neue
+Word-Paketinhalte und PDF-Texte/Seitenzahlen, originale Beispieldateien unverändert,
+Tabellenköpfe/Prüfstatus/Filter sowie manuelle und automatische Sicherung bestanden.
+Daten ausschließlich lokal verarbeitet. Keine neue visuelle Dokumentprüfung.
+
+Aktuelle AGENTS.md: Bei einem Build wird keine EXE erstellt. Ein aufgrund der
+älteren Vorgaben zunächst gestarteter EXE-Bau wurde gezielt beendet, der frische
+Bauordner vollständig verworfen. Kein neues Windows-Paket, kein Ausführungsordner;
+bisherige EXE-Auslieferungen unverändert. Der Quellbuild enthält weder lokale
+Einstellungen noch Vorgaben, Geheimnisse, Beispieldaten oder Prüfartefakte.
+
+# Prüfbericht ANA – aktueller Arbeitsstand
+
+<!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
+
+Stand: 14.11.2026
+
+Umgebung: Windows, Python 3.13.5.
+
+- Buchungsmanagement aus PDF-Kontoauszügen: bestanden.
+- Vollsicherung als ZIP: bestanden.
+- Verbrauchsstatistik aus Jahresabrechnungen: bestanden.
+- Serienbrief-Fettformatierung: bestanden.
+- PDF-Fortschritt im Button: bestanden.
+- Startanzeige und Ladefolge: bestanden.
+- Änderungsprotokoll für Daten und Einstellungen: bestanden.
+- Exportoberfläche bei Fehlern: bestanden.
+- Word-Fehlerbereinigung: bestanden.
+- Ausfallsicherheit von CSV und Sicherungen: bestanden.
+- Mitgliederaktualisierung gegen Original: bestanden.
+- CSV-Speicherhilfe gegen Original: bestanden.
+- Datenbankzugriffe gegen Original: bestanden.
+- Datenaufbereitung gegen Original: bestanden.
+- Sicherung gegen Original: bestanden.
+- Buchungsexport-Bedienung gegen Original: bestanden.
+- Statistik gegen Original: bestanden.
+- Changelog-Anzeige gegen Original: bestanden.
+- Einstellungsansicht gegen Original: bestanden.
+- Werkzeuge gegen Original: bestanden.
+- Kontodatenansicht gegen Original: bestanden.
+- Mitgliederansicht gegen Original: bestanden.
+- Abnehmeransicht gegen Original: bestanden.
+- Zähleransicht gegen Original: bestanden.
+- Testprozesse und Startsperre: bestanden.
+- Abschlagsansicht gegen Original: bestanden.
+- Jahresabrechnung gegen Referenz: bestanden.
+- Berechnung und Abbruchbedingungen: bestanden.
+- Rückvergütung gegen Referenz: bestanden.
+- Buchungs-CSV und freigegebene Fehlerkorrekturen: bestanden.
+- Dateien, INI, Pfade und Strukturvergleich: bestanden.
+- Dokumentfelder und simulierte Dokumentaufrufe: bestanden.
+- Syntax aller Python-Dateien: bestanden.
+
+
 # Aktuelle Prüfung – Getrennte Prüfstatus und feste Tabellenköpfe, 14.11.2026
 
 <!-- Änderung nach 2.06.00: Neue Tools mit lokalen PDF-Vorlagen und regulärem Praxislauf verifizieren. -->

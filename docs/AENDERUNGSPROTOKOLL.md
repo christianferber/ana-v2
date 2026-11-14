@@ -11,6 +11,15 @@ beschreiben den jeweiligen damaligen Stand. Aktuelle Prüfungen stehen im
 Für Endbenutzer bestimmte Features, Verbesserungen und Fehlerkorrekturen stehen
 in den [Release Notes](../RELEASE_NOTES.md).
 
+## Build 2.06.01 – 14.11.2026
+
+<!-- Änderung 2.06.01: Explizit beauftragter Quellbuild ohne EXE; keine neue Fachänderung. -->
+Buildnummer von 2.06.00 auf 2.06.01 erhöht; sichtbare Version bleibt 2.06.
+Gemäß aktueller AGENTS.md wird bei einem Build keine EXE erstellt. Der Quellbuild
+enthält die nachfolgend beschriebenen geprüften Tools- und Oberflächenänderungen.
+Bestehende Windows-Auslieferungen bleiben unverändert. Ein zunächst aufgrund der
+älteren Vorgaben gestarteter EXE-Bau wurde abgebrochen und vollständig verworfen.
+
 ## Arbeitsstand nach 2.06.00 – 14.11.2026
 
 <!-- Änderung: Tools-Unterbereiche und eigenständiges PDF-Buchungsmanagement ergänzen. -->
