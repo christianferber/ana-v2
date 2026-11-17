@@ -1,6 +1,7 @@
 """Änderung nach 2.06.00: Tools-Ansicht für lokale PDF-Kontoauszüge und Rechnungen."""
 from pathlib import Path
 import asyncio
+import re
 from queue import Empty, SimpleQueue
 
 from nicegui import app, run, ui
@@ -16,15 +17,23 @@ from anwendung.buchungsmanagement import (
 )
 
 
+# Änderung 16.11.2026: Bank-App-Verweise nur aus der Anzeige entfernen; Ausschlussregeln bleiben unverändert.
+def zweck_anzeigen(text):
+    # Änderung: Auch TAN-Verfahren und verbundene Bank-App-Namen ausblenden, normale Wörter wie Tankstelle erhalten.
+    bankverweise = r'\b(?:(?:vr[-\s]*)?secure(?:[-\s]*go(?:[-\s]*plus)?)?|(?:(?:mobile|sms|chip|photo|push|smart|sm@rt)[-\s]*)?tan(?:[-\s]*plus)?)\b'
+    return ' '.join(re.sub(bankverweise, '', text, flags=re.I).split())
+
+
 class BuchungsmanagementOberflaeche:
     async def mit_fortschritt(self, arbeit):
         # Änderung: Worker meldet nur Zähler; ausschließlich der UI-Timer bedient die Anzeige.
         meldungen = SimpleQueue()
         with ui.dialog().props('persistent') as dialog, ui.card().classes('ana-kontomanager-fortschritt'):
             ui.label('Buchungsmanagement – Fortschritt').classes('text-lg font-bold')
-            phase = ui.label('Verarbeitung wird vorbereitet …').classes('ana-konto-phase').props('aria-live=polite')
-            balken = ui.linear_progress(value=0, show_value=False).classes('w-full').props('aria-label="Buchungsmanagement-Fortschritt"')
-            stand = ui.label('0 %').classes('ana-konto-stand')
+            # Änderung 16.11.2026: Vor bekanntem Objektbestand keine scheinbaren Prozentwerte anzeigen.
+            phase = ui.label('Kontoauszüge werden vorbereitet …').classes('ana-konto-phase').props('aria-live=polite')
+            balken = ui.linear_progress(value=0, show_value=False).classes('w-full').props('indeterminate aria-label="Buchungsmanagement-Fortschritt"')
+            stand = ui.label('Vorbereitung …').classes('ana-konto-stand')
             with ui.row().classes('items-center'):
                 ui.spinner(size='sm')
                 ui.label('Bei gescannten Rechnungen kann eine Buchung länger dauern.').classes('text-sm')
@@ -41,8 +50,9 @@ class BuchungsmanagementOberflaeche:
                 aktuell, gesamt, text = letzte
                 wert = aktuell / gesamt if gesamt else 1
                 phase.text = text
+                balken.props(remove='indeterminate')
                 balken.value = wert
-                stand.text = f'{aktuell} von {gesamt} · {wert:.0%}'
+                stand.text = f'{aktuell} von {gesamt} Objekten geprüft · {wert:.0%}'
 
         timer = ui.timer(0.1, aktualisieren)
         dialog.open()
@@ -123,7 +133,8 @@ class BuchungsmanagementOberflaeche:
         except Exception as fehler:
             ui.notify('Einstellungen konnten nicht gespeichert werden: ' + str(fehler), type='negative')
 
-    async def oeffnen(self, pruefen=False):
+    async def oeffnen(self):
+        # Änderung 16.11.2026: Ein einziger Einstieg zur Prüfung einschließlich Aktivieren/Ausblenden.
         # Änderung: PDF-Arbeit im Hintergrund; keine Cloud-Aufrufe und keine doppelten Läufe.
         if self.beschaeftigt:
             return
@@ -133,16 +144,17 @@ class BuchungsmanagementOberflaeche:
             self.laden()
             if not self.daten['kontoordner'] or not Path(self.daten['kontoordner']).is_dir():
                 raise ValueError('Bitte einen vorhandenen Kontoauszugsordner auswählen.')
-            if pruefen and not self.daten['rechnungsordner']:
+            if not self.daten['rechnungsordner']:
                 raise ValueError('Bitte einen Rechnungsordner auswählen.')
 
             def arbeit(melden):
                 # Änderung: Ein Fortschrittsfenster begleitet Import und anschließende Rechnungsprüfung.
-                buchungen = kontoauszuege_lesen(self.daten['kontoordner'], melden)
+                # Änderung: Import ist Vorbereitung; der lineare Zähler beginnt mit dem bekannten Prüfbestand.
+                buchungen = kontoauszuege_lesen(self.daten['kontoordner'])
                 # Änderung: Neue Buchungen gegen vorhandene Regeln prüfen und passende Paare dauerhaft ergänzen.
                 regeln = regeln_ergaenzen(buchungen, self.daten['ausgeblendet'])
                 probleme = rechnungen_pruefen(buchungen, self.daten['rechnungsordner'],
-                                               regeln, melden, vollstaendig=True) if pruefen else None
+                                               regeln, melden, vollstaendig=True)
                 return buchungen, probleme, regeln
 
             self.buchungen, probleme, regeln = await self.mit_fortschritt(arbeit)
@@ -163,21 +175,38 @@ class BuchungsmanagementOberflaeche:
         bestand = {b['id']: b for b in self.buchungen}
         with ui.dialog() as dialog, ui.card().classes('ana-kontomanager-dialog'):
             ui.label('Rechnungen überprüfen' if pruefen else 'Kontoumsätze verwalten').classes('text-xl font-bold')
-            ui.label('Ausblenden gilt sofort und bei späteren Importen für gleichen Betreff oder gleichen Empfänger und Zweck. Aktivieren hebt die zusammengehörigen Ausschlüsse wieder auf.').classes('text-sm')
-            if pruefen:
-                # Änderung: Ergänzten PDF-Betragsvergleich und offene manuelle Prüffälle erklären.
-                ui.label('Rechnung und Betrag werden getrennt geprüft. Tagesnummern berücksichtigen ausgeblendete Buchungen. Nicht eindeutig lesbare Beträge bitte manuell prüfen.').classes('text-sm')
+            # Änderung 16.11.2026: Bedienhinweise platzsparend bei Bedarf öffnen.
+            with ui.expansion('Hinweise zur Buchungsprüfung', icon='info').classes('w-full text-sm'):
+                ui.label('Ausblenden gilt auch bei späteren Importen für gleichen Betreff oder gleichen Empfänger und Zweck. Aktivieren hebt zusammengehörige Ausschlüsse auf. Rechnung und Betrag werden getrennt geprüft; unlesbare Beträge bitte manuell prüfen.')
             with ui.row().classes('w-full items-center'):
                 anzeigen = ui.switch('Ausgeblendete Buchungen anzeigen')
                 suche = ui.input('Suchen').props('clearable').classes('grow')
             # Änderung: Anzeigefilter verändern keine gespeicherten Ausschlussregeln.
+            # Änderung 16.11.2026: Filterzustand ohne Dropdown; erneuter Klick zeigt wieder alle Gruppen.
             statusfilter = None
+            # Änderung 16.11.2026: Drei vollständige, gegenseitig ausschließende Prüfgruppen als Schnellfilter.
+            gruppen = ['OK', 'Betrag prüfen', 'Fehlerhaft']
+            zaehler = {}
             if pruefen:
-                statusfilter = ui.select(['Alle anzeigen', 'Status OK ausblenden', 'Status OK und Betrag OK ausblenden'],
-                                         value='Alle anzeigen', label='Prüfergebnisse anzeigen').classes('w-full')
+                # Änderung: Gesamtstatus richtet sich ausschließlich nach fehlerhaften Rechnungen, nicht offenen Beträgen.
+                with ui.row().classes('items-center ana-rechnung-gesamtstatus').props('aria-live=polite'):
+                    gesamt_symbol = ui.icon('check_circle', color='green')
+                    gesamt_text = ui.label()
+                def gruppe_waehlen(gruppe):
+                    nonlocal statusfilter
+                    # Änderung: Suche und ausgeblendete Zeilen zurücksetzen, damit die gezählte Gruppe sichtbar wird.
+                    suche.value = ''
+                    anzeigen.value = False
+                    statusfilter = None if statusfilter == gruppe else gruppe
+                    aktualisieren()
+                with ui.row().classes('w-full items-center'):
+                    for gruppe, symbol, farbe in zip(gruppen, ['check_circle', 'warning', 'error'], ['green', 'amber-9', 'red']):
+                        zaehler[gruppe] = ui.button(icon=symbol, color=farbe, on_click=lambda g=gruppe: gruppe_waehlen(g)).props('outline')
+                        zaehler[gruppe].tooltip('Gruppe anzeigen; erneut klicken, um alle anzuzeigen.')
+                filtertext = ui.label().classes('text-sm ana-rechnung-filter')
             spalten = [{'name': name, 'label': label, 'field': name, 'align': 'left', 'sortable': True}
-                       for name, label in [('status', 'Rechnung' if pruefen else 'Status'),
-                                           ('betrag_status', 'Betrag OK'), ('datum', 'Datum'),
+                       for name, label in [('aktiviert', 'Aktiv'), ('status', 'Rechnung' if pruefen else 'Status'),
+                                           ('betrag_status', 'Betrag OK'), ('datum_anzeige', 'Datum'),
                                            # Änderung: Beide Ansichten zeigen die nach Ausschlüssen neu berechnete Buchungs-ID.
                                            ('pruef_id', 'Dateianfang' if pruefen else 'Buchungs-ID'), ('betrag_anzeige', 'Betrag (EUR)'),
                                            ('empfaenger', 'Empfänger / Auftraggeber'), ('zweck', 'Zweck'),
@@ -186,8 +215,27 @@ class BuchungsmanagementOberflaeche:
             if not pruefen:
                 # Änderung: Verwaltung zeigt keine leeren Rechnungsspalten; Datum/Betrag bleiben erhalten.
                 spalten = [s for s in spalten if s['name'] not in ('betrag_status', 'rechnungsbetrag_anzeige', 'datei', 'hinweis')]
+            # Änderung: Immer chronologisch absteigend anzeigen; Spaltenklicks ändern diese feste Reihenfolge nicht.
+            for spalte in spalten:
+                spalte['sortable'] = False
             tabelle = ui.table(columns=spalten, rows=[], row_key='zeile', selection='multiple',
-                               pagination=20).classes('w-full ana-kontomanager-tabelle').style('min-height: 0; flex: 1')
+                               pagination=20).props('dense').classes('w-full ana-kontomanager-tabelle').style('min-height: 0; flex: 1')
+            # Änderung: Aktivzustand als Symbol mit verständlichem Text für Tooltip und Bildschirmleser.
+            tabelle.add_slot('body-cell-aktiviert', '''
+                <q-td :props="props"><q-icon v-if="props.value !== '—'"
+                :name="props.value === 'Ja' ? 'check' : 'close'"
+                :color="props.value === 'Ja' ? 'green' : 'red'" size="18px"
+                role="img" :aria-label="props.value === 'Ja' ? 'Aktiv' : 'Inaktiv'">
+                <q-tooltip>{{ props.value === 'Ja' ? 'Aktiv' : 'Inaktiv' }}</q-tooltip>
+                </q-icon><span v-else>—</span></q-td>''')
+            # Änderung: Datum als vollständige, ungeteilte Zeichenfolge in einer Zeile darstellen.
+            tabelle.add_slot('body-cell-datum_anzeige', '''
+                <q-td :props="props" class="ana-konto-datum"><span>{{ props.value }}</span></q-td>''')
+            # Änderung 16.11.2026: Lange Texte begrenzen; vollständiger Inhalt bleibt als Tooltip erreichbar.
+            for feld in ('empfaenger', 'zweck', 'datei', 'hinweis'):
+                tabelle.add_slot('body-cell-' + feld, '''
+                    <q-td :props="props"><div class="ana-konto-kurztext">{{ props.value }}</div>
+                    <q-tooltip v-if="props.value" class="ana-konto-volltext">{{ props.value }}</q-tooltip></q-td>''')
             # Änderung: Status immer als Text und zusätzlich farblich unterscheidbar anzeigen.
             tabelle.add_slot('body-cell-status', '''
                 <q-td :props="props"><q-badge
@@ -208,6 +256,7 @@ class BuchungsmanagementOberflaeche:
                 # Änderung: Bei jedem Aktualisieren alle aktiven Tages-IDs neu erzeugen, auch in der Umsatzverwaltung.
                 aktive_ids = buchungs_pruef_ids(self.buchungen, ausgeschlossen)
                 zeilen = []
+                summen = dict.fromkeys(gruppen, 0)
                 quelle = probleme if pruefen else self.buchungen
                 for index, eintrag in enumerate(quelle):
                     b = bestand.get(eintrag.get('id'))
@@ -216,11 +265,11 @@ class BuchungsmanagementOberflaeche:
                         continue
                     zeile = {**(b or {}), **eintrag, 'zeile': 'eintrag-' + str(index)}
                     zeile['status'] = 'Ausgeblendet' if verborgen else eintrag.get('status', 'Aktiv')
-                    if not verborgen and statusfilter is not None:
-                        if statusfilter.value == 'Status OK ausblenden' and zeile['status'] == 'OK':
-                            continue
-                        if (statusfilter.value == 'Status OK und Betrag OK ausblenden'
-                                and zeile['status'] == 'OK' and zeile.get('betrag_status') == 'OK'):
+                    if not verborgen and pruefen:
+                        # Änderung: Zähler immer vor dem Anzeigefilter aus dem vollständigen aktiven Ergebnis bilden.
+                        gruppe = (gruppen[0] if zeile.get('betrag_status') == 'OK' else gruppen[1]) if zeile['status'] == 'OK' else gruppen[2]
+                        summen[gruppe] += 1
+                        if statusfilter is not None and statusfilter != gruppe:
                             continue
                     zeilen.append(zeile)
                 if anzeigen.value and pruefen:
@@ -228,15 +277,32 @@ class BuchungsmanagementOberflaeche:
                         if ist_ausgeblendet(b, ausgeschlossen) and not any(z.get('id') == b['id'] for z in zeilen):
                             zeilen.append({**b, 'zeile': 'aus-' + b['id'], 'status': 'Ausgeblendet'})
                 for z in zeilen:
+                    # Änderung: ISO-Datum bleibt intern für Zuordnung/Sortierung, Anzeige erhält TT.MM.JJJJ.
+                    datum = z.get('datum', '')
+                    z['datum_anzeige'] = '.'.join(reversed(datum.split('-'))) if datum else '—'
+                    # Änderung: Reine Dateifehler ohne zugehörige Buchung besitzen keinen Aktivierungsstatus.
+                    z['aktiviert'] = ('Nein' if z['status'] == 'Ausgeblendet' else 'Ja') if z.get('id') in bestand else '—'
+                    # Änderung: Nur die Tabellenkopie bereinigen, niemals Buchungsdaten oder gespeicherte Regeln.
+                    z['zweck'] = zweck_anzeigen(z.get('zweck', ''))
                     if z.get('id') in bestand:
                         z['pruef_id'] = aktive_ids.get(z['id'], '—')
                     z['betrag_anzeige'] = z.get('betrag', '').replace('.', ',')
                     # Änderung: Abweichenden Rechnungsbetrag neben dem Buchungsbetrag anzeigen.
                     z['rechnungsbetrag_anzeige'] = z.get('rechnungsbetrag', '').replace('.', ',')
+                zeilen.sort(key=lambda z: z.get('datum', ''), reverse=True)
                 tabelle.rows = zeilen
                 tabelle.selected = []
                 tabelle.update()
                 zusammenfassung.text = f'{len(zeilen)} Einträge angezeigt.'
+                for gruppe, knopf in zaehler.items():
+                    knopf.text = f'{gruppe}: {summen[gruppe]}'
+                    knopf.props('aria-pressed=' + str(statusfilter == gruppe).lower())
+                if pruefen:
+                    # Änderung: Gesamtstatus bleibt auch bei Suche/Filter auf den gesamten aktiven Bestand bezogen.
+                    fehlerhaft = summen['Fehlerhaft'] > 0
+                    gesamt_symbol.props('name=' + ('error' if fehlerhaft else 'check_circle') + ' color=' + ('red' if fehlerhaft else 'green'))
+                    gesamt_text.text = 'Gesamtstatus: Fehlerhafte Rechnungen vorhanden' if fehlerhaft else 'Gesamtstatus: Keine fehlerhaften Rechnungen'
+                    filtertext.text = 'Anzeige: ' + (statusfilter or 'Alle')
 
             async def auswahl_aendern(ausblenden):
                 # Änderung: Nur Buchungen ausschließen; reine Rechnungsfehler sind keine Buchungen.
@@ -262,8 +328,6 @@ class BuchungsmanagementOberflaeche:
                     self.beschaeftigt = False
 
             anzeigen.on_value_change(aktualisieren)
-            if statusfilter is not None:
-                statusfilter.on_value_change(aktualisieren)
             with ui.row().classes('w-full items-center'):
                 ui.button('Auswahl ausblenden', icon='visibility_off', on_click=lambda: auswahl_aendern(True))
                 ui.button('Auswahl aktivieren', icon='visibility', on_click=lambda: auswahl_aendern(False))
@@ -286,8 +350,8 @@ class BuchungsmanagementOberflaeche:
                     else:
                         self.rechnungspfad = label
             with ui.row():
-                ui.button('Kontoumsätze verwalten', icon='account_balance', on_click=lambda: self.oeffnen())
-                ui.button('Rechnungen überprüfen', icon='fact_check', on_click=lambda: self.oeffnen(True))
+                # Änderung 16.11.2026: Separate Umsatzverwaltung entfällt; alle Aktionen stehen in der Prüfung.
+                ui.button('Rechnungen überprüfen', icon='fact_check', on_click=self.oeffnen)
             ui.label('Unterstützt wird das PDF-Auszugsformat der bereitgestellten Vorlagen (Buchung/Wert, Betrag mit S/H). Keine gescannten PDFs.').classes('text-sm')
             # Änderung: Empfänger oder Zweck genügt; Rechnungsdetails sind gemäß neuer Vorgabe optional.
             ui.label('Rechnungen: Buchungsdatum[-Nr.] Empfänger oder Zweck.pdf. Rechnungsnummer, „vom“ und Rechnungsdatum sind optional. Endbeträge gescannter Rechnungen werden bei Bedarf mit lokaler Windows-Texterkennung gelesen.').classes('text-sm')

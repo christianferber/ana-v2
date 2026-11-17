@@ -2,7 +2,22 @@
 """Änderung für v2: Arbeitsordnerpfade ohne Abhängigkeit von der Oberfläche bilden."""
 
 import configparser
+import os
 from pathlib import Path
+
+
+def arbeitsordner_relativ(pfad, basis=None):
+    # Änderung: Relative Arbeitsordner beziehen sich auf den beim Start gesetzten Programmordner.
+    if not pfad:
+        return ''
+    basis = Path(basis or Path.cwd()).resolve()
+    ziel = Path(pfad)
+    ziel = (ziel if ziel.is_absolute() else basis / ziel).resolve()
+    try:
+        return os.path.relpath(ziel, basis)
+    except ValueError:
+        # Änderung: Andere Laufwerke/UNC-Freigaben sind nicht relativ erreichbar.
+        return str(ziel)
 
 
 def datenordner_anlegen(ini_datei, programmordner):

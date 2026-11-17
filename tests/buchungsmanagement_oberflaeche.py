@@ -1,6 +1,5 @@
 """Änderung nach 2.06.00: Buchungsmanagement im regulären lokalen Praxislauf bedienen."""
 import json
-from collections import Counter
 from pathlib import Path
 
 from anwendung.buchungsmanagement import (
@@ -36,78 +35,13 @@ def pruefen(kopie, js, klicken, warten, knopf, cdp, auswahl):
         js("(()=>{const e=(" + dialog + ").querySelector('.q-field input');"
            "Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(e," + json.dumps(text) + ");"
            "e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));e.blur()})()")
-    knopf('Kontoumsätze verwalten')
-    warten('Boolean(' + dialog + ')')
-    warten(dialog + ".innerText.includes('62 Einträge angezeigt.')")
-    # Änderung: Betreff entfällt, die bestätigten Datum-/Betragsspalten bleiben erhalten.
-    assert js(dialog + ".querySelector('thead').innerText.includes('Datum') && " + dialog + ".querySelector('thead').innerText.includes('Betrag (EUR)')")
-    assert not js(dialog + ".querySelector('thead').innerText.includes('Betreff vereinfacht')")
-    tabellenkopf_pruefen(js, warten, dialog + ".querySelector('.q-table__middle')", dialog + ".querySelector('thead th')")
+    # Änderung 16.11.2026: Alle Umsatzaktionen sind ausschließlich in der Rechnungsprüfung erreichbar.
+    assert not js("Array.from(document.querySelectorAll('button')).some(e=>e.textContent.includes('Kontoumsätze verwalten'))")
     configdatei = kopie / 'buchungsmanagement.json'
-    # Änderung: Ausschlüsse müssen in der neuen CSV-Datenbank liegen, nicht mehr in JSON.
     db_datei = kopie / 'Datenbank' / AUSBLENDUNGEN_DATEINAME
-    assert db_datei.is_file() and ausblendungen_laden(db_datei) == []
     config = json.loads(configdatei.read_text(encoding='utf-8'))
-    assert 'ausgeblendet' not in config
     buchungen = kontoauszuege_lesen(config['kontoordner'])
-    # Änderung: Reale Tagesgruppe auf eine Buchung reduzieren: sichtbarer Anhang muss sofort entfallen.
-    fall = None
-    for kandidat in buchungen:
-        andere = [b for b in buchungen if b['datum'] == kandidat['datum'] and b['id'] != kandidat['id']]
-        if not andere or len(andere) > 15:
-            continue
-        regeln = auswahl_regeln_aendern(buchungen, [], andere, True)
-        aktiv = [b for b in buchungen if b['datum'] == kandidat['datum'] and not ist_ausgeblendet(b, regeln)]
-        if len(aktiv) == 1 and aktiv[0]['id'] == kandidat['id']:
-            fall = kandidat, andere
-            break
-    assert fall is not None
-    kandidat, andere = fall
-    def id_zelle(ident):
-        return 'Array.from((' + dialog + ").querySelectorAll('.ana-buchungs-id')).find(e=>e.dataset.ursprung===" + json.dumps(ident) + ')'
-    suchen(kandidat['datum'])
-    warten('Boolean(' + id_zelle(kandidat['id']) + ')')
-    for b in andere:
-        klicken('(' + id_zelle(b['id']) + ").closest('tr').querySelector('.q-checkbox')")
-    knopf('Auswahl ausblenden', dialog)
-    warten('(' + id_zelle(kandidat['id']) + ')?.textContent.trim()===' + json.dumps(kandidat['datum'].replace('-', '')))
-    klicken(dialog + ".querySelector('.q-toggle')")
-    for b in andere:
-        warten('Boolean(' + id_zelle(b['id']) + ')')
-        assert js('(' + id_zelle(b['id']) + ').textContent.trim()') == '—'
-        klicken('(' + id_zelle(b['id']) + ").closest('tr').querySelector('.q-checkbox')")
-    knopf('Auswahl aktivieren', dialog)
-    warten('(' + id_zelle(kandidat['id']) + ')?.textContent.trim()===' + json.dumps(kandidat['id']))
-    assert ausblendungen_laden(db_datei) == []
-    klicken(dialog + ".querySelector('.q-toggle')")
-    suchen('')
-    # Änderung: Reales wiederholtes Paar auswählen und die sofortige Gruppenausblendung prüfen.
-    paare = Counter((betreff_schluessel(b['empfaenger']), betreff_schluessel(b['zweck'])) for b in buchungen)
-    ziel = next(b for b in buchungen if paare[(betreff_schluessel(b['empfaenger']), betreff_schluessel(b['zweck']))] > 1)
-    assert js(dialog + ".innerText.includes('Empfänger / Auftraggeber') && " + dialog + ".innerText.includes('Zweck')")
-    suchen(ziel['id'])
-    warten(dialog + '.querySelector("tbody")?.innerText.includes(' + json.dumps(ziel['id']) + ')')
-    klicken("Array.from((" + dialog + ").querySelectorAll('tbody tr')).find(r=>Array.from(r.cells).some(c=>c.textContent.trim()==="
-            + json.dumps(ziel['id']) + ")).querySelector('.q-checkbox')")
-    knopf('Auswahl ausblenden', dialog)
-    warten("(()=>{const d=" + dialog + ";return d && !d.innerText.includes('62 Einträge angezeigt.')})()")
-    ausgeblendet = ausblendungen_laden(db_datei)
-    assert ausgeblendet and all(len(r) == 3 for r in ausgeblendet)
-    assert 'ausgeblendet' not in json.loads(configdatei.read_text(encoding='utf-8'))
-    erwartete = sum(not ist_ausgeblendet(b, ausgeblendet) for b in buchungen)
-    assert erwartete <= len(buchungen) - 2
-    assert js(dialog + '.innerText.includes(' + json.dumps(str(erwartete) + ' Einträge angezeigt.') + ')')
-    suchen('')
-    # Änderung: Ausgeblendete sichtbar machen und Betreff-Regel wieder aufheben.
-    klicken(dialog + ".querySelector('.q-toggle')")
-    warten(dialog + ".innerText.includes('62 Einträge angezeigt.')")
-    klicken("Array.from((" + dialog + ").querySelectorAll('tbody tr')).find(r=>r.innerText.includes('Ausgeblendet')).querySelector('.q-checkbox')")
-    knopf('Auswahl aktivieren', dialog)
-    warten('!(' + dialog + ").querySelector('tbody')?.innerText.includes('Ausgeblendet')")
-    assert ausblendungen_laden(db_datei) == []
-    suchen('')
-    knopf('Schließen', dialog)
-    warten('!(' + dialog + ')')
+    assert db_datei.is_file() and ausblendungen_laden(db_datei) == []
     # Änderung: Tatsächliche Fortschrittsanzeige beobachten, ohne Dateiinhalte zu erfassen.
     js("window.anaKontoMessung=[];window.anaKontoTimer=setInterval(()=>{const d=document.querySelector('.ana-kontomanager-fortschritt');if(d){window.anaKontoMessung.push({phase:d.querySelector('.ana-konto-phase').textContent,wert:Number(d.querySelector('.q-linear-progress').getAttribute('aria-valuenow'))})}},50)")
     knopf('Rechnungen überprüfen')
@@ -117,27 +51,59 @@ def pruefen(kopie, js, klicken, warten, knopf, cdp, auswahl):
     messungen = js('clearInterval(window.anaKontoTimer);window.anaKontoMessung')
     assert len(messungen) >= 2 and any(0 <= m['wert'] < 1 for m in messungen)
     assert messungen[-1]['wert'] == 1
-    for phase in {m['phase'] for m in messungen}:
-        werte = [m['wert'] for m in messungen if m['phase'] == phase]
-        assert werte == sorted(werte)
+    # Änderung 16.11.2026: Kein Rücksprung des linearen Balkens beim Phasenwechsel.
+    werte = [m['wert'] for m in messungen]
+    assert werte == sorted(werte)
     assert js("!document.querySelector('.ana-kontomanager-fortschritt')")
     prueffaelle = rechnungen_pruefen(buchungen, config['rechnungsordner'], set(), vollstaendig=True)
     anzahltext = str(len(prueffaelle)) + ' Einträge angezeigt.'
     warten(dialog + '.innerText.includes(' + json.dumps(anzahltext) + ')')
+    # Änderung: Aktivierung, kompakte Schrift und auf zwei Zeilen begrenzte Hinweise im echten Dialog prüfen.
+    # Änderung: Aktiv-Symbole und deutsches Datum mit durchgehend absteigender Sortierung prüfen.
+    assert js(dialog + ".querySelector('thead').innerText.includes('Aktiv')")
+    assert js(dialog + ".querySelector('tbody [aria-label=Aktiv]') !== null")
+    # Änderung: Aktiv zeigt einen Haken; Datumszellen sind vollständig und einzeilig.
+    assert js(dialog + ".querySelector('tbody [aria-label=Aktiv]').textContent.includes('check')")
+    for breite in (1440, 800, 400):
+        cdp('Emulation.setDeviceMetricsOverride', {'width': breite, 'height': 1000,
+                                                'deviceScaleFactor': 1, 'mobile': False})
+        warten("Array.from((" + dialog + ").querySelectorAll('.ana-konto-datum span')).every(e=>e.getBoundingClientRect().height<=parseFloat(getComputedStyle(e).lineHeight)+1 && e.scrollWidth<=e.clientWidth+1)")
+    cdp('Emulation.clearDeviceMetricsOverride', {})
+    assert js("(()=>{const d=" + dialog + ";const i=Array.from(d.querySelectorAll('thead th')).findIndex(e=>e.textContent.trim()==='Datum');const a=Array.from(d.querySelectorAll('tbody tr')).map(r=>r.cells[i]?.textContent.trim()).filter(x=>x&&x!=='—');return a.every(x=>/^\\d{2}\\.\\d{2}\\.\\d{4}$/.test(x))&&a.map(x=>x.split('.').reverse().join('')).every((x,i,b)=>!i||b[i-1]>=x)})()")
+    assert js("parseFloat(getComputedStyle((" + dialog + ").querySelector('tbody td')).fontSize)<=12")
+    assert js("Array.from((" + dialog + ").querySelectorAll('.ana-konto-kurztext')).every(e=>e.getBoundingClientRect().height<=33)")
+    tabellenkopf_pruefen(js, warten, dialog + ".querySelector('.q-table__middle')", dialog + ".querySelector('thead th')")
     # Änderung: Kurznamen sind jetzt gültig; verbliebene Zuordnungsfälle sichtbar halten.
-    assert js(dialog + ".innerText.includes('Rechnung ohne Buchung') && " + dialog + ".innerText.includes('Rechnung fehlt')")
+    # Änderung: Nicht zugeordnete Rechnungen stehen ohne Buchungsdatum am Ende; gezielt suchen.
+    suchen('Rechnung ohne Buchung')
+    warten(dialog + ".querySelector('tbody')?.innerText.includes('Rechnung ohne Buchung')")
+    suchen('')
     # Änderung: Grüne Zuordnung und Betragsstatus sowie beide reinen Anzeigefilter prüfen.
     assert js(dialog + ".querySelector('thead').innerText.includes('Betrag OK')")
+    # Änderung: Nach Datumsortierung können erfolgreiche Fälle auf späteren Seiten stehen.
+    suchen('OK')
+    warten(dialog + ".querySelectorAll('.q-badge.bg-green').length>0")
     assert js(dialog + ".querySelectorAll('.q-badge.bg-green').length>0")
+    suchen('')
     csv_vorher = db_datei.read_bytes()
-    for modus, erwartet in [
-        ('Status OK ausblenden', sum(r['status'] != 'OK' for r in prueffaelle)),
-        ('Status OK und Betrag OK ausblenden', sum(not (r['status'] == 'OK' and r['betrag_status'] == 'OK') for r in prueffaelle)),
-        ('Alle anzeigen', len(prueffaelle)),
+    # Änderung 16.11.2026: Übersicht zählt alle aktiven Ergebnisse; Klick setzt den passenden Filter.
+    for gruppe, erwartet in [
+        ('OK', sum(r['status'] == 'OK' and r['betrag_status'] == 'OK' for r in prueffaelle)),
+        ('Betrag prüfen', sum(r['status'] == 'OK' and r['betrag_status'] != 'OK' for r in prueffaelle)),
+        ('Fehlerhaft', sum(r['status'] != 'OK' for r in prueffaelle)),
     ]:
-        auswahl('Prüfergebnisse anzeigen', modus)
+        knopf(gruppe + ': ' + str(erwartet), dialog)
         warten(dialog + '.innerText.includes(' + json.dumps(str(erwartet) + ' Einträge angezeigt.') + ')')
         assert db_datei.read_bytes() == csv_vorher
+        # Änderung: Symbole und Gesamtstatus bleiben unabhängig von der ausgewählten Gruppe sichtbar.
+        assert js(dialog + ".querySelector('.ana-rechnung-gesamtstatus').innerText.includes('Fehlerhafte Rechnungen vorhanden')")
+        assert js(dialog + ".querySelector('.ana-rechnung-gesamtstatus .text-red') !== null")
+    # Änderung: Kein Dropdown; aktiven Button erneut klicken setzt den Gruppenfilter zurück.
+    # Änderung: Die unveränderte Seitengrößenauswahl der Tabelle ist weiterhin zulässig.
+    assert js("Array.from((" + dialog + ").querySelectorAll('.q-select')).every(e=>e.closest('.q-table__bottom'))")
+    knopf('Fehlerhaft: ' + str(sum(r['status'] != 'OK' for r in prueffaelle)), dialog)
+    warten(dialog + '.innerText.includes(' + json.dumps(str(len(prueffaelle)) + ' Einträge angezeigt.') + ')')
+    assert db_datei.read_bytes() == csv_vorher
     # Änderung: Neue Betragsfälle im echten Dialog suchen und beide Vergleichsbeträge kontrollieren.
     suchen('Betrag abweichend')
     warten(dialog + ".querySelector('tbody')?.innerText.includes('Betrag abweichend')")
@@ -147,7 +113,7 @@ def pruefen(kopie, js, klicken, warten, knopf, cdp, auswahl):
         assert js(dialog + ".querySelector('tbody').innerText.includes(" + json.dumps(abweichend[feld].replace('.', ',')) + ')')
     suchen('Betrag nicht prüfbar')
     warten(dialog + ".querySelector('tbody')?.innerText.includes('Betrag nicht prüfbar')")
-    suchen('')
+    suchen('Rechnung fehlt')
     warten(dialog + ".querySelector('tbody')?.innerText.includes('Rechnung fehlt')")
     klicken("Array.from((" + dialog + ").querySelectorAll('tbody tr')).find(r=>r.innerText.includes('Rechnung fehlt')).querySelector('.q-checkbox')")
     knopf('Auswahl ausblenden', dialog)
@@ -160,9 +126,18 @@ def pruefen(kopie, js, klicken, warten, knopf, cdp, auswahl):
     assert id_zeilen and all(z['wert'] == neue_ids[z['ursprung']] for z in id_zeilen if z['ursprung'] in neue_ids)
     knopf('Schließen', dialog)
     warten('!(' + dialog + ')')
-    knopf('Kontoumsätze verwalten')
+    knopf('Rechnungen überprüfen')
     warten('Boolean(' + dialog + ')')
-    assert not js(dialog + ".innerText.includes('62 Einträge angezeigt.')")
+    # Änderung 16.11.2026: Deaktivierte Buchungen sind in derselben Prüfung erkennbar und reaktivierbar.
+    klicken(dialog + ".querySelector('.q-toggle')")
+    suchen('Ausgeblendet')
+    warten(dialog + ".querySelector('tbody')?.innerText.includes('Ausgeblendet')")
+    assert js(dialog + ".querySelector('tbody [aria-label=Inaktiv]') !== null")
+    klicken("Array.from((" + dialog + ").querySelectorAll('tbody tr')).find(r=>r.innerText.includes('Ausgeblendet')).querySelector('.q-checkbox')")
+    knopf('Auswahl aktivieren', dialog)
+    warten("!document.querySelector('.ana-kontomanager-fortschritt')", 120)
+    assert ausblendungen_laden(db_datei) == []
+    suchen('')
     knopf('Schließen', dialog)
     warten('!(' + dialog + ')')
     # Änderung: Nach einem echten Lesefehler müssen Fortschrittsfenster und Startsperre frei sein.
@@ -180,7 +155,7 @@ def pruefen(kopie, js, klicken, warten, knopf, cdp, auswahl):
         assert js('!(' + dialog + ')')
     finally:
         configdatei.write_text(gespeichert, encoding='utf-8')
-    knopf('Kontoumsätze verwalten')
+    knopf('Rechnungen überprüfen')
     warten('Boolean(' + dialog + ')')
     knopf('Schließen', dialog)
     warten('!(' + dialog + ')')

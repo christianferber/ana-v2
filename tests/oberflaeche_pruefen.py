@@ -317,6 +317,15 @@ def _testen(prozesse, rueckverguetung=False):
                 warten('Boolean(' + statistik_tab + ')')
                 js('(' + statistik_tab + ').click()')
                 warten("Boolean(document.querySelector('.ana-statistik'))")
+                # Änderung: Statistik beginnt wie Tools direkt mit Symboltabs und anschließendem Inhalt.
+                assert js("""(() => {
+                    const seite = document.querySelector('.ana-statistik');
+                    const tabs = seite.firstElementChild;
+                    return tabs.matches('.q-tabs')
+                        && tabs.querySelectorAll('.q-tab .q-tab__icon').length === 2
+                        && Math.abs(tabs.getBoundingClientRect().bottom
+                            - tabs.nextElementSibling.getBoundingClientRect().top) < 1;
+                })()""")
                 # Änderung: Getrennte Bereiche bedienen; Verbraucherfilter steht vor beiden Einzelstatistiken.
                 def statistikbereich(name):
                     js("Array.from(document.querySelectorAll('.ana-statistik .q-tab')).find(e=>e.querySelector('.q-tab__label')?.textContent.trim()===" + json.dumps(name) + ").click()")
@@ -423,6 +432,11 @@ def _testen(prozesse, rueckverguetung=False):
                 # Änderung: Vier getrennte Tabs, bestehende Eingaben und gemeinsame Aktionsleiste.
                 einstellungstabs = ['Betreiber und Preise', 'Arbeitsordner', 'Datensicherung', 'Darstellung']
                 assert json.loads(js("JSON.stringify(Array.from(document.querySelectorAll('.ana-settings-tabs .q-tab__label')).map(e=>e.textContent.trim()))")) == einstellungstabs
+                # Änderung: Lokale Arbeitskopie wird im tatsächlichen Programm relativ angezeigt.
+                einstellungstab('Arbeitsordner')
+                assert not Path(js("document.querySelector('.ana-settings-path').textContent.trim()")).is_absolute()
+                # Änderung: Für die nachfolgende Feldprüfung zum Betreiber-Tab zurückkehren.
+                einstellungstab('Betreiber und Preise')
                 assert js("document.querySelectorAll('.ana-settings-operator .q-field').length === 5")
                 einstellungstab('Datensicherung')
                 assert js("document.querySelector('.ana-backup-settings').innerText.includes('Jetzt sichern')")
@@ -453,10 +467,11 @@ def _testen(prozesse, rueckverguetung=False):
                             assert all(abs(a - b) <= 1 for a, b in zip(position, vorher))
                         vorher = position
                 assert js("document.querySelector('.ana-settings-appearance input').value") == 'teal'
-                cdp('Emulation.clearDeviceMetricsOverride', {})
-                time.sleep(1)
+                # Änderung: Dialog vor dem Zurücksetzen der Browsergröße schließen.
                 knopf('Abbrechen', "document.querySelector('.ana-settings-dialog')")
                 warten("!document.querySelector('.ana-settings-dialog')")
+                cdp('Emulation.clearDeviceMetricsOverride', {})
+                time.sleep(1)
                 assert (run / 'ana.ini').read_bytes() == ini_vorher
                 if not navigation_offen:
                     klicken(menue)

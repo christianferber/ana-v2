@@ -12,7 +12,7 @@ import shutil
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, patch
 import anwendung.einstellungen_ui as modul
-from anwendung.einstellungen import ini_datei_lesen, ini_datei_schreiben, datenordner_anlegen, pfade_erstellen
+from anwendung.einstellungen import ini_datei_lesen, ini_datei_schreiben, datenordner_anlegen, pfade_erstellen, arbeitsordner_relativ
 
 
 def ordneranlage_pruefen(basis, beispieldaten):
@@ -86,6 +86,11 @@ class Textfeld:
 @patch('anwendung.aenderungsprotokoll.protokolliere', lambda *args: None)
 def pruefen():
     basis = Path(__file__).resolve().parents[1]
+    # Änderung: Unter-/Nachbarordner relativ, anderes Laufwerk absolut, Standard leer.
+    assert arbeitsordner_relativ('C:/ANA/Daten', 'C:/ANA') == 'Daten'
+    assert arbeitsordner_relativ('C:/Daten', 'C:/ANA') == '..\\Daten'
+    assert arbeitsordner_relativ('D:/Daten', 'C:/ANA') == 'D:\\Daten'
+    assert arbeitsordner_relativ('', 'C:/ANA') == ''
     config = ini_datei_lesen(basis / 'ana.ini')
     daten = Path(config['Anwendung']['Arbeitsordner']).resolve()
     assert daten == (basis.parent / '_Vorlagen' / 'ana Beispieldaten').resolve()
@@ -123,7 +128,12 @@ def pruefen():
             alt['ini_speichern']()
             vorher = {p.name: p.read_bytes() for p in wurzel.glob('*.ini')}
             ansicht.ini_speichern()
-            assert vorher == {p.name: p.read_bytes() for p in wurzel.glob('*.ini')}
+            # Änderung: Ausschließlich die angeforderte relative Pfadschreibweise vom Originalvergleich ausnehmen.
+            erwartet = configparser.ConfigParser()
+            erwartet.read_string(vorher['ana.ini'].decode('utf-8'))
+            erwartet['Anwendung']['Arbeitsordner'] = arbeitsordner_relativ(ausgewaehlt)
+            assert dict(ini_datei_lesen(app.ini)['Anwendung']) == dict(erwartet['Anwendung'])
+            assert vorher[app.ini_betreiber] == (wurzel / app.ini_betreiber).read_bytes()
             assert alt['dialog_neustart'].method_calls == ansicht.dialog_neustart.method_calls
             assert ansicht.dialog_neustart.open.call_count == int(ausgewaehlt != str(wurzel))
             assert alt['dialog_einstellungen'].method_calls == ansicht.dialog_einstellungen.method_calls
@@ -141,7 +151,8 @@ def pruefen():
                 with patch.object(modul, 'app', rechts):
                     await alt['ordner_auswaehlen']()
                     await ansicht.ordner_auswaehlen()
-                assert alt['ini_arbeitsordner'].text == ansicht.ini_arbeitsordner.text
+                # Änderung: Auswahl relativ anzeigen; bei Abbruch den letzten gültigen Wert behalten.
+                assert ansicht.ini_arbeitsordner.text == arbeitsordner_relativ(str(wurzel))
                 assert links.native.main_window.create_file_dialog.call_args_list == rechts.native.main_window.create_file_dialog.call_args_list
         asyncio.run(dialoge())
     assert original == {p: p.read_bytes() for p in original}

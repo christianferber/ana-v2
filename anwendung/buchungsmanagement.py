@@ -328,10 +328,12 @@ def rechnungen_pruefen(buchungen, ordner, ausgeblendet, fortschritt=None, vollst
     zuordnung = {}
     probleme = []
     dateiliste = [p for p in sorted(pfad.iterdir()) if p.is_file() and p.suffix.lower() in ('.pdf', '.xml')]
+    # Änderung 16.11.2026: Ein gemeinsamer Objektzähler verhindert Rücksprünge zwischen Zuordnung und Betragsprüfung.
+    gesamt = len(dateiliste) + len(buchungen)
     for index, datei in enumerate(dateiliste):
         # Änderung: Echte Arbeitsstände für die neue Fortschrittsanzeige melden.
         if fortschritt:
-            fortschritt(index, len(dateiliste), 'Rechnungsdateien zuordnen')
+            fortschritt(index, gesamt, 'Rechnungsdateien zuordnen')
         try:
             tag, nr, zusatz, beschreibung, rechnungsdatum = rechnungsname_lesen(datei.stem)
         except ValueError as fehler:
@@ -369,10 +371,10 @@ def rechnungen_pruefen(buchungen, ordner, ausgeblendet, fortschritt=None, vollst
         if ident not in bestand:
             probleme.append({'status': 'Rechnung ohne Buchung', 'datei': datei.name, 'id': '', 'pruef_id': ident, 'hinweis': 'Buchungsdatum und Tagesnummer prüfen.'})
     if fortschritt:
-        fortschritt(len(dateiliste), len(dateiliste), 'Rechnungsdateien zuordnen')
+        fortschritt(len(dateiliste), gesamt, 'Rechnungsdateien zuordnen')
     for index, b in enumerate(buchungen):
         if fortschritt:
-            fortschritt(index, len(buchungen), 'Buchungen und PDF-Beträge prüfen')
+            fortschritt(len(dateiliste) + index, gesamt, 'Buchungen und PDF-Beträge prüfen')
         if ist_ausgeblendet(b, ausgeblendet):
             continue
         dateien = zuordnung.get(b['id'], [])
@@ -405,7 +407,7 @@ def rechnungen_pruefen(buchungen, ordner, ausgeblendet, fortschritt=None, vollst
                                      'rechnungsbetrag': str(rechnungsbetrag), 'hinweis': ''})
     # Änderung: Fehlerhafte Rechnungen bleiben sichtbar, auch wenn kein Betreff zugeordnet werden kann.
     if fortschritt:
-        fortschritt(len(buchungen), len(buchungen), 'Buchungen und PDF-Beträge prüfen')
+        fortschritt(gesamt, gesamt, 'Buchungen und PDF-Beträge prüfen')
     if vollstaendig:
         for zeile in probleme:
             zeile.setdefault('pruef_id', zeile.get('id', ''))

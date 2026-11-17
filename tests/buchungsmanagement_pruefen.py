@@ -229,6 +229,21 @@ async def _fortschrittsbereinigung_pruefen():
             raise AssertionError('Worker-Fehler fehlt.')
     assert len(timer_liste) == 2 and all(t._is_canceled for t in timer_liste)
     assert all(d.id not in d.client.elements for d in dialog_liste)
+    # Änderung 16.11.2026: Gesamtstatus auch bei offenen Beträgen grün; erst Rechnungsfehler machen ihn rot.
+    from nicegui.client import Client
+    for status, betrag_status, erwartet, farbe in [
+        ('OK', 'OK', 'Keine fehlerhaften Rechnungen', 'green'),
+        ('OK', 'Betrag nicht prüfbar', 'Keine fehlerhaften Rechnungen', 'green'),
+        ('Rechnung fehlt', 'Nicht geprüft', 'Fehlerhafte Rechnungen vorhanden', 'red'),
+    ]:
+        ansicht.daten = {'ausgeblendet': []}
+        vorher = set(Client.auto_index_client.elements)
+        ansicht.dialog_oeffnen([{'status': status, 'betrag_status': betrag_status}])
+        elemente = [e for ident, e in Client.auto_index_client.elements.items() if ident not in vorher]
+        assert any(getattr(e, 'text', '') == 'Gesamtstatus: ' + erwartet for e in elemente)
+        assert any(isinstance(e, ui.icon) and e._props.get('color') == farbe
+                   and e._props.get('name') == ('error' if farbe == 'red' else 'check_circle') for e in elemente)
+        next(e for e in elemente if isinstance(e, ui.dialog)).delete()
 
 
 def bestand(ordner):
@@ -245,6 +260,14 @@ def muss_scheitern(aktion):
 
 
 def pruefen():
+    # Änderung 16.11.2026: App-Verweise unabhängig von Schreibweise entfernen, übrigen Zweck erhalten.
+    from anwendung.buchungsmanagement_ui import zweck_anzeigen
+    for text in ['secure', 'Secure Go', 'SECURE GO PLUS', 'SecureGoPlus', 'VR-SecureGo plus',
+                 'TAN', 'chipTAN', 'photoTAN', 'push-TAN', 'mobile TAN', 'Sm@rt-TAN plus']:
+        assert zweck_anzeigen('Wartung ' + text + ' November') == 'Wartung November'
+    assert zweck_anzeigen('Securex Wartung') == 'Securex Wartung'
+    # Änderung: Fachlicher Zweck darf nicht durch den Teilstring „tan“ verschwinden.
+    assert zweck_anzeigen('Tankstelle Standard Wartung') == 'Tankstelle Standard Wartung'
     basis = Path(__file__).resolve().parents[1]
     vorlagen = basis.parent / '_Vorlagen'
     konto = vorlagen / 'Kontoauszüge Beispieldaten'
@@ -260,13 +283,15 @@ def pruefen():
     assert all(b['betreff_alt'] == b['empfaenger'] for b in buchungen)
     assert not any('IBAN:' in b['zweck'] or 'Übertrag' in b['zweck'] for b in buchungen)
     assert sum(b['betrag'].startswith('-') for b in buchungen) == 52
+    # Änderung 16.11.2026: Vorbereitung separat; Prüfung mit gleichbleibendem Nenner und linearen Objektschritten.
+    assert meldungen[0][0] == 0 and meldungen[-1][0] == meldungen[-1][1]
+    meldungen.clear()
     probleme = rechnungen_pruefen(buchungen, rechnungen, set(), melden)
-    assert {m[2] for m in meldungen} == {'Kontoauszüge lesen', 'Rechnungsdateien zuordnen', 'Buchungen und PDF-Beträge prüfen'}
-    for phase in {m[2] for m in meldungen}:
-        werte = [m for m in meldungen if m[2] == phase]
-        assert werte[0][0] == 0 and werte[-1][0] == werte[-1][1]
-        assert all(0 <= m[0] <= m[1] for m in werte)
-        assert [m[0] for m in werte] == sorted(m[0] for m in werte)
+    gesamt = len([p for p in rechnungen.iterdir() if p.is_file() and p.suffix.lower() in ('.pdf', '.xml')]) + len(buchungen)
+    assert {m[2] for m in meldungen} == {'Rechnungsdateien zuordnen', 'Buchungen und PDF-Beträge prüfen'}
+    assert {m[1] for m in meldungen} == {gesamt}
+    assert [m[0] for m in meldungen] == sorted(m[0] for m in meldungen)
+    assert set(m[0] for m in meldungen) == set(range(gesamt + 1))
     # Änderung: Erwartungszahlen an den aktuellen lokalen Rechnungsbestand anpassen;
     # Namens-/Zuordnungsfälle und Betragsfälle weiterhin getrennt prüfen.
     assert Counter(p['status'] for p in probleme if not p['status'].startswith('Betrag')) == {

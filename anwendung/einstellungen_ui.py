@@ -5,7 +5,7 @@ import configparser
 from pathlib import Path
 from nicegui import app, ui
 import webview
-from anwendung.einstellungen import ini_datei_schreiben
+from anwendung.einstellungen import ini_datei_schreiben, arbeitsordner_relativ
 # Änderung nach 2.049: Bestehende Eingaben und Aktionen verständlicher anordnen.
 from anwendung.einstellungen_layout import einstellungen_gestalten
 # Änderung nach 2.05.00: Neue Sicherungsoptionen vor dem Speichern prüfen und in INI ergänzen.
@@ -36,7 +36,8 @@ class EinstellungenOberflaeche:
             with ui.row():
                 auswahl = ui.button("auswählen", icon='folder', on_click=lambda: (self.anwendung.ordner_auswaehlen()))
                 standard = ui.button("Auf standard zurücksetzen", icon='folder_special', on_click=lambda: (self.anwendung.ordner_standard()))
-            self.ini_arbeitsordner = ui.label(self.anwendung.arbeitsordner)
+            # Änderung: Bereits gespeicherte absolute Pfade auch im Dialog relativ anzeigen, soweit möglich.
+            self.ini_arbeitsordner = ui.label(arbeitsordner_relativ(self.anwendung.arbeitsordner))
             with ui.row():
                 speichern = ui.button("Speichern", icon='save', on_click=lambda: (self.anwendung.ini_speichern())).props('color=' + self.anwendung.speichernbutton)
                 abbrechen = ui.button("Abbrechen", icon='close', on_click=self.dialog_einstellungen.close)
@@ -54,12 +55,9 @@ class EinstellungenOberflaeche:
     async def ordner_auswaehlen(self):
         # Änderung 2.038: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
         ordner_pfad = await app.native.main_window.create_file_dialog(webview.FOLDER_DIALOG)
-        ordner_pfad = str(ordner_pfad).replace("(","")
-        ordner_pfad = str(ordner_pfad).replace(")","")
-        ordner_pfad = str(ordner_pfad).replace(",","")
-        ordner_pfad = str(ordner_pfad).replace("'","")
-        ordner_pfad = str(ordner_pfad).replace("\\\\","\\")
-        self.ini_arbeitsordner.set_text(ordner_pfad)
+        # Änderung: Native Auswahl unverfälscht übernehmen; Abbrechen erhält den bestehenden Pfad.
+        if ordner_pfad:
+            self.ini_arbeitsordner.set_text(arbeitsordner_relativ(str(ordner_pfad[0])))
 
     def ini_speichern(self):
         # Änderung: Tatsächliche Daten-/Dateiänderungen zusätzlich protokollieren.
@@ -73,6 +71,8 @@ class EinstellungenOberflaeche:
                 return
             # Änderung 2.038: Bisherigen Ablauf über Ansicht und gemeinsame Anwendung ausführen.
             config = configparser.ConfigParser()
+            # Änderung: Auch vorhandene absolute Einstellungen beim Speichern relativ ablegen.
+            self.ini_arbeitsordner.text = arbeitsordner_relativ(self.ini_arbeitsordner.text)
             config['Anwendung'] = { 'FarbeSpezial' : self.ini_farbe_spezial.value,
                                     'FarbeTabelleEdit' : self.ini_farbe_tabelle_edit.value,
                                     'TabellenZeilenProSeite' : self.ini_tabelle_pagination.value,
@@ -81,7 +81,8 @@ class EinstellungenOberflaeche:
             sicherungskonfiguration_ergaenzen(self, config)
             # Änderung für v2: Nur der Dateizugriff ist ausgelagert; Dialogablauf bleibt bestehen.
             ini_datei_schreiben(self.anwendung.ini, config)
-            if self.anwendung.arbeitsordner != self.ini_arbeitsordner.text:
+            # Änderung: Eine andere Schreibweise desselben Ordners benötigt keinen Neustart.
+            if Path(self.anwendung.arbeitsordner or '.').resolve() != Path(self.ini_arbeitsordner.text or '.').resolve():
                 self.dialog_neustart.open()
             self.dialog_einstellungen.close()
 

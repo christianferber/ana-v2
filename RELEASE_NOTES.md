@@ -4,7 +4,27 @@
 <!-- Änderung 2.06.00: Technische Dokumentation wird gemäß Freigabeprozess 7 separat geführt. -->
 
 <!-- Änderung 2.06.01: Geprüften Quellstand bereitstellen; sichtbare Version bleibt 2.06. -->
+<!-- Änderung 2.06.02: Verbesserungen an Statistik, Einstellungen und Rechnungsprüfung gebündelt. -->
 ## Version 2.06 – 14.11.2026
+
+<!-- Änderung 17.11.2026: Statistiknavigation an Tools angeglichen. -->
+- Verbesserung: Die Statistik beginnt wie die Tools-Seite direkt mit Symbolreitern für „Allgemein“ und „Verbraucherspezifisch“.
+- Verbesserung: Die Einstellungen sind in vier Reiter für Betreiber und Preise, Arbeitsordner, Datensicherung und Darstellung gegliedert.
+
+<!-- Änderung: Datumsanzeige, feste Sortierung, Aktivsymbole und relative Arbeitsordner. -->
+- Verbesserung: Die Rechnungsprüfung zeigt das vollständige Datum als TT.MM.JJJJ in einer Zeile und die neuesten Buchungen zuerst. Die Spalte „Aktiv“ kennzeichnet aktive Buchungen mit grünem Haken, inaktive mit rotem Kreuz.
+- Verbesserung: Arbeitsordner werden relativ zum Programmordner gespeichert, soweit möglich. Bei anderen Laufwerken bleibt der absolute Pfad erhalten. Eine unveränderte Ordnerauswahl erfordert keinen Neustart; Abbrechen behält den bisherigen Pfad.
+
+<!-- Änderung 16.11.2026: Prüfung vereinheitlicht, Fortschritt und Tabelle verdichtet. -->
+- Verbesserung: Die Rechnungsprüfung enthält jetzt alle Umsatzaktionen. Die separate Umsatzverwaltung entfällt; die Spalte „Aktiv“ zeigt den Zustand jeder zugeordneten Buchung.
+- Verbesserung: Der Prüffortschritt zählt die bearbeiteten Objekte durchgehend ohne Rücksprünge zwischen den Phasen. Das vorbereitende Einlesen erhält eine Aktivitätsanzeige.
+- Verbesserung: Kompaktere Prüftabelle mit kleinerer Schrift. Lange Hinweise und Beschreibungen belegen höchstens zwei Zeilen; der vollständige Text erscheint beim Darüberfahren. Bedienhinweise lassen sich aufklappen.
+
+<!-- Änderung 16.11.2026: Zweckanzeige und anklickbare Rechnungsübersicht ergänzt. -->
+- Verbesserung: Die Zweckanzeige im Buchungsmanagement enthält keine Verweise auf Secure, Secure Go, Secure Go Plus oder gängige TAN-Verfahren mehr.
+- Feature: Die Rechnungsprüfung zeigt drei farbige Filterbuttons mit Symbol und Anzahl: „OK“, „Betrag prüfen“ und „Fehlerhaft“. Ein Klick zeigt die Gruppe, ein erneuter Klick wieder alle Ergebnisse. Nicht prüfbare Beträge zählen zu „Betrag prüfen“.
+<!-- Änderung 16.11.2026: Gesamtstatus ergänzt und Dropdown durch direkte Filterbuttons ersetzt. -->
+- Verbesserung: Ein grüner Haken zeigt an, dass keine fehlerhaften Rechnungen vorliegen. Sobald mindestens eine Rechnung fehlerhaft ist, erscheint ein rotes Fehlersymbol. Die Filterauswahl erfolgt direkt über die Buttons.
 
 <!-- Änderung nach 2.06.00: Neue Tools und einzeilige Navigation im aktuellen Quellstand. -->
 - Feature: Tools mit den Unterbereichen PDF-Zusammenführung und Buchungsmanagement. PDF-Kontoauszüge lokal einlesen, Buchungen nach Betreff ausblenden oder reaktivieren und fehlende bzw. fehlerhaft benannte Rechnungen erkennen.

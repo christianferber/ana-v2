@@ -11,7 +11,65 @@ beschreiben den jeweiligen damaligen Stand. Aktuelle Prüfungen stehen im
 Für Endbenutzer bestimmte Features, Verbesserungen und Fehlerkorrekturen stehen
 in den [Release Notes](../RELEASE_NOTES.md).
 
-## Arbeitsstand nach 2.06.01 – 14.11.2026
+## Quellbuild 2.06.02 – 17.11.2026
+
+Die interne Buildnummer steigt auf 2.06.02. In der Anwendung wird weiterhin
+2.06 angezeigt.
+
+- 17.11.2026: Die Statistik verwendet wie Tools eine volle Tabbreite mit Symbolen. Die doppelte Seitenüberschrift und der Abstand vor dem Tabinhalt entfallen. Die Statistikberechnung und die Auswahlabläufe bleiben erhalten.
+
+<!-- Änderung: Datum ungeteilt, Aktivhaken und zusätzliche TAN-Verweise in der Zweckanzeige. -->
+Weiterer Folgeauftrag: Eigene Datumszelle mit Mindestbreite und nowrap verhindert
+Zeilenumbrüche und Kürzungen. Aktive Buchungen zeigen check statt arrow_upward.
+Die reine Zweckanzeige entfernt zusätzlich TAN sowie mobile-/SMS-/chip-/photo-/
+push-/smart-/Sm@rt-TAN einschließlich Plus und VR-SecureGo. Schreibweise, Leerzeichen
+und Bindestriche werden berücksichtigt. Wörter wie Tankstelle und Standard bleiben
+erhalten. Buchungsrohtexte, Ausschlussregeln, Zuordnung und Exporte unverändert.
+
+<!-- Änderung: Anzeigeformat und Arbeitsordnerschreibweise gemäß Folgeauftrag. -->
+Weiterer Folgeauftrag: ISO-Buchungsdaten bleiben intern unverändert. Eine eigene
+Anzeigespalte zeigt TT.MM.JJJJ. Die Tabellenkopie wird bei jeder Aktualisierung
+absteigend nach dem ISO-Datum sortiert, ohne Datum am Ende; manuelle Spaltensortierung
+ist deaktiviert. Aktiv: grüner Aufwärtspfeil oder rotes Kreuz mit Tooltip und
+Bildschirmlesertext; reine Dateifehler ohne Buchung behalten einen Gedankenstrich.
+Arbeitsordner werden in Anzeige, Auswahl und beim Speichern mit os.path.relpath
+gegen den beim Programmstart gesetzten Programmordner umgerechnet. Andere Laufwerke
+bleiben absolut, leerer Standard bleibt leer. Pfadvergleich für Neustart verwendet
+aufgelöste Ziele. Native Ordnerauswahl wird ohne Entfernung von Sonderzeichen
+übernommen; Abbrechen verändert nichts. Fach- und Exportlogik unverändert.
+
+<!-- Änderung 16.11.2026: Objektfortschritt, gemeinsamer Prüfeinstieg und kompakte Tabelle. -->
+Weiterer Folgeauftrag: Der einzige Oberflächeneinstieg führt zur vollständigen
+Rechnungsprüfung. Die separate Umsatzaktion entfällt; dieselbe Prüfung unterstützt
+weiter Ausschlüsse, Reaktivierung und Persistenz. „Aktiviert“ zeigt Ja/Nein, bei
+Dateifehlern ohne Buchungszuordnung einen Gedankenstrich. Ausschlussregeln bleiben erhalten.
+Der Rechnungsprüfer verwendet einen festen Gesamtumfang aus Rechnungsdateien und
+Buchungen. Jede Zuordnung beziehungsweise Buchungsprüfung zählt ein Objekt;
+übersprungene Objekte werden als bearbeitet berücksichtigt. Phasenwechsel setzen
+den Zähler nicht zurück. Der vorausgehende Kontoimport ist eine unbestimmte Vorbereitung.
+Die Tabelle verwendet dense, 12-Pixel-Schrift und geringere Zellabstände. Empfänger,
+Zweck, Dateiname und Hinweise werden auf zwei Zeilen begrenzt und vollständig als
+Tooltip angeboten. Allgemeine Bedienhinweise sind einklappbar. Keine Änderung an
+Rechnungszuordnung, Betragsbewertung oder Exportlogik.
+
+<!-- Änderung 16.11.2026: Reine Zweckanzeige und Prüfgruppen ergänzen. -->
+Ergänzung 16.11.2026: Secure-/Secure-Go-/Secure-Go-Plus-Verweise werden ohne
+Beachtung der Schreibweise aus der Tabellenkopie des Zwecks entfernt. Parser,
+Originalbuchungen, Ausschlussregeln und Rechnungsbewertung bleiben unverändert.
+Drei Schnellfilter zählen den vollständigen aktiven Prüfbestand unabhängig von
+Suchtext und Statusfilter. Rechnung OK mit Betrag ungleich OK umfasst Abweichungen
+und nicht prüfbare Beträge; Rechnung ungleich OK umfasst auch Dateizuordnungsfehler.
+Ein Klick setzt Suche und Anzeige ausgeblendeter Buchungen zurück und wählt die
+Gruppe im Statusfilter. Ausblenden/Reaktivieren berechnet alle Zähler erneut.
+Version unverändert; kein neuer Build oder Veröffentlichung.
+
+<!-- Änderung 16.11.2026: Folgeauftrag zu Gesamtstatus, Symbolen und Dropdown umgesetzt. -->
+Folgeauftrag: Das Dropdown entfällt. Die Gruppen heißen jetzt „OK“ (grüner Haken),
+„Betrag prüfen“ (gelbes Warnsymbol) und „Fehlerhaft“ (rotes Fehlersymbol).
+Erneuter Klick auf die aktive Gruppe hebt ihren Filter auf; ein Text zeigt die
+aktuelle Auswahl. Der Gesamtstatus zählt dieselben aktiven Rechnungsfehler wie
+„Fehlerhaft“, unabhängig von Suche oder Filter. Ohne solche Fehler grüner Haken,
+sonst rotes Symbol mit Text. Offene Betragsprüfungen ändern diesen Gesamtstatus nicht.
 
 <!-- Änderung: Buchungstag gegenüber Wertstellung eindeutig benennen und absichern. -->
 Die erste Datumsspalte „Bu-Tag“ bleibt maßgeblich für Datum, Tagesnummer und

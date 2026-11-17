@@ -28,6 +28,16 @@ body { background: #f4f7fa; color: #233747; font-family: "Segoe UI", Arial, sans
 /* Änderung nach 2.06.00: Großes, eigenständig scrollbar bedienbares Verwaltungsfenster. */
 .ana-kontomanager-dialog { width: 1400px; max-width: 96vw !important; height: 88vh; flex-wrap: nowrap; }
 .ana-kontomanager-dialog .q-table td { white-space: normal; overflow-wrap: anywhere; }
+/* Änderung 16.11.2026: Kompakte Prüfzeilen; lange Hinweise bleiben vollständig über Tooltip zugänglich. */
+.ana-kontomanager-dialog { gap: 8px; }
+.ana-kontomanager-tabelle .q-table th,
+.ana-kontomanager-tabelle .q-table td { font-size: 12px; padding: 4px 6px; line-height: 1.25; }
+.ana-kontomanager-tabelle .q-badge { font-size: 11px; white-space: nowrap; }
+/* Änderung: Vollständiges Datum ohne Umbruch oder Kürzung auch in schmalen Tabellen. */
+.ana-kontomanager-tabelle .q-table td.ana-konto-datum { white-space: nowrap; overflow-wrap: normal; min-width: 86px; }
+.ana-konto-datum span { display: inline-block; white-space: nowrap; }
+.ana-konto-kurztext { min-width: 100px; max-width: 240px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; line-height: 16px; max-height: 32px; }
+.ana-konto-volltext { max-width: min(600px, 90vw); white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
 /* Änderung nach 2.06.00: Fortschrittsfenster mit festem, auch schmal gut lesbarem Rahmen. */
 .ana-kontomanager-fortschritt { width: 560px; max-width: 94vw !important; gap: 16px; }
 /* Änderung: Alle Quasar-Tabellen bekommen einen eigenen Scrollbereich mit stehenden Spaltenüberschriften. */

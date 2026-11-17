@@ -134,11 +134,11 @@ class Verbrauchsstatistik:
 
     def aufbauen(self):
         # Änderung: Zwei Bereiche; Verbraucherauswahl über beiden zugehörigen Statistiken.
-        with ui.column().classes('w-full ana-statistik'):
-            ui.label('Statistik').classes('text-h5')
+        # Änderung: Wie bei Tools beginnt die Seite mit einer durchgehenden Tableiste mit Symbolen.
+        with ui.column().classes('w-full gap-0 ana-statistik'):
             with ui.tabs().classes('w-full') as self.bereichsauswahl:
-                allgemein = ui.tab('Allgemein')
-                verbraucher = ui.tab('Verbraucherspezifisch')
+                allgemein = ui.tab('Allgemein', icon='bar_chart')
+                verbraucher = ui.tab('Verbraucherspezifisch', icon='person')
             with ui.tab_panels(self.bereichsauswahl, value=allgemein).classes('w-full'):
                 with ui.tab_panel(allgemein).classes('ana-allgemeine-statistik'):
                     self.allgemeine_kostenstatistik = Kostenstatistik(self.anwendung)

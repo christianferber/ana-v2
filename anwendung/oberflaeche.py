@@ -144,8 +144,8 @@ ini_betreiber = 'ana-betreiber.ini'
 # Änderung 2.05.00: Neue Freigabe; sichtbare Version 2.05, Entwicklungsstand 00.
 # Änderung 2.06.00: Neue Freigabe mit maximiertem Start und vollständigem Windows-Paket.
 version = 2.06
-# Änderung 2.06.01: Neuer Quellbuild ohne EXE gemäß AGENTS.md; sichtbare Version bleibt 2.06.
-build_version = '2.06.01'
+# Änderung 2.06.02: Quellbuild mit aktualisierter Oberfläche und Rechnungsprüfung.
+build_version = '2.06.02'
 zaehler_liste = []
 # Änderung 2.03: Abrechnungsdaten werden in AbrechnungOberflaeche initialisiert.
 mitglieder_db = []

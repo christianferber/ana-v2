@@ -46,7 +46,28 @@ def methoden_als_funktionen(basis, originalfunktionen):
             continue
         assert methode.args.args[0].arg == 'self'
         funktion = NamenZurueckfuehren().visit(copy.deepcopy(methode))
+        # Änderung: Nur die ausdrücklich beauftragte relative Pfadbehandlung vom historischen AST-Vergleich ausnehmen.
+        if methode.name == 'ordner_auswaehlen':
+            assert ast.unparse(funktion.body[-1]) == "if ordner_pfad:\n    ini_arbeitsordner.set_text(arbeitsordner_relativ(str(ordner_pfad[0])))"
+            assert len(funktion.body) == 2
+            funktion.body = copy.deepcopy([n for n in vorlagen[methode.name].body if not isinstance(n, ast.Global)])
+        if methode.name == 'einstellungen_ui':
+            class RelativeAnzeigeZurueckfuehren(ast.NodeTransformer):
+                def visit_Call(self, knoten):
+                    if isinstance(knoten.func, ast.Name) and knoten.func.id == 'arbeitsordner_relativ':
+                        assert ast.unparse(knoten) == 'arbeitsordner_relativ(arbeitsordner)'
+                        return knoten.args[0]
+                    return self.generic_visit(knoten)
+            funktion = RelativeAnzeigeZurueckfuehren().visit(funktion)
         if methode.name == 'ini_speichern':
+            normalisierung = [n for n in funktion.body if isinstance(n, ast.Assign)
+                              and ast.unparse(n).startswith('ini_arbeitsordner.text = arbeitsordner_relativ')]
+            assert len(normalisierung) == 1
+            assert ast.unparse(normalisierung[0]) == 'ini_arbeitsordner.text = arbeitsordner_relativ(ini_arbeitsordner.text)'
+            funktion.body.remove(normalisierung[0])
+            neustart = next(n for n in funktion.body if isinstance(n, ast.If) and 'resolve()' in ast.unparse(n.test))
+            assert ast.unparse(neustart.test) == "Path(arbeitsordner or '.').resolve() != Path(ini_arbeitsordner.text or '.').resolve()"
+            neustart.test = ast.parse('arbeitsordner != ini_arbeitsordner.text', mode='eval').body
             # Änderung nach 2.05.00: Nur die zwei expliziten Backup-Ergänzungen ausnehmen;
             # alle bisherigen Speicherabläufe weiterhin exakt gegen Original prüfen.
             assert ast.unparse(funktion.body[0]) == 'if not sicherungskonfiguration_pruefen(self):\n    return'

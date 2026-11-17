@@ -1,49 +1,12 @@
-# Ergänzende Prüfung: Buchungstag statt Wertstellung – 14.11.2026
+# Quellbuild 2.06.02 – 17.11.2026
 
-<!-- Änderung: Datumsgrundlage ausdrücklich mit abweichender Wertstellung prüfen. -->
-Die PDF-Spaltenpositionen bestätigen „Bu-Tag“ als erste Datumsspalte.
-Der Parser verwendete diese bereits; Variablen und Kommentar benennen dies nun
-explizit. Keine Änderung der Datums- oder Rechnungslogik.
-`tests.buchungsmanagement_pruefen` erneut vollständig erfolgreich mit lokalen
-Beispielen, PDF-Endbeträgen, OCR, Zuordnung, Persistenz und Fehlerfällen.
-Neuer Test: Wertstellung abweichend vom Buchungstag, über den Jahreswechsel
-und außerhalb des Auszugszeitraums; eingelesene Datensätze bleiben identisch.
-Originaldateien unverändert. Kein erneuter vollständiger Oberflächenlauf;
-der zuvor dokumentierte Praxislauf bleibt der letzte vollständige Lauf.
+Alle 32 gebündelten Prüfungen und die Syntaxprüfung waren erfolgreich. Die Buildnummer ist die einzige Codeänderung seit dem unten dokumentierten regulären Praxislauf. Der Praxislauf nutzte die reguläre Word-Anbindung und ausschließlich lokale Beispieldaten.
 
-# Arbeitsstand nach 2.06.01 – 14.11.2026
-
-Die sichtbaren Buchungs-IDs werden in beiden Buchungsmanagement-Dialogen nach
-Ausblenden und Reaktivieren aus den aktiven Tagesbuchungen neu berechnet.
-Der Praxislauf prüft das Entfallen des Suffixes bei einer verbleibenden Buchung,
-die Wiederherstellung nach Reaktivierung sowie die IDs in der Rechnungsprüfung.
-Ausgeblendete Zeilen zeigen keine aktive ID. Interne Auswahlschlüssel bleiben stabil.
-
-Vollständiger regulärer Praxislauf erfolgreich, ausschließlich lokale Beispieldaten:
-`.lokal/oberflaechentest-20261114-230617-516092`. 73 neu erzeugte Word-Paketinhalte
-sowie 73 PDF-Texte und Seitenzahlen stimmen mit dem letzten erfolgreichen Lauf
-überein. Original-Beispieldateien unverändert, Testprozesse vollständig beendet.
-Export-, Sicherungs- und Oberflächenprüfungen erfolgreich; keine neue visuelle
-Dokumentprüfung. Keine Änderung der Buchungsexportlogik.
-
-Ein erster Lauf stoppte vor den neuen ID-Fällen an der Scrollprüfung. Der Test
-misst die Kopfposition nun relativ zum Scrollbereich, damit Dialogbewegungen
-die Prüfung nicht verfälschen. Der vollständige erneute Lauf bestand.
-
-Die erste gebündelte Prüfung scheiterte an veralteten festen Statussummen für
-den aktuellen lokalen Rechnungsbestand. Aktualisierte Erwartung: eine Rechnung
-ohne Buchung, 26 fehlende Rechnungen, elf nicht prüfbare und ein abweichender
-Betrag. PDF-Zuordnung und OCR sind gegenüber HEAD unverändert. Die gezielten
-synthetischen Zuordnungs-/Fehlerfälle bleiben erhalten. Erneute Gesamtprüfung
-vollständig erfolgreich.
-
-Alle 32 gebündelten Prüfungen und die abschließende Syntaxprüfung erfolgreich:
-
-# Prüfbericht ANA – aktueller Arbeitsstand
+## Gebündelte Prüfungen
 
 <!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
 
-Stand: 14.11.2026
+Stand: 17.11.2026
 
 Umgebung: Windows, Python 3.13.5.
 
@@ -81,267 +44,37 @@ Umgebung: Windows, Python 3.13.5.
 - Dokumentfelder und simulierte Dokumentaufrufe: bestanden.
 - Syntax aller Python-Dateien: bestanden.
 
-
-## Bisheriger Prüfstand
-
-# Quellbuild 2.06.01 – 14.11.2026
-
-<!-- Änderung 2.06.01: Aktueller AGENTS.md folgen; Build ohne EXE. -->
-Alle 32 gebündelten Prüfungen erfolgreich. Abschließende Syntaxprüfung aller
-Python-Quellen erfolgreich. Gegenüber dem zuletzt geprüften Commit b4dd946 ist
-im Anwendungscode ausschließlich build_version auf 2.06.01 geändert; der
-AST-Vergleich bestätigt unveränderte Fachlogik. Sichtbare Version bleibt 2.06.
-
-Der vollständige reguläre Praxislauf des enthaltenen Anwendungsstands ist im
-folgenden Bericht dokumentiert: normale Word-Anbindung, 73 identische neue
-Word-Paketinhalte und PDF-Texte/Seitenzahlen, originale Beispieldateien unverändert,
-Tabellenköpfe/Prüfstatus/Filter sowie manuelle und automatische Sicherung bestanden.
-Daten ausschließlich lokal verarbeitet. Keine neue visuelle Dokumentprüfung.
-
-Aktuelle AGENTS.md: Bei einem Build wird keine EXE erstellt. Ein aufgrund der
-älteren Vorgaben zunächst gestarteter EXE-Bau wurde gezielt beendet, der frische
-Bauordner vollständig verworfen. Kein neues Windows-Paket, kein Ausführungsordner;
-bisherige EXE-Auslieferungen unverändert. Der Quellbuild enthält weder lokale
-Einstellungen noch Vorgaben, Geheimnisse, Beispieldaten oder Prüfartefakte.
-
-# Prüfbericht ANA – aktueller Arbeitsstand
+## Praxisprüfungen
 
 <!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
 
-Stand: 14.11.2026
+Stand: 17.11.2026
+
+<!-- Änderung: Statistiknavigation im lokalen Praxislauf geprüft. -->
+Die Statistik startet mit zwei Symbolreitern direkt über dem Inhalt. Beide
+Ansichten und der Verbraucherwechsel wurden mit lokalen Beispieldaten geprüft.
+Die separate Verbrauchsstatistik-Referenzprüfung und der vollständige reguläre
+Praxislauf einschließlich Word/PDF, ZIP-Sicherung und Fenster-X bestanden. Im
+ersten Lauf war der Einstellungsdialog nach dem Zurücksetzen der Browsergröße
+nicht mehr auffindbar. Der Test klickt nun vor dem Zurücksetzen auf „Abbrechen“.
+Die Original-Beispieldaten blieben unverändert. Testprozesse wurden beendet.
+
+<!-- Änderung: Datum ohne Umbruch, Aktivhaken und TAN-Bereinigung mit lokalen Beispielen geprüft. -->
+Arbeitsstand nach 2.06.01: Alle 32 Gesamtprüfungen und Syntaxprüfung erfolgreich.
+Erweiterte Zweckanzeige für Secure, SecureGo/Plus, VR-SecureGo sowie TAN,
+chipTAN, photoTAN, push-TAN, mobile TAN und Sm@rt-TAN plus geprüft. Andere Wörter
+wie Tankstelle und Standard bleiben unverändert.
+Vollständiger regulärer Praxislauf erfolgreich: Aktiv-Symbol tatsächlich check,
+Datumszellen bei 1440/800/400 Pixeln einzeilig und ohne Textkürzung gemessen.
+Sortierung, Filter, Aktivieren/Ausblenden, Einstellungen und alle bisherigen
+Word-/PDF- und Sicherungsabläufe einschließlich Fenster-X ebenfalls erfolgreich.
+73 neue Word-Paketinhalte und 73 PDF-Texte/Seitenzahlen identisch zum vorherigen
+erfolgreichen Praxislauf. Originaldaten unverändert. Test-App/Fenster/Browser beendet.
+Keine visuelle Dokumentprüfung, kein neuer Build, keine EXE und keine Veröffentlichung.
 
 Umgebung: Windows, Python 3.13.5.
 
 - Buchungsmanagement aus PDF-Kontoauszügen: bestanden.
-- Vollsicherung als ZIP: bestanden.
-- Verbrauchsstatistik aus Jahresabrechnungen: bestanden.
-- Serienbrief-Fettformatierung: bestanden.
-- PDF-Fortschritt im Button: bestanden.
-- Startanzeige und Ladefolge: bestanden.
-- Änderungsprotokoll für Daten und Einstellungen: bestanden.
-- Exportoberfläche bei Fehlern: bestanden.
-- Word-Fehlerbereinigung: bestanden.
-- Ausfallsicherheit von CSV und Sicherungen: bestanden.
-- Mitgliederaktualisierung gegen Original: bestanden.
-- CSV-Speicherhilfe gegen Original: bestanden.
-- Datenbankzugriffe gegen Original: bestanden.
-- Datenaufbereitung gegen Original: bestanden.
-- Sicherung gegen Original: bestanden.
-- Buchungsexport-Bedienung gegen Original: bestanden.
-- Statistik gegen Original: bestanden.
-- Changelog-Anzeige gegen Original: bestanden.
-- Einstellungsansicht gegen Original: bestanden.
-- Werkzeuge gegen Original: bestanden.
-- Kontodatenansicht gegen Original: bestanden.
-- Mitgliederansicht gegen Original: bestanden.
-- Abnehmeransicht gegen Original: bestanden.
-- Zähleransicht gegen Original: bestanden.
-- Testprozesse und Startsperre: bestanden.
-- Abschlagsansicht gegen Original: bestanden.
-- Jahresabrechnung gegen Referenz: bestanden.
-- Berechnung und Abbruchbedingungen: bestanden.
-- Rückvergütung gegen Referenz: bestanden.
-- Buchungs-CSV und freigegebene Fehlerkorrekturen: bestanden.
-- Dateien, INI, Pfade und Strukturvergleich: bestanden.
-- Dokumentfelder und simulierte Dokumentaufrufe: bestanden.
-- Syntax aller Python-Dateien: bestanden.
-
-
-# Aktuelle Prüfung – Getrennte Prüfstatus und feste Tabellenköpfe, 14.11.2026
-
-<!-- Änderung nach 2.06.00: Neue Tools mit lokalen PDF-Vorlagen und regulärem Praxislauf verifizieren. -->
-Alle 32 gebündelten Prüfungen und Syntax erfolgreich. Neue Prüfung gegen alle drei
-lokalen Kontoauszüge: 62 Buchungen, Soll/Haben, eindeutige IDs, Anfangs-/Endsalden
-und unveränderte Originaldateien. Rechnungsbeispiele vollständig abgeglichen;
-gezielte Fälle für Jahreswechsel, doppelte Auszüge, ungültige/fehlende Zeilen,
-Saldenfehler, Dateinamens-/Datumsfehler, Mehrfachrechnung, fehlende Buchung,
-b-Zusatz, Betreff-Regeln und atomare Einstellungsspeicherung bestanden.
-Ergänzte Vorgaben umgesetzt: optionale Rechnungsnummer/„vom“/Rechnungsdatum, Empfänger oder Zweck, XML-Zusatz mit b und centgenauer
-PDF-Endbetragsvergleich im Absolutwert. Lokale PDF-Layoutauswertung und Windows-OCR
-für Scans geprüft. Zehn nicht eindeutig lesbare Endbeträge bleiben manuelle
-Prüffälle; eine Betragsabweichung wird erkannt. Einzelpreise, Steuer-/Nettowerte,
-Prozentangaben, Mehrfachbeträge und widersprüchliche Summen in gezielten Tests
-kontrolliert. OCR-Prozess ohne Shell-Pfadinterpolation, Cache nach Inhaltsprüfung,
-Zeitlimit und nicht verfügbare Texterkennung getestet.
-Alle vorhandenen Rechnungsdateinamen entsprechen den optionalen Namensregeln.
-Gegenüber dem vorherigen Stand sind sieben weitere Buchungen mit Rechnungen
-zugeordnet. Achtstellige Rechnungsnummern ohne „vom“ werden nicht fälschlich als
-ungültige Datumsangaben verworfen; ausdrücklich angegebene Daten werden validiert.
-Drei Fortschrittsphasen zählen tatsächlich verarbeitete Auszüge, Rechnungsdateien
-und Buchungen. Zähler sind je Phase monoton und erreichen vollständig ihr Ziel.
-Fehlerfälle melden keinen scheinbaren Abschluss.
-
-Neue Prüfungen: interne Buchungs-ID bleibt stabil, Prüfdateianfänge werden aus den
-aktiven Tagesbuchungen berechnet. Einzelne übrig gebliebene Buchung ohne Anhang und
-bisheriger nummerierter Dateiname werden unterstützt. Mehrere aktive Tagesbuchungen
-werden neu nummeriert. Vollständige Ergebnistabelle enthält auch erfolgreiche Zeilen.
-Rechnung=OK/grün ist unabhängig vom Betrag; Betragsabweichung und unlesbarer Betrag
-bleiben in eigener Spalte sichtbar. Beide Filter (Status OK bzw. Status OK und Betrag
-OK ausblenden) im echten Dialog geprüft; gespeicherte CSV blieb dabei bytegleich.
-Betreff-Spalte nach Benutzerklärung entfernt, Datum/Betrag behalten. Leere
-Rechnungsspalten in der Verwaltung entfallen. Quasar- und AutoHeight-AG-Grid-Köpfe
-mit echtem vertikalem Scrollen und gemessener fester Position geprüft. Bestehende
-Grid-Optionen und Fachfunktionen unverändert.
-Der erste reguläre Lauf stoppte am neuen AG-Grid-Scrolltest. Gezielte lokale
-Geometriemessung zeigte eine später geladene Theme-Regel mit overflow=hidden.
-Scrollregel präzisiert; kurzer lokaler Kopfzeilenlauf danach vollständig bestanden.
-Vollständigen regulären Praxislauf mit dieser Korrektur wiederholt.
-Im zweiten Lauf stoppte die Testabfrage des gesperrten Exportbuttons. Lokal waren
-bereits 73 Word-Dateien und 17 PDFs erzeugt, ohne App-Fehler. Testabfrage auf die
-stabile DOM-ID des konkreten Exportbuttons umgestellt (unabhängig vom Prozenttext),
-Exportlogik unverändert. Vollständigen regulären Lauf erneut ausgeführt.
-
-Neue Vorgabe: Empfänger und Zweck für alle 62 lokalen Buchungen abgeleitet,
-Bankmetadaten/Seitenabschlüsse nicht im Zweck. Vereinfachter Betreff kombiniert die
-Gegenpartei mit dem Zweck. Gleicher Betreff oder vollständiges gleiches Paar
-bewirken gemeinsame Ausschlüsse, sofort und bei späterem Import. Für eine neue Paarregel müssen beide
-Felder übereinstimmen. Unvollständige Paare ergeben keine Paarregel; die Betreff-
-Regel gilt weiterhin. Gruppenreaktivierung sowie Erhalt/gezieltes Aufheben historischer reiner
-Gegenpartei-Regeln geprüft. Zukünftige passende Buchungen werden in die Regeln ergänzt.
-Ausschlüsse in Datenbank/db_buchungsmanagement.csv mit Betreff;Empfaenger;Zweck,
-Semikolon-Trenner und UTF-8-BOM; alte einspaltige Windows-Dateien werden übernommen.
-CSV-Rundlauf mit den lokalen Beispielbetreffen und Sonderzeichen, Anführungszeichen
-und Semikola geprüft. Leere Auswahl ergibt eine gültige Kopfzeile. Die atomare
-Unicode-Schreibhilfe erhält bei Fehlern den alten Inhalt und beseitigt temporäre Dateien.
-Alte JSON-Regeln werden übernommen; Bereinigung der JSON-Liste erfolgt erst nach
-vollständiger CSV-Anlage und erfolgreichem Lesen. CSV-Vorrang, veraltete JSON-Regeln,
-Fehler bei CSV-Schreiben und JSON-Aufräumen, beschädigte CSVs, neue Ansicht und
-Arbeitsordnerwechsel geprüft. JSON speichert künftig nur die Ordnerpfade.
-Ein gezielter Test zeigte nicht darstellbare Zeichen in erkannten Zwecktexten.
-CSV auf UTF-8-BOM erweitert; alte Kodierung wird weiterhin erkannt. Unicode-Rundlauf,
-Schemaübernahme, Paarregeln, Ausschluss und Reaktivierung danach gezielt bestanden.
-
-Regulärer vollständiger Praxislauf mit normaler Word-Anbindung erfolgreich.
-Neue Tools-Tabs über echte Browserereignisse bedient: PDF-Startbereich, 62 Buchungen,
-Ausblenden aller gleichnamigen Betreffe, Anzeigen/Reaktivieren, gespeicherte Regeln,
-Rechnungsprüfungsdialog und Ausblenden aus diesem Dialog. Empfänger-/Zweck-Spalten, reale wiederholte Paargruppe, sofortiges Ausblenden aller
-zugehörigen Buchungen, CSV-Neuanlage, Entfernen der alten JSON-Liste und gespeicherte Ausschlüsse/
-Reaktivierung im echten Dialog überprüft. Betragsabweichung mit
-Buchungs- und PDF-Betrag sowie Suche nach manuellen Prüffällen bedient.
-Echte Fortschrittsanzeige im Browser beobachtet: sichtbarer Zwischenstand,
-monotone Werte je Phase und 100 % vor dem Ergebnis. Ein absichtlich ungültiger
-PDF-Auszug wurde nur in der Testkopie angelegt: Fortschrittsdialog danach entfernt,
-kein Ergebnisdialog, Fehler angezeigt und erneuter erfolgreicher Import möglich. Navigation bei 1000 und
-1440 Pixeln ohne Zeilenumbruch geprüft. Bisherige UI-, CSV- und Sicherungsprüfungen
-einschließlich nativem Fenster-X, sichtbarer Sicherungsanzeige und ZIP-/INI-Vergleich
-bestanden. 73 neue Word-Paketinhalte und PDF-Texte/Seitenzahlen gegenüber dem letzten
-geprüften Stand unverändert. Original-Beispieldaten unverändert, Testprozesse beendet.
-
-Prüfgrenzen: Kontoauszüge benötigen weiterhin Text im verifizierten Banklayout.
-Rechnungsbeträge werden über gekennzeichnete Endbeträge mit deutscher Dezimalschreibweise
-gelesen; keine automatische Bestätigung bei unlesbaren oder mehrdeutigen Beträgen.
-Windows-OCR benötigt eine lokal verfügbare Erkennungssprache. Erkannte Texte/Bilder
-bleiben im RAM; kein Cloud-Dienst. Keine Prüfung des tatsächlichen Rechnungsempfängers
-oder anderer Rechnungsinhalte. Vereinfachter Betreff kombiniert Gegenpartei und Geschäftszweck. Inhaltliche Zahlen/
-Datumsangaben werden nicht pauschal entfernt; kein unscharfer Paarvergleich. Keine visuelle Prüfung privater Dokumente im KI-Kontext.
-Version 2.06/2.06.00 unverändert, keine neue EXE oder Veröffentlichung.
-Alle Datenprüfungen lokal. Frühere Nachweise bleiben nachfolgend erhalten.
-
-# Prüfbericht ANA – aktueller Arbeitsstand
-
-<!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
-
-Stand: 14.11.2026
-
-Umgebung: Windows, Python 3.13.5.
-
-- Buchungsmanagement aus PDF-Kontoauszügen: bestanden.
-- Vollsicherung als ZIP: bestanden.
-- Verbrauchsstatistik aus Jahresabrechnungen: bestanden.
-- Serienbrief-Fettformatierung: bestanden.
-- PDF-Fortschritt im Button: bestanden.
-- Startanzeige und Ladefolge: bestanden.
-- Änderungsprotokoll für Daten und Einstellungen: bestanden.
-- Exportoberfläche bei Fehlern: bestanden.
-- Word-Fehlerbereinigung: bestanden.
-- Ausfallsicherheit von CSV und Sicherungen: bestanden.
-- Mitgliederaktualisierung gegen Original: bestanden.
-- CSV-Speicherhilfe gegen Original: bestanden.
-- Datenbankzugriffe gegen Original: bestanden.
-- Datenaufbereitung gegen Original: bestanden.
-- Sicherung gegen Original: bestanden.
-- Buchungsexport-Bedienung gegen Original: bestanden.
-- Statistik gegen Original: bestanden.
-- Changelog-Anzeige gegen Original: bestanden.
-- Einstellungsansicht gegen Original: bestanden.
-- Werkzeuge gegen Original: bestanden.
-- Kontodatenansicht gegen Original: bestanden.
-- Mitgliederansicht gegen Original: bestanden.
-- Abnehmeransicht gegen Original: bestanden.
-- Zähleransicht gegen Original: bestanden.
-- Testprozesse und Startsperre: bestanden.
-- Abschlagsansicht gegen Original: bestanden.
-- Jahresabrechnung gegen Referenz: bestanden.
-- Berechnung und Abbruchbedingungen: bestanden.
-- Rückvergütung gegen Referenz: bestanden.
-- Buchungs-CSV und freigegebene Fehlerkorrekturen: bestanden.
-- Dateien, INI, Pfade und Strukturvergleich: bestanden.
-- Dokumentfelder und simulierte Dokumentaufrufe: bestanden.
-- Syntax aller Python-Dateien: bestanden.
-
-
-# Aktuelle Prüfung – Datenordner anhand des INI-Arbeitsordners
-
-<!-- Änderung nach 2.06.00: Bedingte Ordneranlage am konfigurierten Ziel prüfen. -->
-Gezielter Einstellungs-/Ordneranlagetest mit lokaler Beispieldatenkopie bestanden.
-Vollständig vorhandener externer Arbeitsordner ohne mkdir-Aufrufe, ohne zusätzliche
-Datenordner im Programmordner und mit identischen Dateihashes bestätigt.
-Teilweise vorhandene Ziele ergänzen nur fehlende Standardordner; bestehende
-Dateien und Verzeichniszeitstempel erhalten. Fehlender konfigurierter Basispfad
-wird am eingetragenen Ort erstellt, die INI bleibt dabei bytegleich. Relative
-INI-Pfade beziehen sich auf den Programmordner. Leerer oder fehlender INI-Pfad
-verwendet den Programmordner; wiederholter Aufruf legt vorhandene Ordner nicht neu an.
-
-Regulärer Datei-/INI-/Strukturtest und vollständiger regulärer Praxislauf mit
-normaler Word-Anbindung bestanden. Oberfläche, Einstellungen, CSV-Referenz,
-73 neue Word-/PDF-Paare, manuelle und automatische ZIP-Sicherung mit Fenster-X
-und sichtbarer Beendigungsanzeige bestanden. Word-Paketinhalte sowie PDF-Texte/
-Seitenzahlen gegenüber dem vorherigen erfolgreichen Stand identisch.
-Original-Beispieldaten unverändert und Testprozesse beendet. Daten ausschließlich lokal.
-
-Quelländerung nach der Paketierungskorrektur 2.06.00. Bestehende EXE/Release-Dateien
-wurden für diesen Änderungsauftrag nicht neu erstellt. Neue EXE benötigt einen
-weiteren ausdrücklich beauftragten Build. Keine visuelle Dokumentprüfung.
-Nachfolgend frühere Prüfnachweise der veröffentlichten Pakete.
-# Aktuelle Paketierungsprüfung – 2.06.00 gemäß Freigabeprozess 7
-
-<!-- Änderung 2.06.00: Erneute Auslieferung als minimale Onefile-EXE dokumentieren. -->
-Alle 31 Freigabeprüfungen bestanden. Anwendungsmodule entsprechen dem ursprünglichen
-Anwendungsstand 2.06.00. Die Paketierung verwendet jetzt Onefile, der EXE-Einstieg
-legt die früher mitgelieferten leeren Datenordner beim ersten Start an.
-
-Das Windows-ZIP wurde auf exakt diese Dateien geprüft:
-ANA.exe, RELEASE_NOTES.md, ana.ini und die fünf erforderlichen Ressourcen
-(ANA logo.png, Logo NWS.JPG, ANA-favicon.ico, ANA-icon.ico, ana-ui.css).
-Auf oberster Ebene sind nur EXE, Release Notes, INI und ressourcen vorhanden.
-README.md, docs und _internal gehören nicht zur korrigierten Auslieferung.
-
-Tatsächliche EXE-Prüfungen aus zwei unabhängigen entpackten Paketkopien bestanden:
-- Neutraler Erststart ohne vorab angelegte Datenordner. Lokale Oberfläche erreicht,
-  benötigte Datenordner automatisch angelegt und regulär per Fenster-X beendet.
-- Start mit isolierter lokaler Beispieldatenkopie. Versionsanzeige 2.06,
-  SW_SHOWMAXIMIZED und native Titelleiste/Fenster-X bestätigt.
-- Fenster-X mit sichtbarer eigenständiger Sicherungsanzeige und regulärem Ende.
-- Vollständige ZIP-Sicherung, CRC-Lesbarkeit und Vergleich sämtlicher gespeicherter
-  Dateien sowie der Programm-INI gegen die Testkopie bestanden.
-- Original-Beispieldaten unverändert und alle Testprozesse beendet.
-
-Die erzeugten EXE-Dateien wurden nach den Tests nicht verändert. ZIP und
-Ausführungsordner werden vollständig gegeneinander gehasht. Die vorherige
-Auslieferung wird vor Austausch lokal aufbewahrt. Korrigierte Release-Dateien
-werden vor Austausch auf GitHub hochgeladen und anhand ihrer Digests geprüft.
-Paketierungsquellen liegen in einem Folgecommit zum bestehenden Anwendungstag.
-Word-/PDF-Export aus dieser Onefile-EXE nicht zusätzlich geprüft. Keine visuelle
-Dokumentprüfung. Sämtliche Datenprüfungen ausschließlich lokal.
-Nachfolgend frühere Prüfnachweise zur ursprünglichen Paketierung und Fachlogik.
-# Prüfbericht ANA – aktueller Arbeitsstand
-
-<!-- Änderung für v2: Nur Prüfstatus veröffentlichen, keine Beispieldaten. -->
-
-Stand: 13.11.2026
-
-Umgebung: Windows, Python 3.13.5.
-
 - Vollsicherung als ZIP: bestanden.
 - Verbrauchsstatistik aus Jahresabrechnungen: bestanden.
 - Serienbrief-Fettformatierung: bestanden.
